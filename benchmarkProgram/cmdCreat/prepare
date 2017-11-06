@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]
+then
+	echo "Usage: "$0" <Stage Path>"
+	exit 1
+fi
+
+cd "$1"
+
+#Clean directory
+ls | grep -v 'prepare' | xargs rm -f
+
+#Prepare Benchmark Program
+CODE=$(cat <<EOF
+#include<fcntl.h>
+void main() {creat("newtest.txt",S_IRWXU|S_IRWXG|S_IRWXO);}
+EOF
+)
+
+TMPFILE=$(mktemp -t tmp.XXXXXX.c)
+echo "$CODE">$TMPFILE
+
+gcc --static -o test "$TMPFILE"
+
+rm "$TMPFILE"
