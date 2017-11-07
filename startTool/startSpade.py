@@ -22,9 +22,7 @@ def startSpade(stagePath, workingPath, suffix):
 
 	#Start SPADE
 	spadeStart = '%s/bin/spade start' % spadePath
-	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-	time.sleep(5)	
+	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
@@ -122,7 +120,7 @@ for i in range(1,trial+1):
 	inFile.close()
 	outFile.close()
 
-	#Send log lines to SPADE for processing
+	#Send log lines to SPADE for processing (Repeat if data is empty)
 	while True:
 		startSpade(stagePath, workingPath, '%s-%d' %(suffix,i))
 		if os.path.getsize('%s/output.dot-%s-%d' % (workingPath, suffix, i)) > 500:
