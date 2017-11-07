@@ -82,7 +82,7 @@ print ('End of stage 2\n')
 #Stage 3 - Generalize graph
 print ('Starting stage 3...Generalizing graph from multiple trial')
 
-stage3Command = 'sudo %s/processGraph/generalizeGraph %s %s %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), '%s')
+stage3Command = 'sudo %s/processGraph/generalizeGraph.py %s %s %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), '%s')
 
 command = stage3Command % ('control %s')
 for i in range(1,trial+1):
@@ -101,7 +101,7 @@ print ('End of stage 3\n')
 #Stage 4 - Compare and generate benchmark
 print ('Starting stage 4...Generating benchmark')
 
-stage4Command = 'sudo %s/processGraph/findSubgraph %s %s 1 general.clingo-control general.clingo-program %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), outFile)
+stage4Command = 'sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-control general.clingo-program %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), outFile)
 subprocess.call(stage4Command.split())
 
 print ('End of stage 4\n')
