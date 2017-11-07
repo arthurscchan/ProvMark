@@ -1,6 +1,11 @@
 # ProvMark
 Usage: ./fullAutomation \<Tools\> \<Tools Base Directory\> \<Control Directory\> \<Benchmark Directory\> [\<Trial\>, \<Ouput File\>]
 
+Example for generating benchmark for syscall create using SPADE with Graphviz storage:
+~~~~ 
+./fullAutomation spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/cmdCreat 2 ./result.clingo
+~~~~
+
 #### Tools:
 - spg:    SPADE with Graphviz storage
 - spn:    SPADE with Neo4j storage
@@ -8,18 +13,28 @@ Usage: ./fullAutomation \<Tools\> \<Tools Base Directory\> \<Control Directory\>
 - cam:    CamFlow
 
 #### Tools Base Directory:
-Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools.
+- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools.
 
 #### Control / Benchmark Directory:
-Base directory of the control / benchmark program
-Point the script to the syscall choice and control program choice for the benchmarking process
+- Base directory of the control / benchmark program
+- Point the script to the syscall choice and control program choice for the benchmarking process
 
 #### Trial (Default: 2):
-Number of trial executed for each graph for generalization
-More trial will result in longer processing time, but provide a more accurate result as multiple trial can help to filter out uncertainty and unrelated elements and noise
+- Number of trial executed for each graph for generalization
+- More trial will result in longer processing time, but provide a more accurate result as multiple trial can help to filter out uncertainty and unrelated elements and noise
 
 #### Output file (Dafault: ./result.clingo):
-Location of the output file in clingo graph format
+- Location of the output file in clingo graph format
+
+# Provenance Collecting Tools supported
+We assumed that you have already install the provenance collecting tools and their repsective dependency properly before choosing that tools for the ProvMark system. The installation guide, dependencies and details documentations of the three tools can be found in the follow links.
+
+- SPADE [https://github.com/ashish-gehani/SPADE] 
+- OPUS [https://www.cl.cam.ac.uk/research/dtg/fresco/opus/]
+- CamFlow [http://camflow.org/] 
+
+# Use of Clingo
+The content inside the directory Clingo is an external work provided by University of Potsdam as part of the Potassco. It is distributed under MIT License and the developer remain their right for the distribution of the binary and code. We provide a local copy of the compiled version 5.2.1 for convenience only. You should always search for the original code and binary of Clingo from the original developer. Here is a link to the original developer [http://potassco.sourceforge.net/]
 
 # System Description
 
