@@ -2,8 +2,8 @@
 Usage: ./fullAutomation \<Tools\> \<Tools Base Directory\> \<Control Directory\> \<Benchmark Directory\> [\<Trial\>, \<Ouput File\>]
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
-~~~~ 
-./fullAutomation spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/cmdCreat 2 ./result.clingo
+~~~~
+./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/cmdCreat 2 ./result.clingo
 ~~~~
 
 #### Tools:
@@ -29,9 +29,9 @@ Example for generating benchmark for syscall create using SPADE with Graphviz st
 # Provenance Collecting Tools supported
 We assumed that you have already install the provenance collecting tools and their repsective dependency properly before choosing that tools for the ProvMark system. The installation guide, dependencies and details documentations of the three tools can be found in the follow links.
 
-- SPADE [https://github.com/ashish-gehani/SPADE] 
+- SPADE [https://github.com/ashish-gehani/SPADE]
 - OPUS [https://www.cl.cam.ac.uk/research/dtg/fresco/opus/]
-- CamFlow [http://camflow.org/] 
+- CamFlow [http://camflow.org/]
 
 # Use of Clingo
 The content inside the directory Clingo is an external work provided by University of Potsdam as part of the Potassco. It is distributed under MIT License and the developer remain their right for the distribution of the binary and code. We provide a local copy of the compiled version 5.2.1 for convenience only. You should always search for the original code and binary of Clingo from the original developer. Here is a link to the original developer [http://potassco.sourceforge.net/]
@@ -49,4 +49,3 @@ In this stage, multiple clingo graph descirbing the multiple trial of the same p
 
 ## Stage 4 Generating benchmark of chosen syscall for chosen provenance collecting tool
 This is the last stage of the benchmarking system execution. In this stage, the two generalized graph will be compared to each other. As we assume that the chosen syscall is always a few steps or command more than the control program execution and they are both executed based on a same stage environment with the same language. So the additional elements in the generalized syscall graph shows the patterns that can be used as a benchmark to identify this syscall when we are using the chosen provenance collecting tools. All those addtional branchesand properties will be identified and summarized in the result file in clingo format. Currently, this is the end of the full system. The clingo format graph can be transformed into other directed graph format if needed in the future.
-
