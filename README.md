@@ -50,3 +50,22 @@ In this stage, multiple clingo graph descirbing the multiple trial of the same p
 ## Stage 4 Generating benchmark of chosen syscall for chosen provenance collecting tool
 This is the last stage of the benchmarking system execution. In this stage, the two generalized graph will be compared to each other. As we assume that the chosen syscall is always a few steps or command more than the control program execution and they are both executed based on a same stage environment with the same language. So the additional elements in the generalized syscall graph shows the patterns that can be used as a benchmark to identify this syscall when we are using the chosen provenance collecting tools. All those addtional branchesand properties will be identified and summarized in the result file in clingo format. Currently, this is the end of the full system. The clingo format graph can be transformed into other directed graph format if needed in the future.
 
+# Result File Format
+
+- Node
+
+~~~~
+n<graph identifier>(<node identifier>,<type>)
+~~~~
+
+- Edge (Directed edge)
+
+~~~~
+e<graph identifier>(<edge identifier>, <start node identifier>, <end node identifier>, <type>)
+~~~~
+
+- Properties
+
+~~~~
+l<graph identifier>(<node / edge identifier>, <key>, <value>)
+~~~~

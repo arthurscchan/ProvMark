@@ -1,47 +1,80 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
+import os
 import sys
 import shutil
 import subprocess
 from json_merger import Merger
 from json_merger.config import UnifierOps, DictMergerOps
 
-#Check for correct numbers of arguments
-if len(sys.argv) != 2:
-	print ("Usage: %s <Benchmark Program>" % sys.argv[0])
+#Start Camflow
+def startCamflow(stagePath, workingPath, suffix):
+	global camflowPath
+
+	os.chdir(stagePath)
+
+	#Clean camflow working history
+	subprocess.call('service camflowd stop'.split())
+	subprocess.call(('rm -f %s/audit.log' % workingPath).split())
+
+	#Initialize Config File
+	shutil.copyfile('%s/camflowd.ini' % camflowPath, '%s/camflowd.ini.backup' % camflowPath)
+	file = open('%s/camflowd.ini' % camflowPath, 'w')
+	file.write('[general]\noutput=log\nlog=%s/audit.log\n' % workingPath)
+	file.close()
+	subprocess.call(('camflow --track-file %s/test propagate' % stagePath).split())
+
+	#Capture provenance
+	subprocess.check_call('service camflowd start'.split())
+
+#	os.seteuid(1000)
+	subprocess.Popen('%s/test' % stagePath).wait()
+#	os.seteuid(0)
+
+	subprocess.check_call('service camflowd stop'.split())
+
+	#Process provenance result into 1 json
+	file = open('%s/audit.log' % workingPath, 'r')
+	next(file)
+	result={}
+
+	for line in file:
+		print (line)
+		m = Merger({},result,next(file).rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
+		m.merge()
+		result = m.merged_root
+
+	file.close()
+
+	#Writing result to json
+	file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
+	file.write(result)
+	file.close()
+
+	#Recover config file
+	shutil.copyfile('%s/camflowd.ini.backup' % camflowPath, '%s/camflowd.ini' % camflowPath)
+	os.remove('%s/camflowd.ini.backup' % camflowPath)
+
+#Retrieve arguments
+trial = 0
+if len(sys.argv) == 7:
+	if sys.argv[6].isdigit():
+		trial = int(sys.argv[6])
+elif len(sys.argv) != 6:
+	print ("Usage: %s <Stage Directory> <Working Directory> <Program Directory> <CamFlow Config Directory> <suffix> [<Number of trial (Minimum / Default: 2)>" % sys.argv[0])
 	quit()
 
-#Stop Camflow
-subprocess.check_call("sudo service camflowd stop".split())
+if trial < 2:
+	trial = 2
 
-#Clean provenance file
-subprocess.check_call("sudo rm -f /tmp/audit.log".split())
+stagePath = os.path.abspath(sys.argv[1])
+workingPath = os.path.abspath(sys.argv[2])
+progPath = os.path.abspath(sys.argv[3])
+camflowPath = os.path.abspath(sys.argv[4])
+suffix = sys.argv[5]
 
-#Start Camflow
-subprocess.check_call("sudo service camflowd start".split())
+for i in range(1, trial+1):
+	#Prepare the benchmark program
+	subprocess.check_output(('%s/prepare %s' %(progPath, stagePath)).split())
 
-#Execute Benchmark File
-subprocess.Popen(sys.argv[1]).wait()
-
-#Stop Camflow
-subprocess.check_call("sudo service camflowd stop".split())
-
-#Copy log file to current location
-shutil.copyfile("/tmp/audit.log","./result.log")
-
-#Process provenance result into 1 json
-file = open("./result.log", "r")
-next(file)
-result={}
-
-for line in file:
-	m = Merger({},result,next(file).rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
-	m.merge()
-	result = m.merged_root
-
-file.close()
-
-#Writing result to json
-file = open("./result.json","w")
-file.write(result)
-file.close()
+	startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i))
