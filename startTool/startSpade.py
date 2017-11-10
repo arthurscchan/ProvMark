@@ -22,9 +22,7 @@ def startSpade(stagePath, workingPath, suffix):
 
 	#Start SPADE
 	spadeStart = '%s/bin/spade start' % spadePath
-	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-	time.sleep(5)	
+	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
@@ -39,7 +37,7 @@ trial = 0
 if len(sys.argv) == 8:
 	if sys.argv[7].isdigit():
 		trial = int(sys.argv[7])
-elif len(sys.argv) != 5 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):	
+elif len(sys.argv) != 7 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):	
 	print ("Neo4j DB Output Usage: %s -n <Stage Directory> <Working Directory> <Program Directory> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
 	print ("Graphviz DOT Output Usage: %s -d <Stage Directory> <Working Directory> <Program Directory> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
 	quit()
@@ -117,12 +115,10 @@ for i in range(1,trial+1):
 		if (c >= start and c <= end):
 			outFile.write(line)
 
-	print('[%d,%d,%d]' % (start, end, end-start))
-
 	inFile.close()
 	outFile.close()
 
-	#Send log lines to SPADE for processing
+	#Send log lines to SPADE for processing (Repeat if data is empty)
 	while True:
 		startSpade(stagePath, workingPath, '%s-%d' %(suffix,i))
 		if os.path.getsize('%s/output.dot-%s-%d' % (workingPath, suffix, i)) > 500:
