@@ -2,8 +2,8 @@
 Usage: ./fullAutomation \<Tools\> \<Tools Base Directory\> \<Control Directory\> \<Benchmark Directory\> [\<Trial\>, \<Ouput File\>]
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
-~~~~ 
-./fullAutomation spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/cmdCreat 2 ./result.clingo
+~~~~
+./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/cmdCreat 2 ./result.clingo
 ~~~~
 
 #### Tools:
@@ -29,9 +29,9 @@ Example for generating benchmark for syscall create using SPADE with Graphviz st
 # Provenance Collecting Tools supported
 We assumed that you have already install the provenance collecting tools and their repsective dependency properly before choosing that tools for the ProvMark system. The installation guide, dependencies and details documentations of the three tools can be found in the follow links.
 
-- SPADE [https://github.com/ashish-gehani/SPADE] 
+- SPADE [https://github.com/ashish-gehani/SPADE]
 - OPUS [https://www.cl.cam.ac.uk/research/dtg/fresco/opus/]
-- CamFlow [http://camflow.org/] 
+- CamFlow [http://camflow.org/]
 
 # Use of Clingo
 The content inside the directory Clingo is an external work provided by University of Potsdam as part of the Potassco. It is distributed under MIT License and the developer remain their right for the distribution of the binary and code. We provide a local copy of the compiled version 5.2.1 for convenience only. You should always search for the original code and binary of Clingo from the original developer. Here is a link to the original developer [http://potassco.sourceforge.net/]
