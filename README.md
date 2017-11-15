@@ -8,7 +8,7 @@ sudo pip3 install json_merger
 Usage: 
 
 ~~~~
-./fullAutomation \<Tools\> \<Tools Base Directory\> \<Control Directory\> \<Benchmark Directory\> [\<Trial\>, \<Ouput File\>]
+./fullAutomation <Tools> <Tools Base Directory> <Control Directory> <Benchmark Directory> [<Trial>, <Ouput File>]
 ~~~~
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
