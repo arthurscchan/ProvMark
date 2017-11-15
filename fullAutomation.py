@@ -103,7 +103,7 @@ print ('End of stage 3\n')
 #Stage 4 - Compare and generate benchmark
 print ('Starting stage 4...Generating benchmark')
 
-os.system('sudo chmod +x %s/oricessGraph/findSubgraph.py' % baseDir)
+os.system('sudo chmod +x %s/processGraph/findSubgraph.py' % baseDir)
 stage4Command = 'sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-control general.clingo-program %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), outFile)
 subprocess.call(stage4Command.split())
 

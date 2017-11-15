@@ -37,7 +37,7 @@ def handleEdge(type, start, end):
 
 #Check for correct numbers of arguments
 if len(sys.argv) != 4:
-	print ("Usage: %s <suffix> <Json Result from CamFlow> <Working Directory" % sys.argv[0])
+	print ("Usage: %s <suffix> <Json Result from CamFlow> <Working Directory>" % sys.argv[0])
 	quit()
 
 jsonFile = sys.argv[2]
@@ -47,14 +47,7 @@ os.chdir(os.path.abspath(sys.argv[3]))
 
 #Process provenance result into 1 json
 file = open(jsonFile, "r")
-next(file)
-jsonString={}
-
-for line in file:
-	m = Merger({},jsonString,next(file).rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
-	m.merge()
-	jsonString = m.merged_root
-
+jsonString = next(file)
 file.close()
 
 #Intrepret Json
