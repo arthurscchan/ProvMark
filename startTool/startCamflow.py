@@ -65,5 +65,5 @@ suffix = sys.argv[5]
 
 for i in range(1, trial+1):
 	#Prepare the benchmark program
-	subprocess.check_output(('%s/prepare %s' %(progPath, stagePath)).split())
+	subprocess.check_output(('%s/prepare %s --static' %(progPath, stagePath)).split())
 	startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i))

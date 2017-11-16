@@ -7,27 +7,29 @@ import subprocess
 import shutil
 
 #Start SPADE with config
-def startSpade(stagePath, workingPath, suffix):
+def startSpade(workingPath, suffix):
 	global isNeo4j, spadePath
 
 	#Initialize Config File
 	shutil.copyfile('%s/cfg/spade.config' % spadePath, '%s/cfg/spade.config.backup' % spadePath)
 	file = open('%s/cfg/spade.config' % spadePath, 'w')
-	file.write('add reporter Audit inputLog=%s/input.log arch=64\n' % stagePath)
+	file.write('add reporter Audit inputLog=%s/input.log arch=64\n' % workingPath)
 	if isNeo4j:
-		file.write('add storage Neo4j %s/output.db-%s\n' % (workingPath, suffix))		
+		file.write('add storage Neo4j %s/output.db-%s\n' % (workingPath, suffix))	
 	else:
 		file.write('add storage Graphviz %s/output.dot-%s\n' % (workingPath, suffix))
 	file.close()
 
 	#Start SPADE
 	spadeStart = '%s/bin/spade start' % spadePath
-	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
+	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+	time.sleep(5)	
 
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
 	subprocess.call(spadeStop.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	
+
 	#Recover config file
 	shutil.copyfile('%s/cfg/spade.config.backup' % spadePath, '%s/cfg/spade.config' % spadePath)
 	os.remove('%s/cfg/spade.config.backup' % spadePath)
@@ -63,7 +65,7 @@ subprocess.check_output(rule2.split())
 #Get Audit Log
 for i in range(1, trial+1):
 	#Prepare the benchmark program
-	subprocess.check_output(('%s/prepare %s' % (progPath,stagePath)).split())
+	subprocess.check_output(('%s/prepare %s --static' % (progPath,stagePath)).split())
 
 	os.chdir(stagePath)
 
@@ -92,12 +94,12 @@ for i in range(1, trial+1):
 subprocess.check_output(rule0.split())
 
 #Handle Aduit Log File
-shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % stagePath)
+shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % workingPath)
 
 #Generate graph for multiple trial 
-for i in range(1,trial+1):
+for i in range(1, trial+1):
 	#Extract audit log line for each trial
-	command = 'grep -n %s %s/audit.log' % ('%s', stagePath)
+	command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
 
 	grepCommand = command % ('start%dstart%d' % (i,i))
 	tempResult = subprocess.check_output(grepCommand.split()).decode().splitlines()
@@ -109,8 +111,8 @@ for i in range(1,trial+1):
 	totalLine = len(tempResult)
 	end = int(tempResult[totalLine-1].split(':')[0]) - 1
 
-	inFile = open('%s/audit.log' % stagePath, 'r')
-	outFile = open('%s/input.log' % stagePath, 'w')
+	inFile = open('%s/audit.log' % workingPath, 'r')
+	outFile = open('%s/input.log' % workingPath, 'w')
 	for c, line in enumerate(inFile):
 		if (c >= start and c <= end):
 			outFile.write(line)
@@ -119,7 +121,6 @@ for i in range(1,trial+1):
 	outFile.close()
 
 	#Send log lines to SPADE for processing (Repeat if data is empty)
-	while True:
-		startSpade(stagePath, workingPath, '%s-%d' %(suffix,i))
-		if os.path.getsize('%s/output.dot-%s-%d' % (workingPath, suffix, i)) > 500:
-			break;
+	outFile = '%s/output.dot-%s-%d' % (workingPath, suffix, i)
+	while not os.path.exists(outFile) or os.path.getsize(outFile) < 500:
+		startSpade(workingPath, '%s-%d' %(suffix,i))

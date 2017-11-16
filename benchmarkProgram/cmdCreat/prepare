@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 ]
+if [ "$#" -ne 1 -a "$#" -ne 2 ]
 then
-	echo "Usage: "$0" <Stage Path>"
+	echo "Usage: "$0" <Stage Path> [--static]"
 	exit 1
 fi
 
@@ -21,6 +21,6 @@ EOF
 TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
-gcc --static -o test "$TMPFILE"
+gcc "$2" -o test "$TMPFILE"
 
 rm "$TMPFILE"
