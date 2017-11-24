@@ -3,8 +3,8 @@
 import os
 import sys
 import time
-import subprocess
 import shutil
+import subprocess
 
 #Start SPADE with config
 def startSpade(workingPath, suffix):
@@ -14,17 +14,15 @@ def startSpade(workingPath, suffix):
 	shutil.copyfile('%s/cfg/spade.config' % spadePath, '%s/cfg/spade.config.backup' % spadePath)
 	file = open('%s/cfg/spade.config' % spadePath, 'w')
 	file.write('add reporter Audit inputLog=%s/input.log arch=64\n' % workingPath)
-	if isNeo4j:
-		file.write('add storage Neo4j %s/output.db-%s\n' % (workingPath, suffix))	
-	else:
-		file.write('add storage Graphviz %s/output.dot-%s\n' % (workingPath, suffix))
+	file.write('add storage Neo4j %s/output.db-%s\n' % (workingPath, suffix))	
+	file.write('add storage Graphviz %s/output.dot-%s\n' % (workingPath, suffix))
 	file.close()
 
 	#Start SPADE
 	spadeStart = '%s/bin/spade start' % spadePath
 	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-	time.sleep(5)	
+	time.sleep(2)	
 
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
@@ -122,5 +120,6 @@ for i in range(1, trial+1):
 
 	#Send log lines to SPADE for processing (Repeat if data is empty)
 	outFile = '%s/output.dot-%s-%d' % (workingPath, suffix, i)
+	shutil.rmtree('%s/output.db-%s-%d' % (workingPath, suffix, i), ignore_errors=True)
 	while not os.path.exists(outFile) or os.path.getsize(outFile) < 500:
 		startSpade(workingPath, '%s-%d' %(suffix,i))

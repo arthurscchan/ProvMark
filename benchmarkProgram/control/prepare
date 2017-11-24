@@ -7,7 +7,7 @@ then
 fi
 
 cd "$1"
-pwd
+
 #Clean directory
 ls | grep -v 'prepare' | xargs rm -f
 
@@ -20,6 +20,6 @@ EOF
 TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
-gcc "$2" -o test "$TMPFILE"
+gcc -o test $2 $TMPFILE
 
 rm "$TMPFILE"
