@@ -81,5 +81,11 @@ Vagrant.configure(2) do |config|
     sudo grub2-mkconfig -o /boot/grub2/grub.cfg
     sudo dnf -y install ruby ruby-devel redhat-rpm-config graphviz
     gem install json rgl mqtt rake bundler
+
+    # ProvMark specific
+    sudo yum install glibc-static
+    sudo pip3 install json_merger
+
+    git clone https://github.com/arthurscchan/ProvMark.git
   SHELL
 end
