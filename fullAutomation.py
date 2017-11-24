@@ -17,8 +17,8 @@ def helpMenu(name):
 
 #Prepare stage and working directory
 def prepareDir(stageDir, workingDir):
-	shutil.rmtree(stageDir)
-	shutil.rmtree(workingDir)	
+	shutil.rmtree(stageDir, ignore_errors=True)
+	shutil.rmtree(workingDir, ignore_errors=True)	
 	os.makedirs(stageDir)	
 	os.makedirs(workingDir)
 
