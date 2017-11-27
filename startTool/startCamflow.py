@@ -22,8 +22,8 @@ def startCamflow(stagePath, workingPath, suffix):
 	subprocess.call('service camflowd start'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	subprocess.call(('camflow --track-file %s/test propagate' % stagePath).split())
 	os.system('%s/test' % stagePath)
-#	time.sleep(1)
 	subprocess.call(('camflow --track-file %s/test false' % stagePath).split())
+	time.sleep(1)
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	shutil.copyfile('/tmp/audit.log', '%s/temp.log' % workingPath)
 
@@ -33,7 +33,7 @@ def startCamflow(stagePath, workingPath, suffix):
 	result={}
 
 	for line in file:
-		m = Merger({},result,next(file).rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
+		m = Merger({},result,line.rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
 		m.merge()
 		result = m.merged_root
 	file.close()
