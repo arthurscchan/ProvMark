@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 -a "$#" -ne 2 ]
+then
+	echo "Usage: "$0" <Stage Path> [--static]"
+	exit 1
+fi
+
+cd "$1"
+
+#Clean directory
+ls | grep -v 'prepare' | xargs rm -f
+
+#Prepare Benchmark Program
+CODE=$(cat <<EOF
+#include <unistd.h>
+void main() {fork();}
+EOF
+)
+
+TMPFILE=$(mktemp -t tmp.XXXXXX.c)
+echo "$CODE">$TMPFILE
+
+gcc -o test $2 $TMPFILE
+
+rm "$TMPFILE"
