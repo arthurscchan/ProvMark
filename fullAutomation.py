@@ -17,8 +17,10 @@ def helpMenu(name):
 
 #Prepare stage and working directory
 def prepareDir(stageDir, workingDir):
-	shutil.rmtree(stageDir, ignore_errors=True)
-	shutil.rmtree(workingDir, ignore_errors=True)	
+	if os.path.exists(stageDir):
+		subprocess.call(['sudo','rm','-rf',stageDir])
+	if os.path.exists(workingDir):
+		subprocess.call(['sudo','rm','-rf',workingDir])
 	os.makedirs(stageDir)	
 	os.makedirs(workingDir)
 
