@@ -23,6 +23,12 @@ progPath = os.path.abspath(sys.argv[3])
 opusPath = os.path.abspath(sys.argv[4])
 suffix = sys.argv[5]
 
+#Prepare OPUS wrapper
+os.chdir(opusPath)
+subprocess.call('./update-wrapper')
+
+os.chdir(workingPath)
+
 #Get Audit Log
 for i in range(1, trial+1):
 	#Prepare the benchmark program
@@ -32,26 +38,26 @@ for i in range(1, trial+1):
 	pipe = subprocess.Popen(['%s/bin/opusctl' % opusPath, 'conf'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 	#Choose a location for the OPUS master config
-	input = '%s/.opus-cfg\n' % workingPath
+	config = '%s/.opus-cfg\n' % workingPath
 	#Where is your OPUS installation?
-	input = '%s%s/\n' % (input,opusPath)
+	config = '%s%s/\n' % (config,opusPath)
 	#Choose an address for provenance data collection.
-	input = '%s\n' % input
+	config = '%s\n' % config
 	#Choose a location for the OPUS database to reside in
-	input = '%s%s/output.db-%s-%d\n' % (input,workingPath,suffix,i)
+	config = '%s%s/output.db-%s-%d\n' % (config,workingPath,suffix,i)
 	#Choose a location for the OPUS bash variables cfg_file
-	input= '%s%s/.opus-vars\n' % (input,workingPath)
+	config = '%s%s/.opus-vars\n' % (config,workingPath)
 	#What is the location of your python 2.7 binary?
-	input = '%s\n' % input
+	config = '%s\n' % config
 	#Where is your jvm installation?
-	input = '%s/usr/lib/jvm/java-8-oracle\n' % input
+	config = '%s/usr/lib/jvm/java-8-oracle\n' % config
 	#Address to use for provenance server communications.
-	input = '%s\n' % input
+	config = '%s\n' % config
 	#Set OPUS to debug mode
-	input = '%sFalse\n' % input
+	config = '%sFalse\n' % config
 
-	pipe.communicate(input=input.encode())
-	
+	pipe.communicate(input=config.encode())
+
 	baseCommand = '%s/bin/opusctl --conf %s/.opus-cfg %s' % (opusPath,workingPath,'%s')
 	#Start Opus Server
 	subprocess.call((baseCommand % 'server start').split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

@@ -17,12 +17,12 @@ def removeHashCode(dump):
 
 #Dump neo4j to cyhper query
 def dumpFromDb(path):
-	global baseDir
+	global baseDir,workingDir
 
-	command = ['sudo', 'neo4j-shell', '-c', r'MATCH (n) MATCH ()-[r]-() REMOVE n.hashCode,r.hashCode;', '-config', ('%s/../config/neo4j.conf' % baseDir), '-path', path]
-	subprocess.check_output(command)
+	command = ['sudo', 'neo4j-shell', '-c', r'MATCH (n) MATCH ()-[r]-() REMOVE n.hashCode,r.hashCode;', '-config', ('%s/../config/neo4j.conf' % baseDir), '-path', '%s/%s' % (workingDir,path)]
+	subprocess.call(command)
 
-	command = "sudo neo4j-shell -c dump -config %s/../config/neo4j.conf -path %s" % (baseDir,path)
+	command = "sudo neo4j-shell -c dump -config %s/../config/neo4j.conf -path %s/%s" % (baseDir,workingDir,path)
 	dump = subprocess.check_output(command.split())
 	return removeHashCode(dump.decode())
 
@@ -36,6 +36,8 @@ def dumpFromFile(path):
 #Transform propString to propDictionary
 def handleProperties(propString):
 	propString = propString.replace('`','"')
+	propString = propString.replace(':true',':1')
+	propString = propString.replace(':false',':0')
 	propDict = eval(propString)
 	return propDict
 
@@ -72,6 +74,7 @@ if len(sys.argv) != 5 or (sys.argv[1] != "-d" and sys.argv[1] != "-c"):
 	quit()
 
 baseDir = os.path.abspath(os.path.dirname(sys.argv[0]))
+workingDir = os.path.abspath(sys.argv[4])
 
 if sys.argv[1] == "-d":
 	cypherDump = dumpFromDb(sys.argv[3])
@@ -81,8 +84,10 @@ else:
 #Separate node and edge record for handling
 # Node 
 #	create (<Identifier>:`VERTEX` {<Properties>})
+#	create (<Identifier> {<Properties>})
 # Edge 
-#	create (<Identifier1>)-[:`EDGE` {<Properties>}]->(<Identifier2>)
+#	create (<Identifier1>)-[:`.*` {<Properties>}]->(<Identifier2>)
+#	create <Identifier1>-[:`.*` {<Properties>}]-><Identifier2>
 
 id = ""
 label = ""
@@ -92,15 +97,15 @@ dict = {}
 suffix = sys.argv[2]
 
 #Switch to working directory
-os.chdir(os.path.abspath(sys.argv[4]))
+os.chdir(workingDir)
 
 for line in cypherDump.split('\n'):
-	nodeMatch = re.match(r'create \((.*):`VERTEX` ({.*})\)', line)
-	edgeMatch = re.match(r'create \((.*)\)-\[:`EDGE` ({.*})\]->\((.*)\)', line)
+	nodeMatch = re.match(r'create \((.*) ({.*})\)', line)
+	edgeMatch = re.match(r'create \(?([^)]*)\)?-\[:`.*` ({.*})\]->\(?([^)]*)\)?', line)
 
 	if nodeMatch:
 		#Handle Node
-		handleNode(nodeMatch.group(1), nodeMatch.group(2), nodeCounter)
+		handleNode(nodeMatch.group(1).split(':`VERTEX`')[0], nodeMatch.group(2), nodeCounter)
 		nodeCounter = nodeCounter + 1
 	elif edgeMatch:
 		#Handle Edge
