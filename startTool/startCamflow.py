@@ -33,7 +33,7 @@ def startCamflow(stagePath, workingPath, suffix):
 	result={}
 
 	for line in file:
-		m = Merger({},result,line.rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
+		m = Merger(result,result,line.rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
 		m.merge()
 		result = m.merged_root
 	file.close()
