@@ -5,8 +5,36 @@ import sys
 import time
 import shutil
 import subprocess
-from json_merger import Merger
-from json_merger.config import UnifierOps, DictMergerOps
+import json
+
+#Merger Json
+def mergeJson(base, line):
+	lineObj = json.loads(line.rstrip())
+	for typeKey in lineObj:
+		#Loop through each new type section
+		lineTypeObj = lineObj[typeKey]
+		if typeKey in base.keys():
+			#Type exists, add elements
+			for itemKey in lineTypeObj:
+				#Loop through each elements in type
+				obj = lineTypeObj[itemKey]
+				if itemKey in base[typeKey].keys():
+					#Elements exists, merging data
+					if isinstance(obj,str):
+						#Simple Object (New String cover old String)
+						base[typeKey][itemKey] = obj
+					else:
+						#Complex Object (Loop and add each properties)
+						for objKey in obj:
+							base[typeKey][itemKey][objKey] = obj[objKey]
+				else:
+					#Elements not exists, add full element
+					base[typeKey][itemKey] = obj
+		else:
+		#Type not exists, add full type
+			base[typeKey] = lineTypeObj
+	return base
+
 
 #Start Camflow
 def startCamflow(stagePath, workingPath, suffix):
@@ -33,12 +61,10 @@ def startCamflow(stagePath, workingPath, suffix):
 	result={}
 
 	for line in file:
-		m = Merger(result,result,line.rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
-		m.merge()
-		result = m.merged_root
+		result = mergeJson(result, line.rstrip())
 	file.close()
+	result = json.dumps(result)
 	os.remove('%s/temp.log' % workingPath)
-
 
 	#Writing result to json
 	file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
