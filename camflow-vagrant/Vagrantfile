@@ -84,7 +84,7 @@ Vagrant.configure(2) do |config|
 
     # ProvMark specific
     sudo yum install glibc-static
-    sudo pip3 install json_merger
+    # sudo pip3 install json_merger
 
     git clone https://github.com/arthurscchan/ProvMark.git
   SHELL
