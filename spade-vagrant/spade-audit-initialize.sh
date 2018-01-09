@@ -17,6 +17,9 @@ sudo chmod ug+s lib/spadeAuditBridge
 sudo sed -i "s/active = no/active = yes/" /etc/audisp/plugins.d/af_unix.conf
 sudo service auditd restart
 
+## Neo4j
+sudo apt-get install -y neo4j
+sudo apt-get install -y cypher-shell
 
 ## ProvMark stuff
 # 
