@@ -13,7 +13,8 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-void main() {}
+#include <unistd.h>
+void main() {fchownat(open(".",O_DIRECTORY), "test.txt",1000,1000,0);}
 EOF
 )
 
@@ -21,5 +22,8 @@ TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
 gcc -o test $2 $TMPFILE
+
+touch test.txt
+sudo chown root:root test.txt
 
 rm "$TMPFILE"

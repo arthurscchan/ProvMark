@@ -13,7 +13,8 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-void main() {}
+#include<unistd.h>
+void main() {unlinkat(open(".",O_DIRECTORY), "linkat-test.txt",0);}
 EOF
 )
 
@@ -21,5 +22,9 @@ TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
 gcc -o test $2 $TMPFILE
+
+touch test.txt
+echo "TEST" > test.txt
+link test.txt linkat-test.txt
 
 rm "$TMPFILE"

@@ -13,7 +13,8 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-void main() {}
+#include <unistd.h>
+void main() {symlink("test.txt","symlink-test.txt");}
 EOF
 )
 
@@ -21,5 +22,8 @@ TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
 gcc -o test $2 $TMPFILE
+
+touch test.txt
+echo "TEST" > test.txt
 
 rm "$TMPFILE"

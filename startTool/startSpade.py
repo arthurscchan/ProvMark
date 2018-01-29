@@ -3,11 +3,11 @@
 import os
 import sys
 import time
-import subprocess
 import shutil
+import subprocess
 
 #Start SPADE with config
-def startSpade(workingPath, suffix):
+def startSpade(workingPath, suffix, loopCount):
 	global isNeo4j, spadePath
 
 	#Initialize Config File
@@ -24,7 +24,7 @@ def startSpade(workingPath, suffix):
 	spadeStart = '%s/bin/spade start' % spadePath
 	subprocess.call(spadeStart.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-	time.sleep(5)	
+	time.sleep(loopCount)	
 
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
@@ -56,7 +56,7 @@ suffix = sys.argv[6]
 
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'
-rule1 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S kill -S exit -S exit_group -S connect'
+rule1 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S kill -S exit -S exit_group -S connect' 
 rule2 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -F success=1'
 subprocess.check_output(rule0.split())
 subprocess.check_output(rule1.split())
@@ -98,6 +98,8 @@ shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % workingPath)
 
 #Generate graph for multiple trial 
 for i in range(1, trial+1):
+	print ('Trial %d start' % i)
+
 	#Extract audit log line for each trial
 	command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
 
@@ -120,7 +122,14 @@ for i in range(1, trial+1):
 	inFile.close()
 	outFile.close()
 
-	#Send log lines to SPADE for processing (Repeat if data is empty)
-	outFile = '%s/output.dot-%s-%d' % (workingPath, suffix, i)
-	while not os.path.exists(outFile) or os.path.getsize(outFile) < 500:
-		startSpade(workingPath, '%s-%d' %(suffix,i))
+	if not isNeo4j:
+		#Send log lines to SPADE for processing (Repeat if data is empty)
+		outFile = '%s/output.dot-%s-%d' % (workingPath, suffix, i)
+		loopCount = 0
+		while not os.path.exists(outFile) or os.path.getsize(outFile) < 500:
+			loopCount = loopCount + 1
+			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount)
+	else:
+		startSpade(workingPath, '%s-%d' %(suffix,i), 2)
+
+	print ('Trial %d end' % i)

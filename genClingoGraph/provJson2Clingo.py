@@ -28,7 +28,7 @@ def handleEdge(type, start, end):
 		for edgeIdentifier in jsonObject[type]:
 			edge = jsonObject[type][edgeIdentifier]
 			if edge[start] in dict and edge[end] in dict:
-				id += "e%s(e%d, n%d, n%d, \"%s\").\n" %(suffix, counter, dict[edge[start]], dict[edge[end]], type)
+				id += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[edge[start]], dict[edge[end]], type)
 #				label += "l%s(e%d,\"identifier\",\"%s\").\n" % (suffix, counter, edgeIdentifier)
 				for labelIdentifier in edge:
 					if labelIdentifier != start and labelIdentifier != end:

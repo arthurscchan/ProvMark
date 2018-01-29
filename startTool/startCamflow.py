@@ -5,44 +5,133 @@ import sys
 import time
 import shutil
 import subprocess
-from json_merger import Merger
-from json_merger.config import UnifierOps, DictMergerOps
+import json
+
+#Merger Json
+def mergeJson(base, line, isText):
+	if isText:
+		lineObj = json.loads(line.rstrip())
+	else:
+		lineObj = line
+
+	for typeKey in lineObj:
+		#Loop through each new type section
+		lineTypeObj = lineObj[typeKey]
+		if typeKey in base.keys():
+			#Type exists, add elements
+			for itemKey in lineTypeObj:
+				#Loop through each elements in type
+				obj = lineTypeObj[itemKey]
+				if itemKey in base[typeKey].keys():
+					#Elements exists, merging data
+					if isinstance(obj,str):
+						#Simple Object (New String cover old String)
+						base[typeKey][itemKey] = obj
+					else:
+						#Complex Object (Loop and add each properties)
+						for objKey in obj:
+							base[typeKey][itemKey][objKey] = obj[objKey]
+				else:
+					#Elements not exists, add full element
+					base[typeKey][itemKey] = obj
+		else:
+		#Type not exists, add full type
+			base[typeKey] = lineTypeObj
+	return base
+
+#Find if element identifier exists
+def findElementIdentifier(base, identifier):
+	elementKey = {'entity','agent','activity'}
+	
+	for typeKey in base:
+		if typeKey in elementKey:
+			#Found vertics elements group
+			typeObj = base[typeKey]
+			if identifier in typeObj:
+				#If given identifier exists, it means the vertics exists
+				return True 
+	return False
+
+def extractElement(base, identifier):
+	elementKey = {'entity','agent','activity'}
+	
+	for typeKey in base:
+		if typeKey in elementKey:
+			typeObj = base[typeKey]
+			if identifier in typeObj:
+				#Element found
+				return True,typeKey,identifier,typeObj[identifier]
+	return False,None,None,None
+
+#Merge missing node from model
+def mergeModel(base, model):
+	targetKey = {'prov:entity','prov:activity','prov:agent','prov:informant','prov:informed','prov:trigger','prov:generatedEntity','prov:usedEntity','prov:plan','prov:delegate','prov:responsible','prov:influencer','prov:influencee','prov:generalEntity','prov:specificEntity','prov:alternate1','prov:alternate2','prov:collection'}
+	elementKey = {'entity','agent','activity'}
+	prefixKey = {'prefix'}
+
+	for typeKey in base:
+		if (typeKey not in elementKey) and (typeKey not in prefixKey):
+			#Loop all relation elements group
+			typeObj = base[typeKey]
+			for relationKey in typeObj:
+				obj = typeObj[relationKey]
+				for key in targetKey:
+					if key in obj:						
+						#Find if the vertics related by this edges is exsits
+						if not findElementIdentifier(base, obj[key]):
+							exists,newTypeKey,newIdentifier,newObj = extractElement(model,obj[key])
+							if exists:
+								base[newTypeKey][newIdentifier] = newObj
+	return base
 
 #Start Camflow
-def startCamflow(stagePath, workingPath, suffix):
+def startCamflow(stagePath, workingPath, suffix, isModel):
 	global camflowPath
 
 	os.chdir(stagePath)
 
 	#Clean camflow working history
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	os.remove('/tmp/audit.log')
+	try:
+		os.remove('%s/audit.log' % workingPath)
+	except OSError:
+		pass
 
 	#Capture provenance
 	subprocess.call('service camflowd start'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	subprocess.call(('camflow --track-file %s/test propagate' % stagePath).split())
 	os.system('%s/test' % stagePath)
-#	time.sleep(1)
 	subprocess.call(('camflow --track-file %s/test false' % stagePath).split())
+	time.sleep(1)
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	shutil.copyfile('/tmp/audit.log', '%s/temp.log' % workingPath)
 
 	#Process provenance result into 1 json
-	file = open('%s/temp.log' % workingPath, 'r')
+	file = open('%s/audit.log' % workingPath, 'r')
 	next(file)
 	result={}
 
 	for line in file:
-		m = Merger({},result,next(file).rstrip(),DictMergerOps.FALLBACK_KEEP_HEAD,UnifierOps.KEEP_UPDATE_AND_HEAD_ENTITIES_HEAD_FIRST)
-		m.merge()
-		result = m.merged_root
+		result = mergeJson(result, line.rstrip(), True)
 	file.close()
-	os.remove('%s/temp.log' % workingPath)
+	os.remove('%s/audit.log' % workingPath)
 
+	if isModel:
+		#Load existing model
+		if os.path.exists('/tmp/.camflowModel'):
+			file = open('/tmp/.camflowModel', 'r')
+			model = json.loads(file.read().rstrip())
+			result = mergeJson(model,result,False)
+			file.close()
+		file = open('/tmp/.camflowModel', 'w')
+	else:
+		if os.path.exists('/tmp/.camflowModel'):
+			file = open('/tmp/.camflowModel', 'r')
+			result = mergeModel(result,json.loads(file.read().rstrip()))
+			file.close()
+		#Writing result to json
+		file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
 
-	#Writing result to json
-	file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
-	file.write(result)
+	file.write(json.dumps(result))
 	file.close()
 
 #Retrieve arguments
@@ -63,7 +152,13 @@ progPath = os.path.abspath(sys.argv[3])
 camflowPath = os.path.abspath(sys.argv[4])
 suffix = sys.argv[5]
 
+#Create Model Data
+subprocess.check_output(('%s/prepare %s --static' %(progPath, stagePath)).split())
+startCamflow(stagePath, workingPath, '', True)
+
 for i in range(1, trial+1):
 	#Prepare the benchmark program
 	subprocess.check_output(('%s/prepare %s --static' %(progPath, stagePath)).split())
-	startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i))
+	startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i), False)
+#		completeMissingNode(workingPath, '%s-%d' % (suffix, i))
+		

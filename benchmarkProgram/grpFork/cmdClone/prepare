@@ -13,7 +13,12 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-void main() {}
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <sched.h>
+static int childFunc(void *args) {}
+void main() {char* tmp = malloc(1024*1024); clone(childFunc,tmp+1024*1024,CLONE_PARENT,NULL);}
 EOF
 )
 

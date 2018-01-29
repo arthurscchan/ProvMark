@@ -13,7 +13,9 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-void main() {}
+#include <fcntl.h>
+#include <unistd.h>
+void main() {dup3(STDOUT_FILENO,STDERR_FILENO,O_CLOEXEC);}
 EOF
 )
 

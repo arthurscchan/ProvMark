@@ -13,7 +13,8 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-void main() {}
+#include<fcntl.h>
+void main() {creat("newtest.txt",S_IRWXU|S_IRWXG|S_IRWXO);}
 EOF
 )
 

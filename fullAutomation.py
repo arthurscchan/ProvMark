@@ -2,6 +2,7 @@
 
 import os
 import sys
+import shutil
 import subprocess
 import configparser
 
@@ -16,14 +17,12 @@ def helpMenu(name):
 
 #Prepare stage and working directory
 def prepareDir(stageDir, workingDir):
-	if not os.path.exists(stageDir):
-		os.makedirs(stageDir)	
-	if not os.path.exists(workingDir):
-		os.makedirs(workingDir)
-	for file in os.listdir(stageDir):
-		os.remove('%s/%s' %(stageDir, file))
-	for file in os.listdir(workingDir):
-		os.remove('%s/%s' %(workingDir, file))
+	if os.path.exists(stageDir):
+		subprocess.call(['sudo','rm','-rf',stageDir])
+	if os.path.exists(workingDir):
+		subprocess.call(['sudo','rm','-rf',workingDir])
+	os.makedirs(stageDir)	
+	os.makedirs(workingDir)
 
 #Check Arguments
 trial = 2
@@ -44,8 +43,8 @@ tool = sys.argv[1]
 toolBaseDir = os.path.abspath(sys.argv[2])
 controlDir = os.path.abspath(sys.argv[3])
 benchmarkDir = os.path.abspath(sys.argv[4])
-stageDir = os.path.abspath('%s/stage' % baseDir)
-workingDir = os.path.abspath('%s/working' % baseDir)
+stageDir = os.path.abspath('%s/stage/' % baseDir)
+workingDir = os.path.abspath('%s/working/' % baseDir)
 
 prepareDir(stageDir, workingDir)
 
@@ -74,7 +73,7 @@ print ('End of stage 1\n')
 #Stage 2 - Transform to Clingo graph
 print ('Starting stage 2...Transforming provenance result to Clingo graph')
 
-os.system('sudo chmod +x %s/genClingoGraph/%s' % (baseDir, stage2Handler))
+os.system('sudo chmod +x %s/genClingoGraph/%s' % (baseDir, stage2Handler.split()[0]))
 stage2Command = 'sudo %s/genClingoGraph/%s %s %s %s' % (baseDir, stage2Handler, '%s', template, workingDir)
 for i in range(1,trial+1):
 	suffix = 'control-%d' % i

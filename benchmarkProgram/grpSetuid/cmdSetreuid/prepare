@@ -13,7 +13,8 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-void main() {}
+#include <unistd.h>
+void main() {setreuid(1000,1000);}
 EOF
 )
 
