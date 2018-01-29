@@ -66,6 +66,14 @@ file.write("node [fontname=\"Helvetica\" fontsize=\"8\" style=\"filled\" margin=
 file.write("edge [fontname=\"Helvetica\" fontsize=\"8\"];\n")
 # Build Node Statement
 for key in node:
+	found = False
+	for edgeKey in edge:
+		item = edge[edgeKey]
+		if item['from'] == key or item['to'] == key:
+			found = True
+			break;
+	if not found:
+		continue;
 	#Default shape and color for process
 	shape = 'box'
 	fillcolor = "lightsteelblue1"
