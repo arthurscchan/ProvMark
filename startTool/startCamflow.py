@@ -8,11 +8,8 @@ import subprocess
 import json
 
 #Merger Json
-def mergeJson(base, line, isText):
-	if isText:
-		lineObj = json.loads(line.rstrip())
-	else:
-		lineObj = line
+def mergeJson(base, line):
+	lineObj = json.loads(line.rstrip())
 
 	for typeKey in lineObj:
 		#Loop through each new type section
@@ -40,31 +37,40 @@ def mergeJson(base, line, isText):
 	return base
 
 #Find if element identifier exists
-def findElementIdentifier(base, identifier):
-	elementKey = {'entity','agent','activity'}
-	
+def findIdentifier(base, identifier):
 	for typeKey in base:
-		if typeKey in elementKey:
-			#Found vertics elements group
-			typeObj = base[typeKey]
-			if identifier in typeObj:
-				#If given identifier exists, it means the vertics exists
-				return True 
+		typeObj = base[typeKey]
+		#Found vertics elements group
+		if identifier in typeObj:
+			#If given identifier exists, it means the vertics exists
+			return True
 	return False
 
 def extractElement(base, identifier):
-	elementKey = {'entity','agent','activity'}
-	
 	for typeKey in base:
-		if typeKey in elementKey:
-			typeObj = base[typeKey]
-			if identifier in typeObj:
-				#Element found
-				return True,typeKey,identifier,typeObj[identifier]
+		typeObj = base[typeKey]
+		if identifier in typeObj:
+			#Element found
+			return True,typeKey,identifier,typeObj[identifier]
 	return False,None,None,None
 
-#Merge missing node from model
-def mergeModel(base, model):
+#Merge missing edges from model
+def mergeEdge(base, model):
+	elementKey = {'entity','agent','activity'}
+	prefixKey = {'prefix'}
+
+	for typeKey in model:
+		if (typeKey not in elementKey) and (typeKey not in prefixKey):
+			typeObj = model[typeKey]
+			for key in typeObj:
+				if not findIdentifier(base, key):
+					exists,newTypeKey,newIdentifier,newObj = extractElement(model,key)
+					if exists:
+						base[newTypeKey][newIdentifier] = newObj
+	return base
+
+#Merge missing nodes from model
+def mergeNode(base, model):
 	targetKey = {'prov:entity','prov:activity','prov:agent','prov:informant','prov:informed','prov:trigger','prov:generatedEntity','prov:usedEntity','prov:plan','prov:delegate','prov:responsible','prov:influencer','prov:influencee','prov:generalEntity','prov:specificEntity','prov:alternate1','prov:alternate2','prov:collection'}
 	elementKey = {'entity','agent','activity'}
 	prefixKey = {'prefix'}
@@ -78,7 +84,7 @@ def mergeModel(base, model):
 				for key in targetKey:
 					if key in obj:						
 						#Find if the vertics related by this edges is exsits
-						if not findElementIdentifier(base, obj[key]):
+						if not findIdentifier(base, obj[key]):
 							exists,newTypeKey,newIdentifier,newObj = extractElement(model,obj[key])
 							if exists:
 								base[newTypeKey][newIdentifier] = newObj
@@ -92,10 +98,11 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 
 	#Clean camflow working history
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	try:
-		os.remove('%s/audit.log' % workingPath)
-	except OSError:
-		pass
+	if os.path.exists('/tmp/.camflowModel'):
+		try:
+			os.remove('%s/audit.log' % workingPath)
+		except OSError:
+			pass
 
 	#Capture provenance
 	subprocess.call('service camflowd start'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -111,22 +118,20 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	result={}
 
 	for line in file:
-		result = mergeJson(result, line.rstrip(), True)
+		result = mergeJson(result, line.rstrip())
 	file.close()
 	os.remove('%s/audit.log' % workingPath)
 
 	if isModel:
-		#Load existing model
 		if os.path.exists('/tmp/.camflowModel'):
-			file = open('/tmp/.camflowModel', 'r')
-			model = json.loads(file.read().rstrip())
-			result = mergeJson(model,result,False)
-			file.close()
+			return;
 		file = open('/tmp/.camflowModel', 'w')
 	else:
 		if os.path.exists('/tmp/.camflowModel'):
 			file = open('/tmp/.camflowModel', 'r')
-			result = mergeModel(result,json.loads(file.read().rstrip()))
+			line = file.read().rstrip()
+			result = mergeEdge(result,json.loads(line))
+			result = mergeNode(result,json.loads(line))
 			file.close()
 		#Writing result to json
 		file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
@@ -160,5 +165,4 @@ for i in range(1, trial+1):
 	#Prepare the benchmark program
 	subprocess.check_output(('%s/prepare %s --static' %(progPath, stagePath)).split())
 	startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i), False)
-#		completeMissingNode(workingPath, '%s-%d' % (suffix, i))
 		
