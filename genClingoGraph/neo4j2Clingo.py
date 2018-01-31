@@ -63,7 +63,7 @@ def handleEdge(start, end, properties, counter):
 		propDict = handleProperties(properties)
 		for key in propDict:
 			if key == "type":
-				id += "e%s(e%d, n%d, n%d, \"%s\").\n" %(suffix, counter, dict[start], dict[end], propDict[key])
+				id += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[start], dict[end], propDict[key])
 			else:
 				label += "l%s(e%d,\"%s\",\"%s\").\n" % (suffix, counter, key, propDict[key])
 
