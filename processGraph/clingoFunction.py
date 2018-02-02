@@ -16,8 +16,8 @@ def fixIdentifier(graph, graphNo):
 
 #Transform Clingo graph to Dict
 def clingo2Dict(graph):
-	nodeDict = set()
-	edgeDict = set()
+	nodeDict = dict()
+	edgeDict = dict()
 	propDict = dict()
 	if not graph:
 		return nodeDict, edgeDict, propDict
@@ -25,7 +25,7 @@ def clingo2Dict(graph):
 		if line.startswith("l"):
 			#Properties
 			#l1(<identifier>,<key>,<value>).
-			match = re.match(r'.*\((.*),"(.*)","(.*)"\).*', line)
+			match = re.match(r'l[a-zA-Z0-9]*\([ ]*([a-zA-Z0-9]*)[ ]*,[ ]*\"(.*)\"[ ]*,[ ]*\"(.*)\"[ ]*\).', line)
 			if match.group(1) in propDict:
 				prop = propDict[match.group(1)] 
 			else:
@@ -35,13 +35,13 @@ def clingo2Dict(graph):
 		elif line.startswith("e"):
 			#Edges
 			#e1(<identifier>,<node1>,<node2>,<type>).
-			match = re.match(r'.*(\(.*\).*)', line)
-			edgeDict.add(match.group(1))
+			match = re.match(r'e[a-zA-Z0-9]*\([ ]*([a-zA-Z0-9]*)[ ]*,[ ]*([a-zA-Z0-9]*)[ ]*,[ ]*([a-zA-Z0-9]*)[ ]*,[ ]*\"([a-zA-Z0-9]*)\"[ ]*\).', line)
+			edgeDict[match.group(1)] = (match.group(2),match.group(3),match.group(4))
 		elif line.startswith("n"):
 			#Nodes
 			#n1(<identifier>,<type>).
-			match = re.match(r'.*(\(.*\).*)', line)
-			nodeDict.add(match.group(1))
+			match = re.match(r'n[a-zA-Z0-9]*\([ ]*([a-zA-Z0-9]*)[ ]*,[ ]*\"([a-zA-Z0-9]*)\"[ ]*\).', line)
+			nodeDict[match.group(1)] = match.group(2)
 
 
 	return nodeDict, edgeDict, propDict
@@ -51,9 +51,9 @@ def dict2Clingo(nodeDict, edgeDict, graphDict, suffix):
 	result = ""
 	
 	for item in nodeDict:
-		result = result + "n%s%s\n" %(suffix,item)
+		result = result + "n%s(%s,\"%s\").\n" %(suffix,item,nodeDict[item])
 	for item in edgeDict:
-		result = result + "e%s%s\n" %(suffix,item)
+		result = result + "e%s(%s,%s,%s,\"%s\").\n" %(suffix,item,edgeDict[item][0],edgeDict[item][1],edgeDict[item][2])
 	for key in graphDict:
 		props = graphDict[key]
 		for propKey in props:
