@@ -62,8 +62,7 @@ for graph2ID in graph2Edge:
 #Nodes are present if there is an incident edge or property or if linked to anything in map
 diffNode = dict()
 for graph2ID in graph2Node:
-	if (graph2ID in incidentNodes | diffProps.keys()
-	    or graph2ID not in map.values()):
+	if ((graph2ID in incidentNodes) and (diffProps.keys() or graph2ID not in map.values())):
 		diffNode[graph2ID] = graph2Node[graph2ID]
 
 
