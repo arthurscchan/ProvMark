@@ -63,16 +63,16 @@ def dict2Clingo(nodeDict, edgeDict, graphDict, suffix):
 #Retrieve mapping result from Clingo
 def decodeClingoResult(result):
 	map = dict()
-	found = False
+	# get the last line starting with "match"
+	lastline = None
 	for line in result.split('\n'):
 		if line.startswith('match'):
-			found = True
-			for item in line.split():
-				#match(<Graph1 identifier>, <Graph2 identifier>)
-				match = re.match(r'match\((.*),(.*)\)', item)
-				map[match.group(1)] = match.group(2)
-		elif found:
-			break
+			lastline = line
+			
+	for item in lastline.split():
+		#match(<Graph1 identifier>, <Graph2 identifier>)
+		match = re.match(r'match\((.*),(.*)\)', item)
+		map[match.group(1)] = match.group(2)
 	return map
 
 #Retrieve edit distance from Clingo
