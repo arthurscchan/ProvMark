@@ -13,7 +13,7 @@ Usage:
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
 ~~~~
-./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/cmdCreat 2 ./result.clingo
+./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/grpCreat/cmdCreat 2 ./result.clingo
 ~~~~
 
 #### Tools:
