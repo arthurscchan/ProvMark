@@ -96,6 +96,15 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 
 	os.chdir(stagePath)
 
+	#Fix config
+	try:
+		shutil.copyfile('/etc/camflowd.ini','/etc/camflowd.ini.backup')
+		file = open('/etc/camflowd.ini','w')
+		file.write('[general]\noutput=log\nlog=%s/audit.log' % workingPath)
+		file.close()
+	except IOError:
+		pass
+
 	#Clean camflow working history
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	if os.path.exists('/tmp/.camflowModel'):
@@ -138,6 +147,12 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 
 	file.write(json.dumps(result))
 	file.close()
+
+	try:
+		shutil.copyfile('/etc/camflowd.ini.backup','/etc/camflowd.ini')
+	except IOError:
+		pass
+
 
 #Retrieve arguments
 trial = 0
