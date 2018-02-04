@@ -61,7 +61,7 @@ print ('Starting stage 1...Generating provenance from native tools')
 
 os.system('sudo chmod +x %s/startTool/%s' % (baseDir, stage1Tool.split()[0]))
 stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s %d' % (baseDir, stage1Tool, stageDir, workingDir, '%s' ,toolBaseDir , '%s', trial)
-<print ('Program')
+print ('Program')
 subprocess.call((stage1Command % (benchmarkDir, 'program')).split())
 print ('End Program')
 print ('Control')
