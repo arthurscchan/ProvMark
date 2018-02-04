@@ -43,7 +43,7 @@ edge_cost(X,1) :- remove_edge(X).
 % edits to labels and label costs
 % note that we need to account for key-value pairs on added and deleted nodes
 
-update_value(X,K,V1,V2) :- l1(X,K,V1), match(X,Y), l2(X,K,V2), V1 <> V2.
+update_value(X,K,V1,V2) :- l1(X,K,V1), match(X,Y), l2(Y,K,V2), V1 <> V2.
 delete_key(X,K) :- l1(X,K,_), match(X,Y), not l2(Y,K,_).
 delete_key(X,K) :- l1(X,K,_), remove_node(X).
 delete_key(X,K) :- l1(X,K,_), remove_edge(X).
@@ -51,7 +51,7 @@ add_key(Y,K,V) :- l2(Y,K,V), match(X,Y), not l1(X,K,_).
 add_key(Y,K,V) :- l2(Y,K,V), add_node(Y,_).
 add_key(Y,K,V) :- l2(Y,K,V), add_edge(Y,_,_,_).
 
-label_cost(X,K,0) :- l1(X,K,V), match(X,Y), l2(X,K,V).
+label_cost(X,K,0) :- l1(X,K,V), match(X,Y), l2(Y,K,V).
 label_cost(X,K,1) :- update_value(X,K,V1,V2).
 label_cost(X,K,1) :- delete_key(X,K).
 label_cost(Y,K,1) :- add_key(Y,K,V).
