@@ -75,6 +75,14 @@ def decodeClingoResult(result):
 			break
 	return map
 
+#Retrieve edit distance from Clingo
+def decodeEditDistance(result):
+	for line in result.split('\n'):
+		if line.startswith('Optimization:'):
+		 	return line[14:]
+	return -1
+
+
 #Generalize properties of edges / vertics
 def compareProps(graph1Props, graph2Props, isGeneral):
 	result = dict()
@@ -112,7 +120,7 @@ def compareProps(graph1Props, graph2Props, isGeneral):
 	return result
 
 #Graph Process
-def processGraph(graph1Path, graph2Path, clingoCode):
+def processGraph(graph1Path, graph2Path, clingoCode, isMapping):
 	#Read Graph
 	file = open(graph1Path, 'r')
 	graph1 = fixIdentifier(file.read(), 1)
@@ -122,14 +130,18 @@ def processGraph(graph1Path, graph2Path, clingoCode):
 	graph2 = fixIdentifier(file.read(), 2)
 	file.close()
 
-	#Process Graph
-	graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
-	graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
+	if isMapping:
+		#Process Graph
+		graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
+		graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
 
 	#Clingo Operation
 	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
 	pipe = subprocess.Popen(['../clingo/clingo'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 	mapResult = pipe.communicate(input=inputString.encode())[0]
-	map = decodeClingoResult(mapResult.decode())
-
-	return graph2Node, graph2Edge, graph1Props, graph2Props, map
+	if isMapping:
+		map = decodeClingoResult(mapResult.decode())
+		return graph2Node, graph2Edge, graph1Props, graph2Props, map
+	else:
+		editDistance = decodeEditDistance(mapResult.decode())
+		return editDistance

@@ -21,7 +21,7 @@ file.close()
 os.chdir(workingDir)
 
 #Process Graph
-graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[4], sys.argv[5], clingoCode)
+graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[4], sys.argv[5], clingoCode, True)
 
 # Properties are present if present in graph 2 and not in linked part of graph 1
 diffProps = dict()

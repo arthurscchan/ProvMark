@@ -23,7 +23,7 @@ result = dict()
 os.chdir(workingDir)
 
 for i in range(4,len(sys.argv)-1):
-	graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[i], sys.argv[i+1], clingoCode)
+	graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[i], sys.argv[i+1], clingoCode, True)
 
 	#Generalize properties
 	tempDict = dict()
