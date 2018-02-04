@@ -16,8 +16,8 @@ def fixIdentifier(graph, graphNo):
 
 #Transform Clingo graph to Dict
 def clingo2Dict(graph):
-	nodeDict = set()
-	edgeDict = set()
+	nodeDict = dict()
+	edgeDict = dict()
 	propDict = dict()
 	if not graph:
 		return nodeDict, edgeDict, propDict
@@ -25,7 +25,7 @@ def clingo2Dict(graph):
 		if line.startswith("l"):
 			#Properties
 			#l1(<identifier>,<key>,<value>).
-			match = re.match(r'.*\((.*),"(.*)","(.*)"\).*', line)
+			match = re.match(r'l[a-zA-Z0-9]*\([ ]*([a-zA-Z0-9]*)[ ]*,[ ]*\"(.*)\"[ ]*,[ ]*\"(.*)\"[ ]*\).', line)
 			if match.group(1) in propDict:
 				prop = propDict[match.group(1)] 
 			else:
@@ -35,13 +35,13 @@ def clingo2Dict(graph):
 		elif line.startswith("e"):
 			#Edges
 			#e1(<identifier>,<node1>,<node2>,<type>).
-			match = re.match(r'.*(\(.*\).*)', line)
-			edgeDict.add(match.group(1))
+			match = re.match(r'e[a-zA-Z0-9]*\([ ]*([a-zA-Z0-9]*)[ ]*,[ ]*([a-zA-Z0-9]*)[ ]*,[ ]*([a-zA-Z0-9]*)[ ]*,[ ]*\"([a-zA-Z0-9]*)\"[ ]*\).', line)
+			edgeDict[match.group(1)] = (match.group(2),match.group(3),match.group(4))
 		elif line.startswith("n"):
 			#Nodes
 			#n1(<identifier>,<type>).
-			match = re.match(r'.*(\(.*\).*)', line)
-			nodeDict.add(match.group(1))
+			match = re.match(r'n[a-zA-Z0-9]*\([ ]*([a-zA-Z0-9]*)[ ]*,[ ]*\"([a-zA-Z0-9]*)\"[ ]*\).', line)
+			nodeDict[match.group(1)] = match.group(2)
 
 
 	return nodeDict, edgeDict, propDict
@@ -51,9 +51,9 @@ def dict2Clingo(nodeDict, edgeDict, graphDict, suffix):
 	result = ""
 	
 	for item in nodeDict:
-		result = result + "n%s%s\n" %(suffix,item)
+		result = result + "n%s(%s,\"%s\").\n" %(suffix,item,nodeDict[item])
 	for item in edgeDict:
-		result = result + "e%s%s\n" %(suffix,item)
+		result = result + "e%s(%s,%s,%s,\"%s\").\n" %(suffix,item,edgeDict[item][0],edgeDict[item][1],edgeDict[item][2])
 	for key in graphDict:
 		props = graphDict[key]
 		for propKey in props:
@@ -74,6 +74,14 @@ def decodeClingoResult(result):
 		elif found:
 			break
 	return map
+
+#Retrieve edit distance from Clingo
+def decodeEditDistance(result):
+	for line in result.split('\n'):
+		if line.startswith('Optimization:'):
+		 	return line[14:]
+	return -1
+
 
 #Generalize properties of edges / vertics
 def compareProps(graph1Props, graph2Props, isGeneral):
@@ -112,7 +120,7 @@ def compareProps(graph1Props, graph2Props, isGeneral):
 	return result
 
 #Graph Process
-def processGraph(graph1Path, graph2Path, clingoCode):
+def processGraph(graph1Path, graph2Path, clingoCode, isMapping):
 	#Read Graph
 	file = open(graph1Path, 'r')
 	graph1 = fixIdentifier(file.read(), 1)
@@ -122,14 +130,18 @@ def processGraph(graph1Path, graph2Path, clingoCode):
 	graph2 = fixIdentifier(file.read(), 2)
 	file.close()
 
-	#Process Graph
-	graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
-	graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
+	if isMapping:
+		#Process Graph
+		graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
+		graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
 
 	#Clingo Operation
 	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
 	pipe = subprocess.Popen(['../clingo/clingo'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 	mapResult = pipe.communicate(input=inputString.encode())[0]
-	map = decodeClingoResult(mapResult.decode())
-
-	return graph2Node, graph2Edge, graph1Props, graph2Props, map
+	if isMapping:
+		map = decodeClingoResult(mapResult.decode())
+		return graph2Node, graph2Edge, graph1Props, graph2Props, map
+	else:
+		editDistance = decodeEditDistance(mapResult.decode())
+		return editDistance

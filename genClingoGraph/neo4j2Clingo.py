@@ -61,10 +61,12 @@ def handleEdge(start, end, properties, counter):
 
 	if start in dict and end in dict:
 		propDict = handleProperties(properties)
+		if 'type' in propDict:
+			id += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[start], dict[end], propDict['type'])
+		else:
+			id += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[start], dict[end], 'relatedTo')
 		for key in propDict:
-			if key == "type":
-				id += "e%s(e%d, n%d, n%d, \"%s\").\n" %(suffix, counter, dict[start], dict[end], propDict[key])
-			else:
+			if key != "type":
 				label += "l%s(e%d,\"%s\",\"%s\").\n" % (suffix, counter, key, propDict[key])
 
 #Check for correct numbers of arguments

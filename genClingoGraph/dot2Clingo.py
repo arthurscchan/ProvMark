@@ -26,7 +26,7 @@ def handleEdge(start, end, properties, counter):
 		for props in properties.split("\\n"):
 			(key,value) = props.split(':')
 			if key == "type":
-				id += "e%s(e%d, n%d, n%d, \"%s\").\n" %(suffix, counter, dict[start], dict[end], value)
+				id += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[start], dict[end], value)
 			else:			
 				label += "l%s(e%d,\"%s\",\"%s\").\n" % (suffix, counter, key, value)
 

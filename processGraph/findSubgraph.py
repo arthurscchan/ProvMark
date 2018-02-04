@@ -21,32 +21,54 @@ file.close()
 os.chdir(workingDir)
 
 #Process Graph
-graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[4], sys.argv[5], clingoCode)
+graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[4], sys.argv[5], clingoCode, True)
 
-#Handle vertics / edges exist in both graph
-for graph1ID in map:
-	#Existing branches
-	generalizedProps = compareProps(graph1Props[graph1ID], graph2Props[map[graph1ID]], False)
-	tempDict = dict()
-	for key in generalizedProps:
-		if generalizedProps[key] != '?':
-			tempDict[key] = generalizedProps[key]
-	if len(tempDict) > 0:
-		result[map[graph1ID]] = tempDict
-
-#Handle vertics / edge exist in syscall graph
+# Properties are present if present in graph 2 and not in linked part of graph 1
+diffProps = dict()
 for graph2ID in graph2Props:
 	if graph2ID not in map.values():
-		#Additional branches
 		tempDict = dict()
 		props = graph2Props[graph2ID]
 		for key in props:
 			if (props[key] != '?'):
 				tempDict[key] = props[key]
-		result[graph2ID] = tempDict
+		if tempDict:
+			diffProps[graph2ID] = tempDict
+	else:
+		for x in map:
+			if (map[x] == graph2ID):
+				graph1ID = x
+		tempDict = dict()
+		props1 = graph1Props[graph1ID]
+		props2 = graph2Props[graph2ID]
+		for key in props2:	
+			if (props2[key] != '?' 
+			    and (key not in props1 
+			         or props1[key] != props2[key])):
+				tempDict[key] = props2[key]
+		if tempDict:
+			diffProps[graph2ID] = tempDict
+
+# Edges are present if present in graph2 and not linked to anything in map
+
+incidentNodes = set()
+diffEdge = dict()
+for graph2ID in graph2Edge:
+	if (graph2ID in diffProps
+	    or graph2ID not in map.values()):
+		diffEdge[graph2ID] = graph2Edge[graph2ID]
+		incidentNodes = incidentNodes | set([graph2Edge[graph2ID][0],graph2Edge[graph2ID][1]])
+
+#Nodes are present if there is an incident edge or property or if linked to anything in map
+diffNode = dict()
+for graph2ID in graph2Node:
+	if ((graph2ID in incidentNodes) and (graph2ID in diffProps.keys() or graph2ID not in map.values())):
+		diffNode[graph2ID] = graph2Node[graph2ID]
+
+
 
 #Transfer result to Clingo graph format
-resultString = dict2Clingo(graph2Node, graph2Edge, result, suffix)
+resultString = dict2Clingo(diffNode, diffEdge, diffProps, suffix)
 
 #Write result to output file
 file = open(outFile, "w")
