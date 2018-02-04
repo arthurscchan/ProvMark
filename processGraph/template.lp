@@ -23,13 +23,12 @@
 :- e1(E1,_,X2,_), match(E1,E2), e2(E2,_,Y2,_), not match(X2,Y2).
 
 
-update_value(X,K,V1,V2) :- l1(X,K,V1), match(X,Y), l2(X,K,V2), V1 <> V2.
 
 #minimize { LC,X,K : label_cost(X,K,LC) }.
 
-label_cost(X,K,0) :- l1(X,K,V), match(X,Y), l2(X,K,V).
-label_cost(X,K,1) :- update_value(X,K,V1,V2).
+label_cost(X,K,0) :- l1(X,K,V), match(X,Y), l2(Y,K,V).
+label_cost(X,K,1) :- l1(X,K,V1), match(X,Y), l2(Y,K,V2), V1 <> V2.
+label_cost(X,K,1) :- l1(X,K,V), match(X,Y), not l2(Y,K,_).
 
 % Display
 #show match/2.
-

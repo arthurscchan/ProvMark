@@ -83,7 +83,7 @@ Vagrant.configure(2) do |config|
     gem install json rgl mqtt rake bundler
 
     # ProvMark specific
-    sudo yum install glibc-static
+    sudo yum install glibc-static -y
     # sudo pip3 install json_merger
 
     sudo rm -rf /tmp/.camflowModel
