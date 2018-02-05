@@ -11,17 +11,17 @@
 <polygon fill="white" stroke="none" points="-4,4 -4,-66 276,-66 276,4 -4,4"/>
 <!-- n3 -->
 <g id="node1" class="node"><title>n3</title>
-<polygon fill="#cae1ff" stroke="black" points="272,-49 218,-49 218,-13 272,-13 272,-49"/>
-<text text-anchor="middle" x="245" y="-29.1" font-family="Helvetica,sans-Serif" font-size="8.00">type:3</text>
+<ellipse fill="green" stroke="black" cx="245" cy="-31" rx="27" ry="18"/>
+<text text-anchor="middle" x="245" y="-29.1" font-family="Helvetica,sans-Serif" font-size="8.00">Dummy Node</text>
 </g>
 <!-- n80 -->
 <g id="node2" class="node"><title>n80</title>
 <polygon fill="#cae1ff" stroke="black" points="130,-62.5 0,-62.5 0,0.5 130,0.5 130,-62.5"/>
-<text text-anchor="middle" x="65" y="-47.1" font-family="Helvetica,sans-Serif" font-size="8.00">ret:&#45;1</text>
-<text text-anchor="middle" x="65" y="-38.1" font-family="Helvetica,sans-Serif" font-size="8.00">arg_values:[&#39;test.txt&#39;, &#39;2&#39;, &#39;0&#39;]</text>
-<text text-anchor="middle" x="65" y="-29.1" font-family="Helvetica,sans-Serif" font-size="8.00">arg_keys:[&#39;pathname&#39;, &#39;flags&#39;, &#39;mode&#39;]</text>
+<text text-anchor="middle" x="65" y="-47.1" font-family="Helvetica,sans-Serif" font-size="8.00">fn:open</text>
+<text text-anchor="middle" x="65" y="-38.1" font-family="Helvetica,sans-Serif" font-size="8.00">arg_keys:[&#39;pathname&#39;, &#39;flags&#39;, &#39;mode&#39;]</text>
+<text text-anchor="middle" x="65" y="-29.1" font-family="Helvetica,sans-Serif" font-size="8.00">arg_values:[&#39;test.txt&#39;, &#39;2&#39;, &#39;0&#39;]</text>
 <text text-anchor="middle" x="65" y="-20.1" font-family="Helvetica,sans-Serif" font-size="8.00">node_id:78</text>
-<text text-anchor="middle" x="65" y="-11.1" font-family="Helvetica,sans-Serif" font-size="8.00">fn:open</text>
+<text text-anchor="middle" x="65" y="-11.1" font-family="Helvetica,sans-Serif" font-size="8.00">ret:&#45;1</text>
 <text text-anchor="middle" x="65" y="-2.1" font-family="Helvetica,sans-Serif" font-size="8.00">type:5</text>
 </g>
 <!-- n3&#45;&gt;n80 -->
