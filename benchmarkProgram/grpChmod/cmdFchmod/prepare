@@ -27,3 +27,4 @@ touch test.txt
 chmod 0600 test.txt
 
 rm "$TMPFILE"
+chown vagrant:vagrant *
