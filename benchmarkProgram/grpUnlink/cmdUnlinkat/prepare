@@ -28,3 +28,4 @@ echo "TEST" > test.txt
 link test.txt linkat-test.txt
 
 rm "$TMPFILE"
+chown vagrant:vagrant *

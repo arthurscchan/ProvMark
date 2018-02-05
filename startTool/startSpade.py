@@ -29,6 +29,8 @@ def startSpade(workingPath, suffix, loopCount):
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
 	subprocess.call(spadeStop.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+	
+	time.sleep(loopCount)
 
 	#Recover config file
 	shutil.copyfile('%s/cfg/spade.config.backup' % spadePath, '%s/cfg/spade.config' % spadePath)
@@ -126,7 +128,7 @@ for i in range(1, trial+1):
 		#Send log lines to SPADE for processing (Repeat if data is empty)
 		outFile = '%s/output.dot-%s-%d' % (workingPath, suffix, i)
 		loopCount = 0
-		while not os.path.exists(outFile) or os.path.getsize(outFile) < 500:
+		while not os.path.exists(outFile) or os.path.getsize(outFile) < 1000:
 			loopCount = loopCount + 1
 			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount)
 	else:
