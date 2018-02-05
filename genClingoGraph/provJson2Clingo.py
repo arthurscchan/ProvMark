@@ -3,8 +3,6 @@
 import os
 import sys
 import json
-from json_merger import Merger
-from json_merger.config import UnifierOps, DictMergerOps
 
 #Generate Clingo graph string for nodes
 def handleNode(type):
@@ -69,7 +67,7 @@ counter = 1
 handleEdge("used", "prov:activity", "prov:entity")
 handleEdge("wasGeneratedBy", "prov:entity", "prov:activity")
 handleEdge("wasInformedBy", "prov:informed", "prov:informant")
-handleEdge("wasDeviredFrom", "prov:generatedEntity", "prov:usedEntity")
+handleEdge("wasDerivedFrom", "prov:generatedEntity", "prov:usedEntity")
 
 #Write result to output file
 file = open("./clingo-%s" % suffix, "w")

@@ -1,9 +1,4 @@
 # ProvMark
-Python Dependency Installation:
-
-~~~~
-sudo pip3 install json_merger
-~~~~
 
 Usage: 
 
