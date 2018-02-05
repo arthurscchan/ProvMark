@@ -27,4 +27,4 @@ touch test.txt
 sudo chown root:root test.txt
 
 rm "$TMPFILE"
-chown vagrant:vagrant *
+chown 1000:1000 *
