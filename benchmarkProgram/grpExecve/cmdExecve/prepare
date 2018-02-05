@@ -27,4 +27,4 @@ touch tmp
 chmod 0755 tmp
 
 rm "$TMPFILE"
-chown vagrant:vagrant *
+chown 1000:1000 *

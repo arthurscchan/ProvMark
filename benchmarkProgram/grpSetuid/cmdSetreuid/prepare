@@ -24,4 +24,4 @@ echo "$CODE">$TMPFILE
 gcc -o test $2 $TMPFILE
 
 rm "$TMPFILE"
-chown vagrant:vagrant *
+chown 1000:1000 *x
