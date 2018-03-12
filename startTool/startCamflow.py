@@ -156,11 +156,11 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 
 #Retrieve arguments
 trial = 0
-if len(sys.argv) == 7:
-	if sys.argv[6].isdigit():
-		trial = int(sys.argv[6])
-elif len(sys.argv) != 6:
-	print ("Usage: %s <Stage Directory> <Working Directory> <Program Directory> <CamFlow Config Directory> <suffix> [<Number of trial (Minimum / Default: 2)>" % sys.argv[0])
+if len(sys.argv) == 8:
+	if sys.argv[7].isdigit():
+		trial = int(sys.argv[7])
+elif len(sys.argv) != 7:
+	print ("Usage: %s <Stage Directory> <Working Directory> <Program Directory> <GCC MACRO> <CamFlow Config Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
 	quit()
 
 if trial < 2:
@@ -169,15 +169,16 @@ if trial < 2:
 stagePath = os.path.abspath(sys.argv[1])
 workingPath = os.path.abspath(sys.argv[2])
 progPath = os.path.abspath(sys.argv[3])
-camflowPath = os.path.abspath(sys.argv[4])
-suffix = sys.argv[5]
+gccMacro = sys.argv[4]
+camflowPath = os.path.abspath(sys.argv[5])
+suffix = sys.argv[6]
 
 #Create Model Data
-subprocess.check_output(('%s/prepare %s --static' %(progPath, stagePath)).split())
+subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
 startCamflow(stagePath, workingPath, '', True)
 
 for i in range(1, trial+1):
 	#Prepare the benchmark program
-	subprocess.check_output(('%s/prepare %s --static' %(progPath, stagePath)).split())
+	subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
 	startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i), False)
 		

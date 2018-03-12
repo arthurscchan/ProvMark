@@ -8,10 +8,10 @@ import configparser
 
 #Print help menu
 def helpMenu(name):
-	print ('Usage: %s <Tools> <Tools Base Directory> <Control Directory> <Benchmark Directory> [<Trial>, <Ouput File>]' % name)
+	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>, <Ouput File>]' % name)
 	print ('Tools:\n\tspg:\tSPADE with Graphviz storage\n\tspn:\tSPADE with Neo4j storage\n\topu:\tOPUS\n\tcam:\tCamFlow')
 	print ('Tools Base Directory: Base directory of the chosen tool')
-	print ('Control / Benchmark Directory: Base directory of the control / benchmark program')
+	print ('Benchmark Directory: Base directory of the benchmark program')
 	print ('Trial:	Number of trial executed for each graph for generalization (Default: 2)')
 	print ('Output file default: ./result.clingo')
 
@@ -27,22 +27,21 @@ def prepareDir(stageDir, workingDir):
 #Check Arguments
 trial = 2
 outFile = os.path.abspath('./result.clingo')
-if len(sys.argv) < 5 or len(sys.argv) > 7:
+if len(sys.argv) < 4 or len(sys.argv) > 6:
 	helpMenu(sys.argv[0])
 	quit()
+elif len(sys.argv) == 5:
+	trial = int(sys.argv[4])
 elif len(sys.argv) == 6:
-	trial = int(sys.argv[5])
-elif len(sys.argv) == 7:
-	trial = int(sys.argv[5])
-	outFile = os.path.abspath(sys.argv[6])
+	trial = int(sys.argv[4])
+	outFile = os.path.abspath(sys.argv[5])
 
 if trial < 2:
 	trial = 2
 baseDir = os.path.abspath(os.path.dirname(sys.argv[0]))
 tool = sys.argv[1]
 toolBaseDir = os.path.abspath(sys.argv[2])
-controlDir = os.path.abspath(sys.argv[3])
-benchmarkDir = os.path.abspath(sys.argv[4])
+benchmarkDir = os.path.abspath(sys.argv[3])
 stageDir = os.path.abspath('%s/stage/' % baseDir)
 workingDir = os.path.abspath('%s/working/' % baseDir)
 
@@ -60,12 +59,12 @@ template = config[tool]['template']
 print ('Starting stage 1...Generating provenance from native tools')
 
 os.system('sudo chmod +x %s/startTool/%s' % (baseDir, stage1Tool.split()[0]))
-stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s %d' % (baseDir, stage1Tool, stageDir, workingDir, '%s' ,toolBaseDir , '%s', trial)
+stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s %s %d' % (baseDir, stage1Tool, stageDir, workingDir, '%s' , '%s', toolBaseDir , '%s', trial)
 print ('Program')
-subprocess.call((stage1Command % (benchmarkDir, 'program')).split())
+subprocess.call((stage1Command % (benchmarkDir, '-DPROGRAM', 'program')).split())
 print ('End Program')
 print ('Control')
-subprocess.call((stage1Command % (controlDir, 'control')).split())
+subprocess.call((stage1Command % (benchmarkDir, '-DCONTROL', 'control')).split())
 print ('End Control')
 
 print ('End of stage 1\n')

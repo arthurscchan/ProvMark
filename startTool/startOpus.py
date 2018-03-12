@@ -7,11 +7,11 @@ import subprocess
 
 #Retrieve arguments
 trial = 0
-if len(sys.argv) == 7:
-	if sys.argv[6].isdigit():
-		trial = int(sys.argv[6])
-elif len(sys.argv) != 6:	
-	print ("Usage: %s <Stage Directory> <Working Directory> <Program Directory> <OPUS Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
+if len(sys.argv) == 8:
+	if sys.argv[7].isdigit():
+		trial = int(sys.argv[7])
+elif len(sys.argv) != 7:	
+	print ("Usage: %s <Stage Directory> <Working Directory> <Program Directory> <GCC Marco> <OPUS Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
 	quit()
 
 if trial < 2:
@@ -20,8 +20,9 @@ if trial < 2:
 stagePath = os.path.abspath(sys.argv[1])
 workingPath = os.path.abspath(sys.argv[2])
 progPath = os.path.abspath(sys.argv[3])
-opusPath = os.path.abspath(sys.argv[4])
-suffix = sys.argv[5]
+gccMacro = sys.argv[4]
+opusPath = os.path.abspath(sys.argv[5])
+suffix = sys.argv[6]
 
 #Prepare OPUS wrapper
 os.chdir(opusPath)
@@ -32,7 +33,7 @@ os.chdir(workingPath)
 #Get Audit Log
 for i in range(1, trial+1):
 	#Prepare the benchmark program
-	subprocess.check_output(('%s/prepare %s' % (progPath,stagePath)).split())
+	subprocess.check_output(('%s/prepare %s %s' % (progPath,stagePath,gccMacro)).split())
 
 	#Config OPUS Server
 	pipe = subprocess.Popen(['%s/bin/opusctl' % opusPath, 'conf'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)

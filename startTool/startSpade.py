@@ -38,12 +38,12 @@ def startSpade(workingPath, suffix, loopCount):
 
 #Retrieve arguments
 trial = 0
-if len(sys.argv) == 8:
-	if sys.argv[7].isdigit():
-		trial = int(sys.argv[7])
-elif len(sys.argv) != 7 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):	
-	print ("Neo4j DB Output Usage: %s -n <Stage Directory> <Working Directory> <Program Directory> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
-	print ("Graphviz DOT Output Usage: %s -d <Stage Directory> <Working Directory> <Program Directory> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
+if len(sys.argv) == 9:
+	if sys.argv[8].isdigit():
+		trial = int(sys.argv[8])
+elif len(sys.argv) != 8 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):
+	print ("Neo4j DB Output Usage: %s -n <Stage Directory> <Working Directory> <Program Directory> <GCC Marco> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
+	print ("Graphviz DOT Output Usage: %s -d <Stage Directory> <Working Directory> <Program Directory> <GCC Macro> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
 	quit()
 
 if trial < 2:
@@ -53,8 +53,9 @@ stagePath = os.path.abspath(sys.argv[2])
 workingPath = os.path.abspath(sys.argv[3])
 isNeo4j = (sys.argv[1] == '-n')
 progPath = os.path.abspath(sys.argv[4])
-spadePath = os.path.abspath(sys.argv[5])
-suffix = sys.argv[6]
+gccMacro = sys.argv[5]
+spadePath = os.path.abspath(sys.argv[6])
+suffix = sys.argv[7]
 
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'
@@ -67,7 +68,7 @@ subprocess.check_output(rule2.split())
 #Get Audit Log
 for i in range(1, trial+1):
 	#Prepare the benchmark program
-	subprocess.check_output(('%s/prepare %s --static' % (progPath,stagePath)).split())
+	subprocess.check_output(('%s/prepare %s %s --static' % (progPath,stagePath,gccMacro)).split())
 
 	os.chdir(stagePath)
 

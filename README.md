@@ -3,12 +3,12 @@
 Usage: 
 
 ~~~~
-./fullAutomation <Tools> <Tools Base Directory> <Control Directory> <Benchmark Directory> [<Trial>, <Ouput File>]
+./fullAutomation <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>, <Ouput File>]
 ~~~~
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
 ~~~~
-./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/control ./benchmarkProgram/grpCreat/cmdCreat 2 ./result.clingo
+./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/grpCreat/cmdCreat 2 ./result.clingo
 ~~~~
 
 #### Tools:
@@ -20,9 +20,9 @@ Example for generating benchmark for syscall create using SPADE with Graphviz st
 #### Tools Base Directory:
 - Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools.
 
-#### Control / Benchmark Directory:
-- Base directory of the control / benchmark program
-- Point the script to the syscall choice and control program choice for the benchmarking process
+#### Benchmark Directory:
+- Base directory of the benchmark program
+- Point the script to the syscall choice for the benchmarking process
 
 #### Trial (Default: 2):
 - Number of trial executed for each graph for generalization
