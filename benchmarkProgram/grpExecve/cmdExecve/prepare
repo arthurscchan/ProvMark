@@ -14,10 +14,11 @@ ls | grep -v 'prepare' | xargs rm -f
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
 #include <unistd.h>
-void main() {char *argv[] = {"`realpath tmp`",0}; 
+int main() {char *argv[] = {"`realpath tmp`",0}; 
 #ifdef PROGRAM 
 execve(argv[0],&argv[0],0);
 #endif
+return 0;
 }
 EOF
 )

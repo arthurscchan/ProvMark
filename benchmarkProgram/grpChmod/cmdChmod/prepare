@@ -14,10 +14,11 @@ ls | grep -v 'prepare' | xargs rm -f
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
 #include <sys/stat.h>
-void main() {
+int main() {
 #ifdef PROGRAM
 chmod("`realpath test.txt`", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); 
 #endif
+return 0;
 }
 EOF
 )

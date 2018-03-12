@@ -16,11 +16,12 @@ CODE=$(cat <<EOF
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-void main() {int d=open("`realpath .`",O_DIRECTORY);
+int main() {int d=open("`realpath .`",O_DIRECTORY);
 #ifdef PROGRAM
 fchmodat(d, "test.txt", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH, 0);
 #endif
-close(d);}
+close(d);
+return 0;}
 EOF
 )
 
