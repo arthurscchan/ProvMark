@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 -a "$#" -ne 2 ]
+if [ "$#" -ne 1 -a "$#" -ne 2 -a "$#" -ne 3 ]
 then
-	echo "Usage: "$0" <Stage Path> [--static]"
-	exit 1
+        echo "Usage: "$0" <Stage Path> [GCC_MARCO] [--static]"
+        exit 1
 fi
 
 cd "$1"
@@ -13,16 +13,21 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
+#define _GNU_SOURCE
 #include <fcntl.h>
 #include <unistd.h>
-void main() {dup3(STDOUT_FILENO,STDERR_FILENO,O_CLOEXEC);}
+int main() {int rn=0;
+#ifdef PROGRAM
+rn=dup3(STDOUT_FILENO,STDERR_FILENO,O_CLOEXEC);
+#endif
+return (rn==-1);}
 EOF
 )
 
 TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
-gcc -o test $2 $TMPFILE
+gcc -o test $2 $3 $TMPFILE
 
 rm "$TMPFILE"
-chown 1000:1000t *
+chown 1000:1000 *
