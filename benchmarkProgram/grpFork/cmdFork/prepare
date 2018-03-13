@@ -13,7 +13,6 @@ ls | grep -v 'prepare' | xargs rm -f
 
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
-#include <stdio.h>
 #include <unistd.h>
 int main() {
 pid_t id=0;
