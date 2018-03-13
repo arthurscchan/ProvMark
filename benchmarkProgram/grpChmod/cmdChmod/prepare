@@ -15,10 +15,11 @@ ls | grep -v 'prepare' | xargs rm -f
 CODE=$(cat <<EOF
 #include <sys/stat.h>
 int main() {
+int rn=0;
 #ifdef PROGRAM
-chmod("`realpath test.txt`", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); 
+rn=chmod("`realpath test.txt`", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); 
 #endif
-return 0;
+return (rn==-1);
 }
 EOF
 )

@@ -16,12 +16,12 @@ CODE=$(cat <<EOF
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-int main() {int f = open("`realpath test.txt`",O_RDWR);
+int main() {int f = open("`realpath test.txt`",O_RDWR); int rn=0;
 #ifdef PROGRAM
-fchmod(f, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+rn=fchmod(f, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 #endif
 close(f);
-return 0;
+return (rn==-1);
 }
 EOF
 )

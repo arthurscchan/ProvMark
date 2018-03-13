@@ -16,10 +16,11 @@ CODE=$(cat <<EOF
 #include<fcntl.h>
 #include<unistd.h>
 int main() {
+int id=0;
 #ifdef PROGRAM
-creat("`realpath newtest.txt`",S_IRWXU|S_IRWXG);
+id=creat("`realpath newtest.txt`",S_IRWXU|S_IRWXG);
 #endif
-return 0;
+return (id==-1);
 }
 EOF
 )

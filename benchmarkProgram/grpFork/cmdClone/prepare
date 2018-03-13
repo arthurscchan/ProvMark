@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 -a "$#" -ne 2 ]
+if [ "$#" -ne 1 -a "$#" -ne 2 -a "$#" -ne 3 ]
 then
-	echo "Usage: "$0" <Stage Path> [--static]"
+	echo "Usage: "$0" <Stage Path> [GCC_MACRO] [--static]"
 	exit 1
 fi
 
@@ -18,14 +18,20 @@ CODE=$(cat <<EOF
 #include <stdlib.h>
 #include <sched.h>
 static int childFunc(void *args) {}
-void main() {char* tmp = malloc(1024*1024); clone(childFunc,tmp+1024*1024,CLONE_PARENT,NULL);}
+int main() {char* tmp = malloc(1024*1024); int id=0;
+#ifdef PROGRAM
+id=clone(childFunc,tmp+1024*1024,CLONE_PARENT,NULL);
+#endif
+free(tmp);
+return (id==-1);
+}
 EOF
 )
 
 TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
-gcc -o test $2 $TMPFILE
+gcc -o test $2 $3 $TMPFILE
 
 rm "$TMPFILE"
 chown 1000:1000 *
