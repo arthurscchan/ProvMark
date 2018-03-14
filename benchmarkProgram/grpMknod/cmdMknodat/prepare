@@ -1,11 +1,10 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 -a "$#" -ne 2 ]
-then
-	echo "Usage: "$0" <Stage Path> [--static]"
-	exit 1
+if [ "$#" -ne 1 -a "$#" -ne 2 -a "$#" -ne 3 ]
+then 
+        echo "Usage: "$0" <Stage Path> [GCC_MACRO] [--static]"
+        exit 1
 fi
-
 cd "$1"
 
 #Clean directory
@@ -15,14 +14,20 @@ ls | grep -v 'prepare' | xargs rm -f
 CODE=$(cat <<EOF
 #include <unistd.h>
 #include <sys/stat.h>
-void main() {mknodat(open(".",O_DIRECTORY),"newtest.txt", S_IFREG | S_IRWXU | S_IRGRP | S_IROTH, 0);}
+#include <fcntl.h>
+int main() {int d=open("`realpath .`",O_DIRECTORY); int rn=0;
+#ifdef PROGRAM
+rn=mknodat(d,"newtest.txt", S_IFREG | S_IRWXU | S_IRGRP | S_IROTH, 0);
+#endif
+close(d);
+return (rn==-1);}
 EOF
 )
 
 TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
-gcc -o test $2 $TMPFILE
+gcc -o test $2 $3 $TMPFILE
 
 rm "$TMPFILE"
 chown 1000:1000 *
