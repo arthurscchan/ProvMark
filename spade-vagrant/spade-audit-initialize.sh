@@ -23,6 +23,7 @@ echo 'deb https://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.lis
 sudo apt-get update
 sudo apt-get install -y neo4j
 sudo apt-get install -y cypher-shell
+sudo apt-get install -y realpath
 
 ## ProvMark stuff
 git clone https://github.com/arthurscchan/ProvMark.git 

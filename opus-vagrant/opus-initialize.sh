@@ -14,5 +14,6 @@ sudo apt-get install -y cypher-shell
 
 ## ProvMark stuff
 sudo apt-get install python3-pip 
+sudo apt-get install realpath
 sudo pip3 install json_merger
 git clone https://github.com/arthurscchan/ProvMark.git 
