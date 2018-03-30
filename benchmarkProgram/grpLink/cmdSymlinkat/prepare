@@ -15,7 +15,7 @@ ls | grep -v 'prepare' | xargs rm -f
 CODE=$(cat <<EOF
 #include <unistd.h>
 #include <fcntl.h>
-int main() {int d=open("`realpath .`",O_DIRECTORY); int rn=0;
+int main() {int d=open("`realpath $1`",O_DIRECTORY); int rn=0;
 #ifdef PROGRAM
 rn=symlinkat("test.txt",d,"symlinkat-test.txt");
 #endif

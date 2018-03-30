@@ -16,7 +16,7 @@ CODE=$(cat <<EOF
 #include <unistd.h>
 int main() {int rn=0;
 #ifdef PROGRAM
-rn=truncate("`realpath test.txt`",0);
+rn=truncate("`realpath $1`/test.txt",0);
 #endif
 return (rn==-1);}
 EOF

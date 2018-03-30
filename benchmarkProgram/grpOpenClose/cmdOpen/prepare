@@ -16,7 +16,7 @@ CODE=$(cat <<EOF
 #include <fcntl.h>
 int main() {int id=0;
 #ifdef PROGRAM
-id=open("`realpath test.txt`",O_RDWR);
+id=open("`realpath $1`/test.txt",O_RDWR);
 #endif
 return (id==-1);}
 EOF

@@ -18,7 +18,7 @@ CODE=$(cat <<EOF
 int main() {
 int id=0;
 #ifdef PROGRAM
-id=creat("`realpath newtest.txt`",S_IRWXU|S_IRWXG);
+id=creat("`realpath $1`/newtest.txt",S_IRWXU|S_IRWXG);
 #endif
 return (id==-1);
 }

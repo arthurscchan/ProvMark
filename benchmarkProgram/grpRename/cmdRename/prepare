@@ -16,7 +16,7 @@ CODE=$(cat <<EOF
 #include <stdio.h>
 int main() {int rn=0;
 #ifdef PROGRAM
-rn=rename("`realpath test.txt`","`realpath rename-test.txt`");
+rn=rename("`realpath $1`/test.txt","`realpath $1`/rename-test.txt");
 #endif
 return (rn==-1);}
 EOF

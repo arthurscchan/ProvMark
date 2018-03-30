@@ -16,7 +16,7 @@ CODE=$(cat <<EOF
 #include <unistd.h>
 int main() {int rn=0;
 #ifdef PROGRAM
-rn=chown("`realpath test.txt`", 1000, 1000);
+rn=chown("`realpath $1`/test.txt", 1000, 1000);
 #endif
 return (rn==-1);}
 EOF

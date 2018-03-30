@@ -2,7 +2,7 @@
 
 if [ "$#" -ne 1 -a "$#" -ne 2 -a "$#" -ne 3 ]
 then 
-	echo "Usage: "$0" <Stage Path> [--static]"
+	echo "Usage: "$0" <Stage Path> [GCC_MACRO] [--static]"
 	exit 1
 fi
 
@@ -17,7 +17,7 @@ CODE=$(cat <<EOF
 #include <sys/stat.h>
 int main() {int rn=0;
 #ifdef PROGRAM
-rn=mknod("newtest.txt", S_IFREG | S_IRWXU | S_IRGRP | S_IROTH, 0);
+rn=mknod("`realpath $1`/newtest.txt", S_IFREG | S_IRWXU | S_IRGRP | S_IROTH, 0);
 #endif
 return (rn==-1);}
 EOF

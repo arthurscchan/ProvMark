@@ -16,7 +16,7 @@ CODE=$(cat <<EOF
 #include <unistd.h>
 int main() {int rn=0;
 #ifdef PROGRAM
-rn=link("`realpath test.txt`","`realpath link-test.txt`");
+rn=link("`realpath $1`/test.txt","`realpath $1`/link-test.txt");
 #endif
 return (rn==-1);}
 EOF

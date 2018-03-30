@@ -15,7 +15,7 @@ ls | grep -v 'prepare' | xargs rm -f
 CODE=$(cat <<EOF
 #include <fcntl.h>
 #include <unistd.h>
-int main() {int d=open("`realpath .`",O_DIRECTORY); int rn=0;
+int main() {int d=open("`realpath $1`",O_DIRECTORY); int rn=0;
 #ifdef PROGRAM
 rn=fchownat(d, "test.txt",1000,1000,0);
 #endif

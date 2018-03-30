@@ -15,7 +15,7 @@ ls | grep -v 'prepare' | xargs rm -f
 CODE=$(cat <<EOF
 #include <unistd.h>
 #include <fcntl.h>
-int main() {int f=open("`realpath test.txt`",O_RDWR); int rn=0;
+int main() {int f=open("`realpath $1`/test.txt",O_RDWR); int rn=0;
 #ifdef PROGRAM
 rn=ftruncate(f,0);
 #endif

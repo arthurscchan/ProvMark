@@ -17,7 +17,7 @@ CODE=$(cat <<EOF
 int main() {
 int rn=0;
 #ifdef PROGRAM
-rn=chmod("`realpath test.txt`", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); 
+rn=chmod("`realpath $1`/test.txt", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); 
 #endif
 return (rn==-1);
 }
