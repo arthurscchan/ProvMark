@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 -a "$#" -ne 2 -a "$#" -ne 3 ]
+then 
+        echo "Usage: "$0" <Stage Path> [GCC_MACRO] [--static]"
+        exit 1
+fi
+
+cd "$1"
+
+#Clean directory
+ls | grep -v 'prepare' | xargs rm -f
+
+#Prepare Benchmark Program
+CODE=$(cat <<EOF
+#include <fcntl.h>
+#include <unistd.h>
+int main() {int id=open("`realpath $1`/test.txt", O_RDWR); int rn=0; char buf[1];
+#ifdef PROGRAM
+rn=read(id, buf, 1);
+#endif
+close(id);
+return (rn==-1);}
+EOF
+)
+
+TMPFILE=$(mktemp -t tmp.XXXXXX.c)
+echo "$CODE">$TMPFILE
+
+gcc -o test $2 $3 $TMPFILE
+
+touch test.txt
+echo "TEST" > test.txt
+
+rm "$TMPFILE"
+chown 1000:1000 *
