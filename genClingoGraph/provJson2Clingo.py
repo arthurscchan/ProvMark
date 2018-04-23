@@ -6,7 +6,7 @@ import json
 
 #Recover missing node
 def addNode(identifier,counter):
-	global suffix, id, label
+	global suffix, nodeRec, label
 
 	nodeType = ["activity","entity","agent"]
 
@@ -26,7 +26,7 @@ def addNode(identifier,counter):
 	
 	if targetNode:
 		dict[identifier] = counter
-		id += "n%s(n%d,\"%s\").\n" % (suffix, counter, type)
+		nodeRec += "n%s(n%d,\"%s\").\n" % (suffix, counter, type)
 		for labelIdentifier in targetNode:
 			label += "l%s(n%d,\"%s\",\"%s\").\n" % (suffix, counter, labelIdentifier, targetNode[labelIdentifier])
 		return True
@@ -35,13 +35,13 @@ def addNode(identifier,counter):
 
 #Generate Clingo graph string for nodes
 def handleNode(type):
-	global jsonObject, dict, id, label, counter, suffix
+	global jsonObject, dict, nodeRec, label, counter, suffix
 	
 	if type in jsonObject:
 		for nodeIdentifier in jsonObject[type]:
 			node = jsonObject[type][nodeIdentifier]
 			dict[nodeIdentifier] = counter
-			id += "n%s(n%d,\"%s\").\n" % (suffix, counter, type)
+			nodeRec += "n%s(n%d,\"%s\").\n" % (suffix, counter, type)
 #			label += "l%s(n%d,\"identifier\",\"%s\").\n" % (suffix, counter, nodeIdentifier)
 			for labelIdentifier in node:
 				label += "l%s(n%d,\"%s\",\"%s\").\n" % (suffix, counter, labelIdentifier, node[labelIdentifier])
@@ -49,7 +49,7 @@ def handleNode(type):
 
 #Generate Clingo graph string for edges
 def handleEdge(type, start, end):
-	global jsonObject, dict, id, label, counter, suffix, nodeCounter
+	global jsonObject, dict, edgeRec, label, counter, suffix, nodeCounter
 
 	if type in jsonObject:
 		for edgeIdentifier in jsonObject[type]:
@@ -65,7 +65,7 @@ def handleEdge(type, start, end):
 					nodeCounter = nodeCounter + 1
 
 			if edge[start] in dict and edge[end] in dict:
-				id += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[edge[start]], dict[edge[end]], type)
+				edgeRec += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[edge[start]], dict[edge[end]], type)
 #				label += "l%s(e%d,\"identifier\",\"%s\").\n" % (suffix, counter, edgeIdentifier)
 				for labelIdentifier in edge:
 					if labelIdentifier != start and labelIdentifier != end:
@@ -90,7 +90,8 @@ file.close()
 #Intrepret Json
 jsonObject = json.loads(jsonString)
 
-id = ""
+nodeRec = ""
+edgeRec = ""
 label = ""
 counter = 1
 dict = {}
@@ -111,7 +112,8 @@ handleEdge("wasDerivedFrom", "prov:generatedEntity", "prov:usedEntity")
 
 #Write result to output file
 file = open("./clingo-%s" % suffix, "w")
-file.write(id)
+file.write(nodeRec)
+file.write(edgeRec)
 file.write(label)
 file.close()
 
