@@ -6,7 +6,7 @@ import json
 
 #Recover missing node
 def addNode(identifier,counter):
-	global suffix, id
+	global suffix, id, label
 
 	nodeType = ["activity","entity","agent"]
 
