@@ -23,14 +23,29 @@ def mergeJson(base, line):
 					#Elements exists, merging data
 					if isinstance(obj,str):
 						#Simple Object (New String cover old String)
-						base[typeKey][itemKey] = obj
+						if (typeKey not in base):
+							newItem = {itemKey:obj}
+							base[typeKey] = newItem
+						else:
+							base[typeKey][itemKey] = obj
 					else:
 						#Complex Object (Loop and add each properties)
 						for objKey in obj:
-							base[typeKey][itemKey][objKey] = obj[objKey]
+							if (typeKey not in base):
+								newItem = {itemKey:{objKey:obj[objKey]}}
+								base[typeKey] = newItem
+							elif (itemKey not in base):
+								newItem = {objKey:obj[ObjKey]}
+								base[typeKey][itemKey] = newItem
+							else:
+								base[typeKey][itemKey][objKey] = obj[objKey]
 				else:
 					#Elements not exists, add full element
-					base[typeKey][itemKey] = obj
+					if (typeKey not in base):
+						newItem = {itemKey:obj}
+						base[typeKey] = newItem
+					else:
+						base[typeKey][itemKey] = obj
 		else:
 		#Type not exists, add full type
 			base[typeKey] = lineTypeObj
@@ -66,7 +81,11 @@ def mergeEdge(base, model):
 				if not findIdentifier(base, key):
 					exists,newTypeKey,newIdentifier,newObj = extractElement(model,key)
 					if exists:
-						base[newTypeKey][newIdentifier] = newObj
+						if (newTypeKey not in base):
+							newItem = {newIdentifier:newObj}
+							base[newTypeKey] = newItem
+						else:
+							base[newTypeKey][newIdentifier] = newObj
 	return base
 
 #Merge missing nodes from model
@@ -75,6 +94,7 @@ def mergeNode(base, model):
 	elementKey = {'entity','agent','activity'}
 	prefixKey = {'prefix'}
 
+	pending = dict()
 	for typeKey in base:
 		if (typeKey not in elementKey) and (typeKey not in prefixKey):
 			#Loop all relation elements group
@@ -87,7 +107,22 @@ def mergeNode(base, model):
 						if not findIdentifier(base, obj[key]):
 							exists,newTypeKey,newIdentifier,newObj = extractElement(model,obj[key])
 							if exists:
-								base[newTypeKey][newIdentifier] = newObj
+								if (newTypeKey not in base):
+									if (newTypeKey not in pending):
+										newItem = {newIdentifier:newObj}
+										pending[newTypeKey] = newItem
+									else:
+										pending[newTypeKey][newIdentifier] = newObj
+								else:
+									base[newTypeKey][newIdentifier] = newObj
+	#Add Pending Item
+	for key in pending:
+		if (key not in base):
+			base[key] = pending[key]
+		else:
+			for itemKey in pending[key]:
+				base[key][itemKey] = pending[key][itemKey]
+
 	return base
 
 #Start Camflow
