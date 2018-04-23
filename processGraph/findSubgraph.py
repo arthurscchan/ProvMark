@@ -34,8 +34,6 @@ for graph2ID in graph2Props:
 				tempDict[key] = props[key]
 		if tempDict:
 			diffProps[graph2ID] = tempDict
-	elif graph1ID not in map.values():
-		#Should not reach here. But left here for debugging
 	else:
 		for x in map:
 			if (map[x] == graph2ID):

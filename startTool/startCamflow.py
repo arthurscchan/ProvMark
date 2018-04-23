@@ -142,11 +142,11 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 
 	#Clean camflow working history
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	if os.path.exists('/tmp/.camflowModel'):
-		try:
-			os.remove('%s/audit.log' % workingPath)
-		except OSError:
-			pass
+#	if os.path.exists('/tmp/.camflowModel'):
+#		try:
+#			os.remove('%s/audit.log' % workingPath)
+#		except OSError:
+#			pass
 
 	#Capture provenance
 	subprocess.call('service camflowd start'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -168,18 +168,21 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 
 	if isModel:
 		if os.path.exists('/tmp/.camflowModel'):
-			return;
-		file = open('/tmp/.camflowModel', 'w')
-	else:
-		if os.path.exists('/tmp/.camflowModel'):
 			file = open('/tmp/.camflowModel', 'r')
 			line = file.read().rstrip()
 			result = mergeEdge(result,json.loads(line))
 			result = mergeNode(result,json.loads(line))
 			file.close()
-		#Writing result to json
-		file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
-
+		file = open('/tmp/.camflowModel', 'w')
+	else:
+		if os.path.exists('/tmp/.camflowModel'):
+#			file = open('/tmp/.camflowModel', 'r')
+#			line = file.read().rstrip()
+#			result = mergeEdge(result,json.loads(line))
+#			result = mergeNode(result,json.loads(line))
+#			file.close()
+			#Writing result to json
+			file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
 	file.write(json.dumps(result))
 	file.close()
 

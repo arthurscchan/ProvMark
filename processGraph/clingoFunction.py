@@ -65,21 +65,26 @@ def decodeClingoResult(result):
 	map = dict()
 	# get the last line starting with "match"
 	lastline = None
+
 	for line in result.split('\n'):
 		if line.startswith('match'):
 			lastline = line
-			
-	for item in lastline.split():
-		#match(<Graph1 identifier>, <Graph2 identifier>)
-		match = re.match(r'match\((.*),(.*)\)', item)
-		map[match.group(1)] = match.group(2)
+
+	if lastline:
+		for item in lastline.split():
+			#match(<Graph1 identifier>, <Graph2 identifier>)
+			match = re.match(r'match\((.*),(.*)\)', item)
+			map[match.group(1)] = match.group(2)
 	return map
 
 #Retrieve edit distance from Clingo
 def decodeEditDistance(result):
+	found = False
 	for line in result.split('\n'):
-		if line.startswith('Optimization:'):
-		 	return line[14:]
+		if line.startswith('OPTIMUM FOUND'):
+			found = True
+		if (found and line.startswith('Optimization')):
+		 	return  line[15:]
 	return -1
 
 
