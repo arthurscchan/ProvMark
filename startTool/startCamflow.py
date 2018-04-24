@@ -142,11 +142,15 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 
 	#Clean camflow working history
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-#	if os.path.exists('/tmp/.camflowModel'):
-#		try:
-#			os.remove('%s/audit.log' % workingPath)
-#		except OSError:
-#			pass
+	if os.path.exists('/tmp/.camflowModel'):
+		try:
+			mtime = os.path.getmtime('/tmp/.camflowModel')
+			with open('/proc/uptime', 'r') as f:
+				sec = float (f.readline().split()[0])
+			if (mtime < (time.time() - sec)):
+				os.remove('/tmp/.camflowModel' % workingPath)
+		except OSError:
+			pass
 
 	#Capture provenance
 	subprocess.call('service camflowd start'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
