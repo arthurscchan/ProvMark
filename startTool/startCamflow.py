@@ -23,106 +23,39 @@ def mergeJson(base, line):
 					#Elements exists, merging data
 					if isinstance(obj,str):
 						#Simple Object (New String cover old String)
-						if (typeKey not in base):
-							newItem = {itemKey:obj}
-							base[typeKey] = newItem
-						else:
-							base[typeKey][itemKey] = obj
+						base[typeKey][itemKey] = obj
 					else:
 						#Complex Object (Loop and add each properties)
 						for objKey in obj:
-							if (typeKey not in base):
-								newItem = {itemKey:{objKey:obj[objKey]}}
-								base[typeKey] = newItem
-							elif (itemKey not in base):
-								newItem = {objKey:obj[ObjKey]}
-								base[typeKey][itemKey] = newItem
-							else:
-								base[typeKey][itemKey][objKey] = obj[objKey]
+							base[typeKey][itemKey][objKey] = obj[objKey]
 				else:
 					#Elements not exists, add full element
-					if (typeKey not in base):
-						newItem = {itemKey:obj}
-						base[typeKey] = newItem
-					else:
 						base[typeKey][itemKey] = obj
 		else:
 		#Type not exists, add full type
 			base[typeKey] = lineTypeObj
 	return base
 
-#Find if element identifier exists
-def findIdentifier(base, identifier):
-	for typeKey in base:
-		typeObj = base[typeKey]
-		#Found vertics elements group
-		if identifier in typeObj:
-			#If given identifier exists, it means the vertics exists
-			return True
-	return False
-
-def extractElement(base, identifier):
-	for typeKey in base:
-		typeObj = base[typeKey]
-		if identifier in typeObj:
-			#Element found
-			return True,typeKey,identifier,typeObj[identifier]
-	return False,None,None,None
-
-#Merge missing edges from model
-def mergeEdge(base, model):
-	elementKey = {'entity','agent','activity'}
-	prefixKey = {'prefix'}
-
-	for typeKey in model:
-		if (typeKey not in elementKey) and (typeKey not in prefixKey):
-			typeObj = model[typeKey]
-			for key in typeObj:
-				if not findIdentifier(base, key):
-					exists,newTypeKey,newIdentifier,newObj = extractElement(model,key)
-					if exists:
-						if (newTypeKey not in base):
-							newItem = {newIdentifier:newObj}
-							base[newTypeKey] = newItem
-						else:
-							base[newTypeKey][newIdentifier] = newObj
-	return base
-
 #Merge missing nodes from model
 def mergeNode(base, model):
-	targetKey = {'prov:entity','prov:activity','prov:agent','prov:informant','prov:informed','prov:trigger','prov:generatedEntity','prov:usedEntity','prov:plan','prov:delegate','prov:responsible','prov:influencer','prov:influencee','prov:generalEntity','prov:specificEntity','prov:alternate1','prov:alternate2','prov:collection'}
 	elementKey = {'entity','agent','activity'}
-	prefixKey = {'prefix'}
 
-	pending = dict()
-	for typeKey in base:
-		if (typeKey not in elementKey) and (typeKey not in prefixKey):
-			#Loop all relation elements group
-			typeObj = base[typeKey]
-			for relationKey in typeObj:
-				obj = typeObj[relationKey]
-				for key in targetKey:
-					if key in obj:						
-						#Find if the vertics related by this edges is exsits
-						if not findIdentifier(base, obj[key]):
-							exists,newTypeKey,newIdentifier,newObj = extractElement(model,obj[key])
-							if exists:
-								if (newTypeKey not in base):
-									if (newTypeKey not in pending):
-										newItem = {newIdentifier:newObj}
-										pending[newTypeKey] = newItem
-									else:
-										pending[newTypeKey][newIdentifier] = newObj
-								else:
-									base[newTypeKey][newIdentifier] = newObj
-	#Add Pending Item
-	for key in pending:
-		if (key not in base):
-			base[key] = pending[key]
-		else:
-			for itemKey in pending[key]:
-				base[key][itemKey] = pending[key][itemKey]
-
+	for typeKey in model:
+		if typeKey in elementKey:
+			#Type object
+			typeObj = model[typeKey]
+			if typeKey not in base:
+				#Type not exist in base
+				base[typeKey] = typeObj
+			else:
+				#Type exists in base
+				baseObj = base[typeKey]
+				for key in typeObj:
+					if key not in baseObj:
+						#New Node
+						baseObj[key] = typeObj[key]
+				#Replace base type json
+				base[typeKey] = baseObj
 	return base
 
 #Start Camflow
@@ -170,24 +103,18 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	file.close()
 	os.remove('%s/audit.log' % workingPath)
 
-#	if isModel:
+	#Write node to model (camflow will not republish node)
 	if os.path.exists('/tmp/.camflowModel'):
 		file = open('/tmp/.camflowModel', 'r')
 		line = file.read().rstrip()
-		result = mergeEdge(result,json.loads(line))
-		result = mergeNode(result,json.loads(line))
+		oldNode = json.loads(line)
 		file.close()
+	else:
+		oldNode = dict()
 	file = open('/tmp/.camflowModel', 'w')
-	file.write(json.dumps(result))
+	file.write(json.dumps(mergeNode(oldNode,result)))
 	file.close()
 
-#	else:
-#		if os.path.exists('/tmp/.camflowModel'):
-#			file = open('/tmp/.camflowModel', 'r')
-#			line = file.read().rstrip()
-#			result = mergeEdge(result,json.loads(line))
-#			result = mergeNode(result,json.loads(line))
-#			file.close()
 	#Writing result to json
 	file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
 	file.write(json.dumps(result))
