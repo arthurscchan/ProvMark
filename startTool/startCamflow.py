@@ -170,23 +170,26 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	file.close()
 	os.remove('%s/audit.log' % workingPath)
 
-	if isModel:
-		if os.path.exists('/tmp/.camflowModel'):
-			file = open('/tmp/.camflowModel', 'r')
-			line = file.read().rstrip()
-			result = mergeEdge(result,json.loads(line))
-			result = mergeNode(result,json.loads(line))
-			file.close()
-		file = open('/tmp/.camflowModel', 'w')
-	else:
-		if os.path.exists('/tmp/.camflowModel'):
+#	if isModel:
+	if os.path.exists('/tmp/.camflowModel'):
+		file = open('/tmp/.camflowModel', 'r')
+		line = file.read().rstrip()
+		result = mergeEdge(result,json.loads(line))
+		result = mergeNode(result,json.loads(line))
+		file.close()
+	file = open('/tmp/.camflowModel', 'w')
+	file.write(json.dumps(result))
+	file.close()
+
+#	else:
+#		if os.path.exists('/tmp/.camflowModel'):
 #			file = open('/tmp/.camflowModel', 'r')
 #			line = file.read().rstrip()
 #			result = mergeEdge(result,json.loads(line))
 #			result = mergeNode(result,json.loads(line))
 #			file.close()
-			#Writing result to json
-			file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
+	#Writing result to json
+	file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
 	file.write(json.dumps(result))
 	file.close()
 
@@ -216,8 +219,8 @@ camflowPath = os.path.abspath(sys.argv[5])
 suffix = sys.argv[6]
 
 #Create Model Data
-subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
-startCamflow(stagePath, workingPath, '', True)
+#subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
+#startCamflow(stagePath, workingPath, '', True)
 
 for i in range(1, trial+1):
 	#Prepare the benchmark program
