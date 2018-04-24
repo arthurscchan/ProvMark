@@ -39,7 +39,11 @@ for graph2ID in graph2Props:
 			if (map[x] == graph2ID):
 				graph1ID = x
 		tempDict = dict()
-		props1 = graph1Props[graph1ID]
+			
+		if(graph1ID in graph1Props):
+			props1 = graph1Props[graph1ID]
+		else:
+			props1 = dict()
 		props2 = graph2Props[graph2ID]
 		for key in props2:	
 			if (props2[key] != '?' 
