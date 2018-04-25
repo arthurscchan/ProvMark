@@ -90,7 +90,7 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	subprocess.call(('camflow --track-file %s/test propagate' % stagePath).split())
 	os.system('%s/test' % stagePath)
 	subprocess.call(('camflow --track-file %s/test false' % stagePath).split())
-	time.sleep(1)
+	time.sleep(3)
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 	#Process provenance result into 1 json
@@ -146,8 +146,8 @@ camflowPath = os.path.abspath(sys.argv[5])
 suffix = sys.argv[6]
 
 #Create Model Data
-#subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
-#startCamflow(stagePath, workingPath, '', True)
+subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
+startCamflow(stagePath, workingPath, '', True)
 
 for i in range(1, trial+1):
 	#Prepare the benchmark program

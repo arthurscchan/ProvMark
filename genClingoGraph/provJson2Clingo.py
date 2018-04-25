@@ -4,10 +4,7 @@ import os
 import sys
 import json
 
-#Recover missing node
-def addNode(identifier,counter):
-	global suffix, nodeRec, label
-
+def retrieveNode(identifier):
 	nodeType = ["activity","entity","agent"]
 
 	file = open("/tmp/.camflowModel", "r")
@@ -23,15 +20,16 @@ def addNode(identifier,counter):
 			if identifier in obj[type]:
 				targetNode = obj[type][identifier]
 				targetType = type
-	
-	if targetNode:
-		dict[identifier] = counter
-		nodeRec += "n%s(n%d,\"%s\").\n" % (suffix, counter, type)
-		for labelIdentifier in targetNode:
-			label += "l%s(n%d,\"%s\",\"%s\").\n" % (suffix, counter, labelIdentifier, targetNode[labelIdentifier])
-		return True
-	else:
-		return False
+	return targetNode,targetType
+
+#Recover missing node
+def addNode(identifier,targetNode,targetType,counter):
+	global suffix, nodeRec, label, dict
+
+	dict[identifier] = counter
+	nodeRec += "n%s(n%d,\"%s\").\n" % (suffix, counter, targetType)
+	for labelIdentifier in targetNode:
+		label += "l%s(n%d,\"%s\",\"%s\").\n" % (suffix, counter, labelIdentifier, targetNode[labelIdentifier])
 
 #Generate Clingo graph string for nodes
 def handleNode(type):
@@ -56,12 +54,23 @@ def handleEdge(type, start, end):
 			edge = jsonObject[type][edgeIdentifier]
 
 			#Recover missing node from model
-			if edge[start] not in dict:
-				if (addNode(edge[start],nodeCounter)):
+			if edge[start] not in dict and edge[end] in dict:
+				targetNode,targetType = retrieveNode(edge[start])
+				if targetNode:
+					addNode(edge[start],targetNode,targetType,nodeCounter)
 					nodeCounter = nodeCounter + 1
-
-			if edge[end] not in dict:
-				if (addNode(edge[end],nodeCounter)):
+			elif edge[start] in dict and edge[end] not in dict:
+				targetNode,targetType = retrieveNode(edge[end])
+				if targetNode:
+					addNode(edge[end],targetNode,targetType,nodeCounter)
+					nodeCounter = nodeCounter + 1
+			elif edge[start] not in dict and edge[end] not in dict:
+				target1Node,target1Type = retrieveNode(edge[start])
+				target2Node,target2Type = retrieveNode(edge[end])				
+				if target1Node and target2Node:
+					addNode(edge[start],target1Node,target1Type,nodeCounter)
+					nodeCounter = nodeCounter + 1
+					addNode(edge[end],target2Node,target2Type,nodeCounter)
 					nodeCounter = nodeCounter + 1
 
 			if edge[start] in dict and edge[end] in dict:
