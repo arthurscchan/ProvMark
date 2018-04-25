@@ -71,9 +71,7 @@ print ('End Control')
 
 print ('End of stage 1\n')
 end = time.time()
-
-with open('/tmp/time.log', 'a') as file:
-	file.write("%s, %s, s1, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
+t1 = end-start
 
 #Stage 2 - Transform to Clingo graph
 start = time.time()
@@ -89,9 +87,7 @@ for i in range(1,trial+1):
 	subprocess.call((stage2Command % (suffix,suffix)).split())
 print ('End of stage 2\n')
 end = time.time()
-
-with open('/tmp/time.log', 'a') as file:
-	file.write("%s, %s, s2, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
+t2 = end-start
 
 #Stage 3 - Generalize graph
 start = time.time()
@@ -114,9 +110,7 @@ subprocess.call((command % '').split())
 
 print ('End of stage 3\n')
 end = time.time()
-
-with open('/tmp/time.log', 'a') as file:
-	file.write("%s, %s, s3, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
+t3 = end-start
 
 #Stage 4 - Compare and generate benchmark
 start = time.time()
@@ -128,7 +122,8 @@ subprocess.call(stage4Command.split())
 
 print ('End of stage 4\n')
 end = time.time()
+t4 = end-start
 
 with open('/tmp/time.log', 'a') as file:
-	file.write("%s, %s, s4, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
+	file.write("%s, %s, s4, %.3f, %.3f, %.3f, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], t1, t2, t3, t4))
 
