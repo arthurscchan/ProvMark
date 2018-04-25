@@ -90,7 +90,7 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	subprocess.call(('camflow --track-file %s/test propagate' % stagePath).split())
 	os.system('%s/test' % stagePath)
 	subprocess.call(('camflow --track-file %s/test false' % stagePath).split())
-	time.sleep(3)
+	time.sleep(1)
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 	#Process provenance result into 1 json
@@ -115,10 +115,11 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	file.write(json.dumps(mergeNode(oldNode,result)))
 	file.close()
 
-	#Writing result to json
-	file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
-	file.write(json.dumps(result))
-	file.close()
+	if not isModel:
+		#Writing result to json
+		file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
+		file.write(json.dumps(result))
+		file.close()
 
 	try:
 		shutil.copyfile('/etc/camflowd.ini.backup','/etc/camflowd.ini')
