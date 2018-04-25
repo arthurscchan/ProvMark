@@ -125,5 +125,5 @@ end = time.time()
 t4 = end-start
 
 with open('/tmp/time.log', 'a') as file:
-	file.write("%s, %s, s4, %.3f, %.3f, %.3f, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], t1, t2, t3, t4))
+	file.write("%s, %s, %.3f, %.3f, %.3f, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], t1, t2, t3, t4))
 
