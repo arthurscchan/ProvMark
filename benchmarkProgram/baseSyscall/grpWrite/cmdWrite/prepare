@@ -29,7 +29,5 @@ echo "$CODE">$TMPFILE
 
 gcc -o test $2 $3 $TMPFILE
 
-touch test.txt
-
 rm "$TMPFILE"
 chown 1000:1000 *
