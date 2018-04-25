@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 import shutil
 import subprocess
 import configparser
@@ -56,6 +57,7 @@ stage2Handler = config[tool]['stage2handler']
 template = config[tool]['template']
 
 #Stage 1 - Start the tools and generate graph (neo4j / dot / provjson)
+start = time.time()
 print ('Starting stage 1...Generating provenance from native tools')
 
 os.system('sudo chmod +x %s/startTool/%s' % (baseDir, stage1Tool.split()[0]))
@@ -68,8 +70,13 @@ subprocess.call((stage1Command % (benchmarkDir, '-DCONTROL', 'control')).split()
 print ('End Control')
 
 print ('End of stage 1\n')
+end = time.time()
+
+with open('/tmp/time.log', 'a') as file:
+	file.write("%s, %s, s1, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
 
 #Stage 2 - Transform to Clingo graph
+start = time.time()
 print ('Starting stage 2...Transforming provenance result to Clingo graph')
 
 os.system('sudo chmod +x %s/genClingoGraph/%s' % (baseDir, stage2Handler.split()[0]))
@@ -81,8 +88,13 @@ for i in range(1,trial+1):
 	suffix = 'program-%d' % i
 	subprocess.call((stage2Command % (suffix,suffix)).split())
 print ('End of stage 2\n')
+end = time.time()
+
+with open('/tmp/time.log', 'a') as file:
+	file.write("%s, %s, s2, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
 
 #Stage 3 - Generalize graph
+start = time.time()
 print ('Starting stage 3...Generalizing graph from multiple trial')
 
 os.system('sudo chmod +x %s/processGraph/generalizeGraph.py' % baseDir)
@@ -101,8 +113,13 @@ for i in range(1,trial+1):
 subprocess.call((command % '').split())
 
 print ('End of stage 3\n')
+end = time.time()
+
+with open('/tmp/time.log', 'a') as file:
+	file.write("%s, %s, s3, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
 
 #Stage 4 - Compare and generate benchmark
+start = time.time()
 print ('Starting stage 4...Generating benchmark')
 
 os.system('sudo chmod +x %s/processGraph/findSubgraph.py' % baseDir)
@@ -110,3 +127,8 @@ stage4Command = 'sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-con
 subprocess.call(stage4Command.split())
 
 print ('End of stage 4\n')
+end = time.time()
+
+with open('/tmp/time.log', 'a') as file:
+	file.write("%s, %s, s4, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], end-start))
+
