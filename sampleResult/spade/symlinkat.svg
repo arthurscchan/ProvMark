@@ -26,8 +26,8 @@
 </g>
 <!-- e3335fe59bba0a748866cb47bcb4aa0e&#45;&gt;192284cafa68e10174d9d2722c36b11e -->
 <g id="edge1" class="edge"><title>e3335fe59bba0a748866cb47bcb4aa0e&#45;&gt;192284cafa68e10174d9d2722c36b11e</title>
-<path fill="none" stroke="green" d="M334.349,-73.0458C305.793,-68.644 257.782,-61.243 213.218,-54.3736"/>
-<polygon fill="green" stroke="green" points="213.593,-50.89 203.176,-52.8256 212.526,-57.8083 213.593,-50.89"/>
+<path fill="none" stroke="blue" d="M334.349,-73.0458C305.793,-68.644 257.782,-61.243 213.218,-54.3736"/>
+<polygon fill="blue" stroke="blue" points="213.593,-50.89 203.176,-52.8256 212.526,-57.8083 213.593,-50.89"/>
 <text text-anchor="middle" x="266" y="-87.6" font-family="Helvetica,sans-Serif" font-size="8.00">(source:syscall</text>
 <text text-anchor="middle" x="266" y="-78.6" font-family="Helvetica,sans-Serif" font-size="8.00">type:Used</text>
 <text text-anchor="middle" x="266" y="-69.6" font-family="Helvetica,sans-Serif" font-size="8.00">operation:link_read)</text>
@@ -44,16 +44,16 @@
 </g>
 <!-- 453c58356045905d20ef04da839e336c&#45;&gt;e3335fe59bba0a748866cb47bcb4aa0e -->
 <g id="edge2" class="edge"><title>453c58356045905d20ef04da839e336c&#45;&gt;e3335fe59bba0a748866cb47bcb4aa0e</title>
-<path fill="none" stroke="red" d="M531.438,-53.9753C483.386,-60.505 431.321,-67.5801 397.77,-72.1393"/>
-<polygon fill="red" stroke="red" points="396.994,-68.7125 387.556,-73.5272 397.936,-75.6488 396.994,-68.7125"/>
+<path fill="none" stroke="blue" d="M531.438,-53.9753C483.386,-60.505 431.321,-67.5801 397.77,-72.1393"/>
+<polygon fill="blue" stroke="blue" points="396.994,-68.7125 387.556,-73.5272 397.936,-75.6488 396.994,-68.7125"/>
 <text text-anchor="middle" x="461" y="-88.6" font-family="Helvetica,sans-Serif" font-size="8.00">(source:syscall</text>
 <text text-anchor="middle" x="461" y="-79.6" font-family="Helvetica,sans-Serif" font-size="8.00">type:WasGeneratedBy</text>
 <text text-anchor="middle" x="461" y="-70.6" font-family="Helvetica,sans-Serif" font-size="8.00">operation:link_write)</text>
 </g>
 <!-- 453c58356045905d20ef04da839e336c&#45;&gt;192284cafa68e10174d9d2722c36b11e -->
 <g id="edge3" class="edge"><title>453c58356045905d20ef04da839e336c&#45;&gt;192284cafa68e10174d9d2722c36b11e</title>
-<path fill="none" stroke="orange" d="M524.823,-27.6056C463.233,-23.656 387.713,-20.6187 320,-23 287.097,-24.1571 251.388,-26.3167 218.779,-28.644"/>
-<polygon fill="orange" stroke="orange" points="218.486,-25.156 208.766,-29.3707 218.993,-32.1376 218.486,-25.156"/>
+<path fill="none" stroke="blue" d="M524.823,-27.6056C463.233,-23.656 387.713,-20.6187 320,-23 287.097,-24.1571 251.388,-26.3167 218.779,-28.644"/>
+<polygon fill="blue" stroke="blue" points="218.486,-25.156 208.766,-29.3707 218.993,-32.1376 218.486,-25.156"/>
 <text text-anchor="middle" x="361" y="-43.6" font-family="Helvetica,sans-Serif" font-size="8.00">(source:syscall</text>
 <text text-anchor="middle" x="361" y="-34.6" font-family="Helvetica,sans-Serif" font-size="8.00">type:WasDerivedFrom</text>
 <text text-anchor="middle" x="361" y="-25.6" font-family="Helvetica,sans-Serif" font-size="8.00">operation:link)</text>
