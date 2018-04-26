@@ -60,7 +60,7 @@ suffix = sys.argv[7]
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'
 rule1 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S kill -S exit -S exit_group -S connect' 
-rule2 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -F success=1'
+rule2 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -S creat -F success=1'
 subprocess.check_output(rule0.split())
 subprocess.check_output(rule1.split())
 subprocess.check_output(rule2.split())
