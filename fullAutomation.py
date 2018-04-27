@@ -124,6 +124,6 @@ print ('End of stage 4\n')
 end = time.time()
 t4 = end-start
 
-with open('/tmp/time.log', 'a') as file:
+with open('%s/time.log' % workingDir, 'a') as file:
 	file.write("%s, %s, %.3f, %.3f, %.3f, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], t1, t2, t3, t4))
 

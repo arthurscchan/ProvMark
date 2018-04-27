@@ -1,6 +1,4 @@
-% Match graphs that have key-value pairs on nodes and edges
-% which can be ignored at a cost, and
-% labels on nodes and edges which must match exactly
+% Match graphs that have key-value pairs on nodes and edges which can be ignored at a cost, and labels on nodes and edges which must match exactly
 
 % Generate matches s.t. each node in n1 is matched to one node in n2.
 { match(X,Y) : n2(Y,_)} = 1 :- n1(X,_).
@@ -21,8 +19,6 @@
 % edge is mapped only if source and target are mapped
 :- e1(E1,X1,_,_), match(E1,E2), e2(E2,Y1,_,_), not match(X1,Y1).
 :- e1(E1,_,X2,_), match(E1,E2), e2(E2,_,Y2,_), not match(X2,Y2).
-
-
 
 #minimize { LC,X,K : label_cost(X,K,LC) }.
 
