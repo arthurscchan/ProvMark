@@ -9,33 +9,26 @@ import configparser
 
 #Print help menu
 def helpMenu(name):
-	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>, <Ouput File>]' % name)
+	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]' % name)
 	print ('Tools:\n\tspg:\tSPADE with Graphviz storage\n\tspn:\tSPADE with Neo4j storage\n\topu:\tOPUS\n\tcam:\tCamFlow')
 	print ('Tools Base Directory: Base directory of the chosen tool')
 	print ('Benchmark Directory: Base directory of the benchmark program')
 	print ('Trial:	Number of trial executed for each graph for generalization (Default: 2)')
-	print ('Output file default: ./result.clingo')
 
 #Prepare stage and working directory
-def prepareDir(stageDir, workingDir):
-	if os.path.exists(stageDir):
-		subprocess.call(['sudo','rm','-rf',stageDir])
-	if os.path.exists(workingDir):
-		subprocess.call(['sudo','rm','-rf',workingDir])
-	os.makedirs(stageDir)	
-	os.makedirs(workingDir)
+def prepareDir(directory):
+	if os.path.exists(directory):
+		subprocess.call(['sudo','rm','-rf',directory])
+	os.makedirs(directory)
 
 #Check Arguments
 trial = 2
 outFile = os.path.abspath('./result.clingo')
-if len(sys.argv) < 4 or len(sys.argv) > 6:
+if len(sys.argv) < 4 or len(sys.argv) > 5:
 	helpMenu(sys.argv[0])
 	quit()
 elif len(sys.argv) == 5:
 	trial = int(sys.argv[4])
-elif len(sys.argv) == 6:
-	trial = int(sys.argv[4])
-	outFile = os.path.abspath(sys.argv[5])
 
 if trial < 2:
 	trial = 2
@@ -45,8 +38,11 @@ toolBaseDir = os.path.abspath(sys.argv[2])
 benchmarkDir = os.path.abspath(sys.argv[3])
 stageDir = os.path.abspath('%s/stage/' % baseDir)
 workingDir = os.path.abspath('%s/working/' % baseDir)
+outDir = os.path.abspath('%s/result/' % baseDir)
 
-prepareDir(stageDir, workingDir)
+prepareDir(stageDir)
+prepareDir(workingDir)
+prepareDir(outDir)
 
 #Parse Config File
 config = configparser.ConfigParser()
@@ -112,12 +108,15 @@ print ('End of stage 3\n')
 end = time.time()
 t3 = end-start
 
+shutil.copyfile('%s/general.clingo-program' % workingDir, '%s/general.clingo-program' % outDir)
+shutil.copyfile('%s/general.clingo-control' % workingDir, '%s/general.clingo-control' % outDir)
+
 #Stage 4 - Compare and generate benchmark
 start = time.time()
 print ('Starting stage 4...Generating benchmark')
 
 os.system('sudo chmod +x %s/processGraph/findSubgraph.py' % baseDir)
-stage4Command = 'sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-control general.clingo-program %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), outFile)
+stage4Command = 'sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-control general.clingo-program %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), ('%s/result.clingo' % outDir))
 subprocess.call(stage4Command.split())
 
 print ('End of stage 4\n')
