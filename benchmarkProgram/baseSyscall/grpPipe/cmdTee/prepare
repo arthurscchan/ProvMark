@@ -1,8 +1,9 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 -a "$#" -ne 2 -a "$#" -ne 3 ]
-then 
-        echo "Usage: "$0" <Stage Path> [GCC_MACRO] [--static]"
+if [ "$#" -le 1 ]
+then
+    	echo "Usage: "$0" <Stage Path> [GCC_MACRO]"
+        echo "Sample: "$0" ./stage -DPROGRAM --static"
         exit 1
 fi
 
@@ -27,7 +28,7 @@ EOF
 TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
-gcc -o tee $2 $3 $TMPFILE
+gcc -o tee ${*:2}  $TMPFILE
 echo -e "#!/bin/bash\necho A | `realpath tee` | echo " > test
 
 rm "$TMPFILE"

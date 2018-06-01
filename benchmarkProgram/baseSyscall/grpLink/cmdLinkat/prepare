@@ -1,8 +1,9 @@
 #!/bin/bash
 
-if [ "$#" -ne 1 -a "$#" -ne 2 -a "$#" -ne 3 ]
+if [ "$#" -le 1 ]
 then
-        echo "Usage: "$0" <Stage Path> [GCC_MARCO] [--static]"
+    	echo "Usage: "$0" <Stage Path> [GCC_MACRO]"
+        echo "Sample: "$0" ./stage -DPROGRAM --static"
         exit 1
 fi
 
@@ -27,7 +28,7 @@ EOF
 TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
-gcc -o test $2 $3 $TMPFILE
+gcc -o test ${*:2} $TMPFILE
 
 touch test.txt
 echo "TEST" > test.txt
