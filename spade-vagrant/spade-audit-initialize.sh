@@ -9,6 +9,7 @@ sudo apt-get install -y oracle-java8-set-default
 sudo apt-get install -y git libaudit-dev auditd libfuse-dev fuse pkg-config lsof uthash-dev
 git clone https://github.com/ashish-gehani/SPADE.git
 cd SPADE
+git checkout tags/tc-e3
 ./configure
 make
 sudo chmod ug+s `which auditctl`
@@ -26,4 +27,5 @@ sudo apt-get install -y cypher-shell
 sudo apt-get install -y realpath
 
 ## ProvMark stuff
+cd ~
 git clone https://github.com/arthurscchan/ProvMark.git 
