@@ -145,9 +145,14 @@ if trial < 2:
 stagePath = os.path.abspath(sys.argv[1])
 workingPath = os.path.abspath(sys.argv[2])
 progPath = os.path.abspath(sys.argv[3])
-gccMacro = sys.argv[4]
+macroOpt = sys.argv[4]
 camflowPath = os.path.abspath(sys.argv[5])
 suffix = sys.argv[6]
+
+#Process GCC Macro
+gccMacro = ""
+for item in macroOpt.split(','):
+        gccMacro = "%s -D%s" %(gccMacro,item)
 
 #Create Model Data
 subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())

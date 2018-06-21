@@ -56,9 +56,14 @@ stagePath = os.path.abspath(sys.argv[2])
 workingPath = os.path.abspath(sys.argv[3])
 isNeo4j = (sys.argv[1] == '-n')
 progPath = os.path.abspath(sys.argv[4])
-gccMacro = sys.argv[5]
+macroOpt = sys.argv[5]
 spadePath = os.path.abspath(sys.argv[6])
 suffix = sys.argv[7]
+
+#Process GCC Macro
+gccMacro = ""
+for item in macroOpt.split(','):
+	gccMacro = "%s -D%s" %(gccMacro,item)
 
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'

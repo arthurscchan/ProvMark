@@ -36,6 +36,7 @@ if (fork()) {int id=open("`realpath $1`/test.txt", O_RDWR); char buf[1]; int i;
 	for (i=0;i<WRITE;i++) {
 		#ifdef RANDOM
 		sleep(rand()%20);
+		#endif
 		#ifdef PROGRAM
 		write(id, "TEST", 1);
 		#endif
