@@ -11,7 +11,10 @@ def startSpade(workingPath, suffix, loopCount):
 	global isNeo4j, spadePath
 
 	#Initialize Config File
-	shutil.copyfile('%s/cfg/spade.config' % spadePath, '%s/cfg/spade.config.backup' % spadePath)
+	try:
+		shutil.copyfile('%s/cfg/spade.config' % spadePath, '%s/cfg/spade.config.backup' % spadePath)
+	except:
+		pass
 	file = open('%s/cfg/spade.config' % spadePath, 'w')
 	file.write('add reporter Audit inputLog=%s/input.log arch=64 fileIO=true\n' % workingPath)
 	if isNeo4j:

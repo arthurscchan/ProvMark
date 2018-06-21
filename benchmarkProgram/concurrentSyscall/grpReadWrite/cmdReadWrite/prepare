@@ -3,7 +3,7 @@
 if [ "$#" -le 1 ]
 then 
         echo "Usage: "$0" <Stage Path> [GCC_MACRO]"
-	echo "Sample: "$0" ./stage -DREAD=3 -DWRITE=4 -DPROGRAM --static"
+	echo "Sample: "$0" ./stage -DREAD=3 -DWRITE=4 -DRANDOM -DPROGRAM --static"
         exit 1
 fi
 
@@ -21,7 +21,6 @@ int main() {int id=open("`realpath $1`/test.txt", O_RDWR); int rn=0; char buf[1]
 for (i=0;i<READ;i++) {
 #ifdef PROGRAM
 rn=read(id, buf, 1);
-printf("T1");
 #endif
 if (rn==-1) break;
 }
@@ -30,7 +29,6 @@ if (rn==-1) break;
 for (i=0;i<WRITE;i++) {
 #ifdef PROGRAM
 rn=write(id, "TEST", 1);
-printf("T2");
 #endif
 if (rn==-1) break;
 }

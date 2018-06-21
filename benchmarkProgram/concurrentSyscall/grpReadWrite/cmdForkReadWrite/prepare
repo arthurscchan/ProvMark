@@ -1,0 +1,58 @@
+#!/bin/bash
+
+if [ "$#" -le 1 ]
+then 
+        echo "Usage: "$0" <Stage Path> [GCC_MACRO]"
+	echo "Sample: "$0" ./stage -DREAD=3 -DWRITE=4 -DRANDOM -DPROGRAM --static"
+        exit 1
+fi
+
+cd "$1"
+
+#Clean directory
+ls | grep -v 'prepare' | xargs rm -f
+
+#Prepare Benchmark Program
+CODE=$(cat <<EOF
+#include <time.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+int main() { srand(time(NULL));
+if (fork()) {int id=open("`realpath $1`/test.txt", O_RDWR); char buf[1]; int i;
+	#ifdef READ
+	for (i=0;i<READ;i++) {
+		#ifdef RANDOM
+		sleep(rand()%20);
+		#endif
+		#ifdef PROGRAM
+		read(id, buf, 1);
+		#endif
+	}
+	#endif
+	close(id);
+} else {int id=open("`realpath $1`/test.txt", O_RDWR); int i;
+	#ifdef WRITE
+	for (i=0;i<WRITE;i++) {
+		#ifdef RANDOM
+		sleep(rand()%20);
+		#ifdef PROGRAM
+		write(id, "TEST", 1);
+		#endif
+	}
+	#endif
+	close(id);
+}}
+EOF
+)
+
+TMPFILE=$(mktemp -t tmp.XXXXXX.c)
+echo "$CODE">$TMPFILE
+
+gcc -o test ${*:2} $TMPFILE
+
+touch test.txt
+echo "TEST" > test.txt
+
+rm "$TMPFILE"
+chown 1000:1000 *
