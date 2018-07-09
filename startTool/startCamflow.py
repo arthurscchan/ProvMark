@@ -97,13 +97,16 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 	#Process provenance result into 1 json
-	file = open('%s/audit.log' % workingPath, 'r')
-	next(file)
 	result={}
+	try:
+		file = open('%s/audit.log' % workingPath, 'r')
+		next(file)
+		for line in file:
+			result = mergeJson(result, line.rstrip())
+		file.close()
+	except Exception:
+		pass
 
-	for line in file:
-		result = mergeJson(result, line.rstrip())
-	file.close()
 	os.remove('%s/audit.log' % workingPath)
 
 	#Write node to model (camflow will not republish node)
