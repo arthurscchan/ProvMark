@@ -104,10 +104,9 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 		for line in file:
 			result = mergeJson(result, line.rstrip())
 		file.close()
+		os.remove('%s/audit.log' % workingPath)
 	except Exception:
 		pass
-
-	os.remove('%s/audit.log' % workingPath)
 
 	#Write node to model (camflow will not republish node)
 	if os.path.exists('/tmp/.camflowModel'):
