@@ -47,7 +47,7 @@ Vagrant.configure(2) do |config|
    # Display the VirtualBox GUI when booting the machine
    vb.gui = true
    # Customize the amount of memory on the VM:
-   vb.memory = 2048
+   vb.memory = 4096
    # Customize CPU cap
    vb.customize ["modifyvm", :id, "--cpuexecutioncap", "70"]
    # Customize number of CPU
@@ -72,7 +72,7 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: <<-SHELL
     sudo dnf -y install curl
 		curl -s https://packagecloud.io/install/repositories/camflow/provenance/script.rpm.sh | sudo bash
-		sudo dnf -y install camflow
+		sudo dnf -y install camflow-0.7.4-1
     sudo dnf -y install camflow --allowerasing
 		sudo systemctl enable camconfd.service
 		sudo systemctl enable camflowd.service
