@@ -11,6 +11,7 @@ then
 fi
 
 sudo mkdir finalResult > /dev/null 2>&1
+row=""
 for i in `ls benchmarkProgram/baseSyscall`
 do
 	for j in `ls benchmarkProgram/baseSyscall/$i`
@@ -42,7 +43,7 @@ do
 
 			if [ "$3" = "rh" ]
 			then
-				row=$row$(cat template/row.html | sed "s/%%%SYSCALL%%%/${syscall}/g")				
+				row=$row$(cat template/row.html | sed "s|@@@SYSCALL@@@|${syscall}|g")
 			fi
 		fi
 
@@ -52,8 +53,8 @@ done
 
 if [ "$3" = "rh" ]
 then
-	cp template/base.html finalResult/index.html
-	sed -i "s/%%%TABLEROW%%%/${row}/g" finalResult/index.html
+	html=$(sudo cat template/base.html)
+        echo "${html%@@@TABLEROW@@@*} $row ${html##*@@@TABLEROW@@@}" | sudo tee finalResult/index.html > /dev/null
 fi
 
 echo "Process done. Result in finalResult directory."
