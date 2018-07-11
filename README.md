@@ -33,6 +33,6 @@ The content inside the directory Clingo is an external work provided by Universi
 
 # Documentation
 
-- [Installation] (documentation/install.md)
-- [Configuration] (documentation/config.md)
-- [Usage] (documentation/usage.md)
+- [Installation](./documentation/install.md)
+- [Configuration](./documentation/config.md)
+- [Usage](./documentation/usage.md)

@@ -4,9 +4,9 @@ The major language used in ProvMark is Python3. So you need to ensure you have p
 Our tools basically support all unix-liked operating system.
 As our tools aim to generate benchmark for different provenance collecting tools, we assumed that you have already install the provenance collecting tools and their repsective dependency properly before choosing that tools for the ProvMark system. The installation guide, dependencies and details documentations of the three currently supported tools can be found in the follow links.
 
-- SPADE [https://github.com/ashish-gehani/SPADE]
-- OPUS [https://www.cl.cam.ac.uk/research/dtg/fresco/opus/]
-- CamFlow [http://camflow.org/]
+- [SPADE](https://github.com/ashish-gehani/SPADE)
+- [OPUS](https://www.cl.cam.ac.uk/research/dtg/fresco/opus/)
+- [CamFlow](http://camflow.org/)
 
 # ProvMark Installation
 
@@ -23,7 +23,9 @@ In the vagrant folder, we also prepared the vagrant script for the three provena
 ## SPADEv2 / SPADEv3
 ...
 cd ./vagrant/spadev2 
-# cd ./vagrant/spadev3
+or
+cd ./vagrant/spadev3
+
 vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant ssh
