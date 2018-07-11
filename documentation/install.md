@@ -18,37 +18,41 @@ git clone https://github.com/arthurscchan/ProvMark.git
 
 # Vagrant File
 
+
+## Installation
+
 In the vagrant folder, we also prepared the vagrant script for the three provenance collecting tools currently supported. If you have vagrant and virtual box installed in your system. You can follow the steps below to build up a virtual environment which everything (tools and ProvMark) are installed.
 
 ## SPADEv2 / SPADEv3
-...
-cd ./vagrant/spadev2 
-or
-cd ./vagrant/spadev3
 
+```
+cd ./vagrant/spadev2 
+# cd ./vagrant/spadev3
 vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant ssh
-...
+```
 
 ## OPUS
-...
+
+```
 cd ./vagrant/spadev2
 vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant ssh
-...
+```
 
 ## CamFlow
-...
+
+```
 cd ./vagrant/camflow
 vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant halt
 vagrant up
 vagrant ssh
-...
+```
 
 After the above steps, you should be given a ssh connection connects to the virtual machine which you can start ProvMark on your chosen tools directly.
-
+Note: the installation process can take an extended amount of time depending on your configuration.
 
