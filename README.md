@@ -1,45 +1,6 @@
 # ProvMark
 
-Usage: 
-
-~~~~
-./fullAutomation <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>, <Ouput File>]
-~~~~
-
-Example for generating benchmark for syscall create using SPADE with Graphviz storage:
-~~~~
-./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/grpCreat/cmdCreat 2 ./result.clingo
-~~~~
-
-#### Tools:
-- spg:    SPADE with Graphviz storage
-- spn:    SPADE with Neo4j storage
-- opu:    OPUS
-- cam:    CamFlow
-
-#### Tools Base Directory:
-- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools.
-
-#### Benchmark Directory:
-- Base directory of the benchmark program
-- Point the script to the syscall choice for the benchmarking process
-
-#### Trial (Default: 2):
-- Number of trial executed for each graph for generalization
-- More trial will result in longer processing time, but provide a more accurate result as multiple trial can help to filter out uncertainty and unrelated elements and noise
-
-#### Output file (Dafault: ./result.clingo):
-- Location of the output file in clingo graph format
-
-# Provenance Collecting Tools supported
-We assumed that you have already install the provenance collecting tools and their repsective dependency properly before choosing that tools for the ProvMark system. The installation guide, dependencies and details documentations of the three tools can be found in the follow links.
-
-- SPADE [https://github.com/ashish-gehani/SPADE]
-- OPUS [https://www.cl.cam.ac.uk/research/dtg/fresco/opus/]
-- CamFlow [http://camflow.org/]
-
-# Use of Clingo
-The content inside the directory Clingo is an external work provided by University of Potsdam as part of the Potassco. It is distributed under MIT License and the developer remain their right for the distribution of the binary and code. We provide a local copy of the compiled version 5.2.1 for convenience only. You should always search for the original code and binary of Clingo from the original developer. Here is a link to the original developer [http://potassco.sourceforge.net/]
+ProvMark is a fully automated system that try to generate benchmark from provenance information collected by different provenance collection tools.
 
 # System Description
 
@@ -55,22 +16,23 @@ In this stage, multiple clingo graph descirbing the multiple trial of the same p
 ## Stage 4 Generating benchmark of chosen syscall for chosen provenance collecting tool
 This is the last stage of the benchmarking system execution. In this stage, the two generalized graph will be compared to each other. As we assume that the chosen syscall is always a few steps or command more than the control program execution and they are both executed based on a same stage environment with the same language. So the additional elements in the generalized syscall graph shows the patterns that can be used as a benchmark to identify this syscall when we are using the chosen provenance collecting tools. All those addtional branchesand properties will be identified and summarized in the result file in clingo format. Currently, this is the end of the full system. The clingo format graph can be transformed into other directed graph format if needed in the future.
 
-# Result File Format
+# Folder Structure
+- benchmarkProgram: Contains sample c program for the collection of provenance information on different syscall
+- clingo: Contains the clingo code
+- config: Contains the configuration profile of different tools choice for stage 1 and stage 2
+- documentation: Contains the documentation for ProvMark
+- genClingoGraph: Contains code to transform graph format
+- processGraph: Contains code to handle graph comparison and generalization
+- sampleResult: Contains sample benchmark result on out trial
+- startTool: Contains tools to handle provenance collecting tools currently supported and retrieve result from them
+- template: Contains html template for result generation
+- vagrant: Contains vagrant file for those provenance collecting tools currently supported
 
-- Node
+# Use of Clingo
+The content inside the directory Clingo is an external work provided by University of Potsdam as part of the Potassco. It is distributed under MIT License and the developer remain their right for the distribution of the binary and code. We provide a local copy of the compiled version 5.2.1 for convenience only. You should always search for the original code and binary of Clingo from the original developer. Here is a link to the original developer [http://potassco.sourceforge.net/]
 
-~~~~
-n<graph identifier>(<node identifier>,<type>)
-~~~~
+# Documentation
 
-- Edge (Directed edge)
-
-~~~~
-e<graph identifier>(<edge identifier>, <start node identifier>, <end node identifier>, <type>)
-~~~~
-
-- Properties
-
-~~~~
-l<graph identifier>(<node / edge identifier>, <key>, <value>)
-~~~~
+- [Installation] (documentation/install.md)
+- [Configuration] (documentation/config.md)
+- [Usage] (documentation/usage.md)
