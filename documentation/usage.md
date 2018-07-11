@@ -35,6 +35,27 @@ Example for generating benchmark for syscall create using SPADE with Graphviz st
 - general.clingo-control: generalized background graph
 - result.clingo: final benchmark graph
 
+#### Output Clingo File Format
+
+- Node
+
+~~~~
+n<graph identifier>(<node identifier>,<type>)
+~~~~
+
+- Edge (Directed edge)
+
+~~~~
+e<graph identifier>(<edge identifier>, <start node identifier>, <end node identifier>, <type>)
+~~~~
+
+- Properties
+
+~~~~
+l<graph identifier>(<node / edge identifier>, <key>, <value>)
+~~~~
+
+
 ## Batch Execution
 
 Auto execute ProvMark for all syscall currently supported
