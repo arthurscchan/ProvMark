@@ -25,7 +25,7 @@ In the vagrant folder, we also prepared the vagrant script for the three provena
 
 ## SPADEv2 / SPADEv3
 
-```
+``` shell
 cd ./vagrant/spadev2 
 # cd ./vagrant/spadev3
 vagrant plugin install vagrant-vbguest
@@ -35,7 +35,7 @@ vagrant ssh
 
 ## OPUS
 
-```
+``` shell
 cd ./vagrant/spadev2
 vagrant plugin install vagrant-vbguest
 vagrant up
@@ -44,7 +44,7 @@ vagrant ssh
 
 ## CamFlow
 
-```
+``` shell
 cd ./vagrant/camflow
 vagrant plugin install vagrant-vbguest
 vagrant up
