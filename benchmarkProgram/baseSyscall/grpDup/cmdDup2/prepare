@@ -1,4 +1,4 @@
-x#!/bin/bash
+#!/bin/bash
 
 if [ "$#" -le 1 ]
 then
