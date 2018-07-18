@@ -19,7 +19,11 @@ CODE=$(cat <<EOF
 int main() {int rn=0;
 #ifdef PROGRAM
 rn=setresgid(1000,1000,1000);
-#endFILE=$(mktemp -t tmp.XXXXXX.c)
+#endif
+return (rn==-1);}
+EOF
+)
+TMPFILE=$(mktemp -t tmp.XXXXXX.c)
 echo "$CODE">$TMPFILE
 
 gcc -o test ${*:2} $TMPFILE
