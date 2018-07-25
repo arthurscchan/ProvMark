@@ -12,6 +12,11 @@ Example for generating benchmark for syscall create using SPADE with Graphviz st
 ./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
 ~~~~
 
+Example for CamFlow (note that the "tool base directory" is unused and arbitrary in this case):
+~~~~
+./fullAutomation.py cam . ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
+~~~~
+
 #### Currently Supported Tools:
 - spg:    SPADE with Graphviz storage
 - spn:    SPADE with Neo4j storage
@@ -19,7 +24,7 @@ Example for generating benchmark for syscall create using SPADE with Graphviz st
 - cam:    CamFlow
 
 #### Tools Base Directory:
-- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools.
+- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools; ignored for CamFlow
 
 #### Benchmark Directory:
 - Base directory of the benchmark program
@@ -70,6 +75,11 @@ Example for batch execution of spade with Graphviz storage and generate html web
 ./runTests.sh spg /path/to/spade/base/directory rh
 ~~~~
 
+Example for batch execution of CamFlow (again, the base directory is ignored in this case):
+~~~~
+./runTests.sh cam . rh
+~~~~
+
 #### Currently Supported Tools:
 - spg:    SPADE with Graphviz storage
 - spn:    SPADE with Neo4j storage
@@ -77,7 +87,7 @@ Example for batch execution of spade with Graphviz storage and generate html web
 - cam:    CamFlow
 
 #### Tools Base Directory:
-- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting to$
+- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system with a specific provenance collecting tool; ignored for CamFlow
 
 #### Result Type:
 - rb: benchmark only

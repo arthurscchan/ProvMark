@@ -36,11 +36,13 @@ vagrant ssh
 ## OPUS
 
 ``` shell
-cd ./vagrant/spadev2
+cd ./vagrant/opus
 vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant ssh
 ```
+
+To run OPUS, you also need a source or binary distribution for hte OPUS system itself, which is not currently available online.  Please contact the authors (http://www.cl.cam.ac.uk/research/dtg/fresco/opus/).
 
 ## CamFlow
 
@@ -52,6 +54,8 @@ vagrant halt
 vagrant up
 vagrant ssh
 ```
+It is necessary to reboot so that the camflow-enabled kernel will be used.  This kernel should be highlighted as the first entry by the boot loader but if not, it should be selected.
+
 
 After the above steps, you should be given a ssh connection connects to the virtual machine which you can start ProvMark on your chosen tools directly.
 Note: the installation process can take an extended amount of time depending on your configuration.
