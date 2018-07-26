@@ -68,7 +68,7 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	try:
 		shutil.copyfile('/etc/camflowd.ini','/etc/camflowd.ini.backup')
 		file = open('/etc/camflowd.ini','w')
-		file.write('[general]\noutput=log\nlog=%s/audit.log' % workingPath)
+		file.write('[general]\noutput=log\n[log]\npath=%s/audit.log' % workingPath)
 		file.close()
 	except IOError:
 		pass
