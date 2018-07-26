@@ -26,14 +26,16 @@ for i in range(4,len(sys.argv)-1):
 	graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[i], sys.argv[i+1], clingoCode, True)
 
 	#Generalize properties
-	tempDict = dict()
-	for graph1ID in map:
-		if graph1ID in result:
-			generalizedProps = compareProps(result[graph1ID], graph2Props[map[graph1ID]], True)
-		else:
-			generalizedProps = compareProps(graph1Props[graph1ID], graph2Props[map[graph1ID]], True)
-		tempDict[map[graph1ID]] = generalizedProps
-	result = tempDict
+	if map:
+		for graph1ID in map:
+			if graph1ID in result:
+				generalizedProps = compareProps(result[graph1ID], graph2Props[map[graph1ID]], True)
+			else:
+				generalizedProps = compareProps(graph1Props[graph1ID], graph2Props[map[graph1ID]], True)
+			tempDict[map[graph1ID]] = generalizedProps
+		result = tempDict
+	else:
+		result = graph2Props
 
 #Transfer result to Clingo graph format
 resultString = dict2Clingo(graph2Node, graph2Edge, result, suffix)

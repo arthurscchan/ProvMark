@@ -4,32 +4,32 @@ import os
 import sys
 import json
 
-def retrieveNode(identifier):
-	nodeType = ["activity","entity","agent"]
-
-	file = open("/tmp/.camflowModel", "r")
-	jsonString = next(file)
-	file.close()
-	obj = json.loads(jsonString)
-
-	targetNode = None
-	targetType = None
-	
-	for type in nodeType:
-		if type in obj:
-			if identifier in obj[type]:
-				targetNode = obj[type][identifier]
-				targetType = type
-	return targetNode,targetType
+#def retrieveNode(identifier):
+#	nodeType = ["activity","entity","agent"]
+#
+#	file = open("/tmp/.camflowModel", "r")
+#	jsonString = next(file)
+#	file.close()
+#	obj = json.loads(jsonString)
+#
+#	targetNode = None
+#	targetType = None
+#	
+#	for type in nodeType:
+#		if type in obj:
+#			if identifier in obj[type]:
+#				targetNode = obj[type][identifier]
+#				targetType = type
+#	return targetNode,targetType
 
 #Recover missing node
-def addNode(identifier,targetNode,targetType,counter):
-	global suffix, nodeRec, label, dict
-
-	dict[identifier] = counter
-	nodeRec += "n%s(n%d,\"%s\").\n" % (suffix, counter, targetType)
-	for labelIdentifier in targetNode:
-		label += "l%s(n%d,\"%s\",\"%s\").\n" % (suffix, counter, labelIdentifier, targetNode[labelIdentifier])
+#def addNode(identifier,targetNode,targetType,counter):
+#	global suffix, nodeRec, label, dict
+#
+#	dict[identifier] = counter
+#	nodeRec += "n%s(n%d,\"%s\").\n" % (suffix, counter, targetType)
+#	for labelIdentifier in targetNode:
+#		label += "l%s(n%d,\"%s\",\"%s\").\n" % (suffix, counter, labelIdentifier, targetNode[labelIdentifier])
 
 #Generate Clingo graph string for nodes
 def handleNode(type):
@@ -54,24 +54,24 @@ def handleEdge(type, start, end):
 			edge = jsonObject[type][edgeIdentifier]
 
 			#Recover missing node from model
-			if edge[start] not in dict and edge[end] in dict:
-				targetNode,targetType = retrieveNode(edge[start])
-				if targetNode:
-					addNode(edge[start],targetNode,targetType,nodeCounter)
-					nodeCounter = nodeCounter + 1
-			elif edge[start] in dict and edge[end] not in dict:
-				targetNode,targetType = retrieveNode(edge[end])
-				if targetNode:
-					addNode(edge[end],targetNode,targetType,nodeCounter)
-					nodeCounter = nodeCounter + 1
-			elif edge[start] not in dict and edge[end] not in dict:
-				target1Node,target1Type = retrieveNode(edge[start])
-				target2Node,target2Type = retrieveNode(edge[end])				
-				if target1Node and target2Node:
-					addNode(edge[start],target1Node,target1Type,nodeCounter)
-					nodeCounter = nodeCounter + 1
-					addNode(edge[end],target2Node,target2Type,nodeCounter)
-					nodeCounter = nodeCounter + 1
+#			if edge[start] not in dict and edge[end] in dict:
+#				targetNode,targetType = retrieveNode(edge[start])
+#				if targetNode:
+#					addNode(edge[start],targetNode,targetType,nodeCounter)
+#					nodeCounter = nodeCounter + 1
+#			elif edge[start] in dict and edge[end] not in dict:
+#				targetNode,targetType = retrieveNode(edge[end])
+#				if targetNode:
+#					addNode(edge[end],targetNode,targetType,nodeCounter)
+#					nodeCounter = nodeCounter + 1
+#			elif edge[start] not in dict and edge[end] not in dict:
+#				target1Node,target1Type = retrieveNode(edge[start])
+#				target2Node,target2Type = retrieveNode(edge[end])				
+#				if target1Node and target2Node:
+#					addNode(edge[start],target1Node,target1Type,nodeCounter)
+#					nodeCounter = nodeCounter + 1
+#					addNode(edge[end],target2Node,target2Type,nodeCounter)
+#					nodeCounter = nodeCounter + 1
 
 			if edge[start] in dict and edge[end] in dict:
 				edgeRec += "e%s(e%d,n%d,n%d,\"%s\").\n" %(suffix, counter, dict[edge[start]], dict[edge[end]], type)
