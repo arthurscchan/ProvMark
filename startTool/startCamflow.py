@@ -74,24 +74,28 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 		pass
 
 	#Clean camflow working history
-	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	if os.path.exists('/tmp/.camflowModel'):
-		try:
-			mtime = os.path.getmtime('/tmp/.camflowModel')
-			with open('/proc/uptime', 'r') as f:
-				sec = float (f.readline().split()[0])
-			if (mtime < (time.time() - sec)):
-				os.remove('/tmp/.camflowModel' % workingPath)
-		except OSError:
-			pass
+#	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+#	if os.path.exists('/tmp/.camflowModel'):
+#		try:
+#			mtime = os.path.getmtime('/tmp/.camflowModel')
+#			with open('/proc/uptime', 'r') as f:
+#				sec = float (f.readline().split()[0])
+#			if (mtime < (time.time() - sec)):
+#				os.remove('/tmp/.camflowModel' % workingPath)
+#		except OSError:
+#			pass
 
 	#Capture provenance
 	subprocess.call('service camflowd start'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 #	subprocess.call('camflow --opaque-file /usr/bin/rm true'.split())
 	subprocess.call(('camflow --track-file %s/test propagate' % stagePath).split())
+	subprocess.call('camflow --duplicate true'.split())
 	subprocess.call('camflow -e true'.split())
+	subprocess.call('camflow -a true'.split())
 	os.system('%s/test' % stagePath)
+	subprocess.call('camflow -a false'.split())
 	subprocess.call('camflow -e false'.split())
+	subprocess.call('camflow --duplicate false'.split())
 	subprocess.call(('camflow --track-file %s/test false' % stagePath).split())
 	time.sleep(1)
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -109,16 +113,16 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 		pass
 
 	#Write node to model (camflow will not republish node)
-	if os.path.exists('/tmp/.camflowModel'):
-		file = open('/tmp/.camflowModel', 'r')
-		line = file.read().rstrip()
-		oldNode = json.loads(line)
-		file.close()
-	else:
-		oldNode = dict()
-	file = open('/tmp/.camflowModel', 'w')
-	file.write(json.dumps(mergeNode(oldNode,result)))
-	file.close()
+#	if os.path.exists('/tmp/.camflowModel'):
+#		file = open('/tmp/.camflowModel', 'r')
+#		line = file.read().rstrip()
+#		oldNode = json.loads(line)
+#		file.close()
+#	else:
+#		oldNode = dict()
+#	file = open('/tmp/.camflowModel', 'w')
+#	file.write(json.dumps(mergeNode(oldNode,result)))
+#	file.close()
 
 	if not isModel:
 		#Writing result to json
@@ -157,8 +161,8 @@ for item in macroOpt.split(','):
         gccMacro = "%s -D%s" %(gccMacro,item)
 
 #Create Model Data
-subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
-startCamflow(stagePath, workingPath, '', True)
+#subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
+#startCamflow(stagePath, workingPath, '', True)
 
 for i in range(1, trial+1):
 	#Prepare the benchmark program
