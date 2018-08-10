@@ -142,7 +142,7 @@ def processGraph(graph1Path, graph2Path, clingoCode, isMapping):
 
 	#Clingo Operation
 	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
-	pipe = subprocess.Popen(['../clingo/clingo'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+	pipe = subprocess.Popen(['../clingo/clingo', '--time-limit=30'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 	mapResult = pipe.communicate(input=inputString.encode())[0]
 	if isMapping:
 		map = decodeClingoResult(mapResult.decode())
