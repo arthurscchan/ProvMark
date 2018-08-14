@@ -27,6 +27,7 @@ for i in range(4,len(sys.argv)-1):
 
 	#Generalize properties
 	if map:
+		tempDict = {}
 		for graph1ID in map:
 			if graph1ID in result:
 				generalizedProps = compareProps(result[graph1ID], graph2Props[map[graph1ID]], True)
