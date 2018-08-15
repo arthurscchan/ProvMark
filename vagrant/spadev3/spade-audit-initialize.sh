@@ -25,6 +25,7 @@ sudo apt-get update
 sudo apt-get install -y neo4j
 sudo apt-get install -y cypher-shell
 sudo apt-get install -y realpath
+sudo apt-get install -y trace-cmd
 
 ## ProvMark stuff
 cd ~

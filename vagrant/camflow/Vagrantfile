@@ -83,7 +83,7 @@ Vagrant.configure(2) do |config|
     gem install json rgl mqtt rake bundler
 
     # ProvMark specific
-    sudo yum install glibc-static -y
+    sudo yum install glibc-static trace-cmd -y
 
     sudo rm -rf /tmp/.camflowModel
     git clone https://github.com/arthurscchan/ProvMark.git

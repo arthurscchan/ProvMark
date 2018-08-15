@@ -9,7 +9,7 @@ sudo apt-get install -y oracle-java8-set-default
 sudo apt-get install -y git libaudit-dev auditd libfuse-dev fuse pkg-config lsof uthash-dev
 git clone https://github.com/ashish-gehani/SPADE.git
 cd SPADE
-git checkout tags/tc-e3
+git checkout tags/pm-v2
 ./configure
 make
 sudo chmod ug+s `which auditctl`
@@ -25,6 +25,7 @@ sudo apt-get update
 sudo apt-get install -y neo4j
 sudo apt-get install -y cypher-shell
 sudo apt-get install -y realpath
+sudo apt-get install -y trace-cmd
 
 ## ProvMark stuff
 cd ~
