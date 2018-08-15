@@ -20,6 +20,7 @@ def prepareDir(directory):
 	if os.path.exists(directory):
 		subprocess.call(['sudo','rm','-rf',directory])
 	os.makedirs(directory)
+	os.chown(directory,1000,1000)
 
 #Check Arguments
 trial = 2
