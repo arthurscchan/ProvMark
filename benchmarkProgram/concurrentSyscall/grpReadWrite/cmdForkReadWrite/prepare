@@ -18,6 +18,7 @@ CODE=$(cat <<EOF
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/wait.h>
 int main() { srand(time(NULL));
 if (fork()) {int id=open("`realpath $1`/test.txt", O_RDWR); char buf[1]; int i;
 	#ifdef READ
@@ -28,6 +29,7 @@ if (fork()) {int id=open("`realpath $1`/test.txt", O_RDWR); char buf[1]; int i;
 		#ifdef PROGRAM
 		read(id, buf, 1);
 		#endif
+		wait(NULL);
 	}
 	#endif
 	close(id);
