@@ -7,8 +7,8 @@ import subprocess
 from clingoFunction import *
 
 #Check for number graph
-if len(sys.argv) < 6:
-	print ("Usage: %s <Working Directory> <Clingo Code Template File> <suffix> <Graph1> <Graph2> [<Graph3> ...]" % sys.argv[0])
+if len(sys.argv) < 5:
+	print ("Usage: %s <Working Directory> <Clingo Code Template File> <suffix> <Graph1> [<Graph2> <Graph3> ...]" % sys.argv[0])
 	quit()
 
 workingDir = os.path.abspath(sys.argv[1])
@@ -21,6 +21,11 @@ file.close()
 result = dict()
 
 os.chdir(workingDir)
+
+if len(sys.argv) == 5:
+	#Only one graph provided
+	os.rename(sys.argv[4],"%s/general.clingo-%s" % (workingDir,suffix))
+	quit()
 
 for i in range(4,len(sys.argv)-1):
 	graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[i], sys.argv[i+1], clingoCode, True)
