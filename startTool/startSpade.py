@@ -7,8 +7,13 @@ import shutil
 import subprocess
 
 #Start SPADE with config
-def startSpade(workingPath, suffix, loopCount):
+def startSpade(workingPath, suffix, loopCount, fingerprint):
 	global isNeo4j, spadePath
+
+	#Handle fingerprint folder
+	if not os.path.exists('%s/%s' %(workingPath, fingerprint)):
+		os.makedirs('%s/%s' %(workingPath, fingerprint))
+		os.chown('%s/%s' %(workingPath, fingerprint), 1000, 1000)
 
 	#Initialize Config File
 	try:
@@ -18,9 +23,9 @@ def startSpade(workingPath, suffix, loopCount):
 	file = open('%s/cfg/spade.config' % spadePath, 'w')
 	file.write('add reporter Audit inputLog=%s/input.log arch=64 fileIO=true\n' % workingPath)
 	if isNeo4j:
-		file.write('add storage Neo4j %s/output.db-%s\n' % (workingPath, suffix))	
+		file.write('add storage Neo4j %s/%s/output.db-%s\n' % (workingPath, fingerprint, suffix))	
 	else:
-		file.write('add storage Graphviz %s/output.dot-%s\n' % (workingPath, suffix))
+		file.write('add storage Graphviz %s/%s/output.dot-%s\n' % (workingPath, fingerprint, suffix))
 	file.close()
 
 	#Start SPADE
@@ -73,6 +78,8 @@ subprocess.check_output(rule0.split())
 subprocess.check_output(rule1.split())
 subprocess.check_output(rule2.split())
 
+fingerprintList = []
+
 #Get Audit Log
 for i in range(1, trial+1):
 	#Prepare the benchmark program
@@ -90,7 +97,7 @@ for i in range(1, trial+1):
 	file.close()
 
 	os.seteuid(1000)
-	os.system('%s/test' % stagePath)
+	os.system('trace-cmd record -e syscalls %s/test' % stagePath)
 	os.seteuid(0)
 
 	#Ensure no one writing to the file
@@ -101,6 +108,12 @@ for i in range(1, trial+1):
 	file = open('/var/log/audit/audit.log','a')
 	file.write('end%dend%d\n' % (i,i))
 	file.close()
+
+	#Handle FTrace Fingerprint
+	ftraceResult = subprocess.check_output('trace-cmd report'.split())
+	if ftraceResult:
+		syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
+	fingerprintList.append(hashlib.md5(''.join(syscallList).encode()).hexdigest())
 
 subprocess.check_output(rule0.split())
 
@@ -139,8 +152,11 @@ for i in range(1, trial+1):
 		loopCount = 0
 		while not os.path.exists(outFile) or os.path.getsize(outFile) < 1000:
 			loopCount = loopCount + 1
-			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount)
+			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprintList[i-1])
 	else:
-		startSpade(workingPath, '%s-%d' %(suffix,i), 2)
+		startSpade(workingPath, '%s-%d' %(suffix,i), 2, fingerprintList[i-1])
 
 	print ('Trial %d end' % i)
+
+for fingerprint in set(fingerprintList):
+	print (fingerprint)
