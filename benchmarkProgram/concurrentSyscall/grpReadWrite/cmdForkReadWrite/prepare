@@ -18,34 +18,25 @@ CODE=$(cat <<EOF
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/wait.h>
-int main() { srand(time(NULL));
-if (fork()) {int id=open("`realpath $1`/test.txt", O_RDWR); char buf[1]; int i;
-	#ifdef READ
-	for (i=0;i<READ;i++) {
-		#ifdef RANDOM
-		sleep(rand()%20);
-		#endif
-		#ifdef PROGRAM
-		read(id, buf, 1);
-		#endif
-		wait(NULL);
-	}
+int main() {
+int id=open("`realpath $1`/test.txt", O_RDWR); char buf[1]; int i;
+fork();
+#ifdef READ
+for (i=0;i<READ;i++) {
+	#ifdef PROGRAM
+	read(id, buf, 1);
 	#endif
-	close(id);
-} else {int id=open("`realpath $1`/test.txt", O_RDWR); int i;
-	#ifdef WRITE
-	for (i=0;i<WRITE;i++) {
-		#ifdef RANDOM
-		sleep(rand()%20);
-		#endif
-		#ifdef PROGRAM
-		write(id, "TEST", 1);
-		#endif
-	}
+}
+#endif
+#ifdef WRITE
+for (i=0;i<WRITE;i++) {
+	#ifdef PROGRAM
+	write(id, "TEST", 1);
 	#endif
-	close(id);
-}}
+}
+#endif
+close(id);
+}
 EOF
 )
 
