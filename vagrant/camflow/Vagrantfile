@@ -132,7 +132,6 @@ Vagrant.configure(2) do |config|
     CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0" cmake -DENABLE_SOLVER_STP=ON -DENABLE_POSIX_RUNTIME=ON -DENABLE_KLEE_UCLIBC=ON -DKLEE_UCLIBC_PATH=/home/vagrant/klee-uclibc/ -DENABLE_SYSTEM_TESTS=OFF -DENABLE_UNIT_TESTS=OFF -DENABLE_TCMALLOC=OFF /home/vagrant/klee
     make
 
-    rm -rf klee klee-uclibc
-    mv klee_build_dir klee
+    rm -rf klee-uclibc
   SHELL
 end
