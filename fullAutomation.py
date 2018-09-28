@@ -69,7 +69,7 @@ print ('End Program')
 
 print ('Control')
 #controlFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'CONTROL,RANDOM,READ=2,WRITE=2', 'control')).split())
-controlFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'CONTROL,READ=2,WRITE=2', 'control')).split()).decode().split()[0]
+controlFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'CONTROL,READ=2,WRITE=2', 'control')).split()).decode().split()
 print ('End Control')
 
 print ('End of stage 1\n')
@@ -83,13 +83,14 @@ print ('Starting stage 2...Transforming provenance result to Clingo graph')
 os.system('sudo chmod +x %s/genClingoGraph/%s' % (baseDir, stage2Handler.split()[0]))
 stage2Command = 'sudo %s/genClingoGraph/%s %s %s %s' % (baseDir, stage2Handler, '%s', '%s', '%s')
 
-dir = os.path.abspath('%s/%s' % (workingDir, controlFingerprint))
-if os.path.isdir(dir):
-	i = 1
-	for file in ('%s/%s' % (dir,name) for name in os.listdir(dir)):
-		suffix = 'control-%d' % i
-		subprocess.call((stage2Command % (suffix,file,workingDir)).split())
-		i += 1
+for fingerprint in controlFingerprint:
+	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
+	if os.path.isdir(dir):
+		i = 1
+		for file in os.listdir(dir):
+			suffix = 'control-%d' % i
+			subprocess.call((stage2Command % (suffix,file,dir)).split())
+			i += 1
 
 for fingerprint in programFingerprint:
 	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
@@ -111,11 +112,13 @@ print ('Starting stage 3...Generalizing graph from multiple trial')
 os.system('sudo chmod +x %s/processGraph/generalizeGraph.py' % baseDir)
 stage3Command = 'sudo %s/processGraph/generalizeGraph.py %s %s %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), '%s')
 
-command = stage3Command % ('control %s')
-for i in range(1,trial+1):
-	suffix = 'control-%d' % i
-	command = command % ('%s/clingo-%s %s' % (workingDir, suffix, '%s'))
-subprocess.call((command % '').split())
+for fingerprint in controlFingerprint:
+	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
+	if os.path.isdir(dir):
+		command = stage3Command % ('control-%s %s' % (fingerprint, '%s'))
+		for file in ('%s/%s' % (dir,name) for name in os.listdir(dir) if name.startswith('clingo-control')):
+			command = command % ('%s %s' % (file, '%s'))
+		subprocess.call((command % '').split())
 
 for fingerprint in programFingerprint:
 	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
@@ -138,8 +141,22 @@ print ('Starting stage 4...Generating benchmark')
 
 os.system('sudo chmod +x %s/processGraph/findSubgraph.py' % baseDir)
 for fingerprint in programFingerprint:
-	stage4Command = '''sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-control general.clingo-program-%s 
-	%s''' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), fingerprint, ('%s/result-%s.clingo' % (outDir,fingerprint)))
+	if len(controlFingerprint) > 1:
+		editDistance = sys.maxsize 
+		for backgroundFingerprint in controlFingerprint:
+			preStage4Command = '''sudo %s/processGraph/calEditDistance.py %s %s/general.clingo-control-%s 
+			%s/general.clingo-program-%s''' % (baseDir, ('''%s/processGraph/editdist.lp
+			''' % baseDir), workingDir, backgroundFingerprint, workingDir, fingerprint)
+			newEditDistance = subprocess.check_output(preStage4Command.split())
+			if newEditDistance < editDistance:
+				editDistance = newEditDistance
+				background = backgroundFingerprint
+	else:
+		background = controlFingerprint[0]	
+	
+	stage4Command = '''sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-control-%s general.clingo-program-%s %s
+        ''' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), background, fingerprint, ('''%s/result-%s.clingo
+        ''' % (outDir,fingerprint)))
 	subprocess.call(stage4Command.split())
 
 print ('End of stage 4\n')

@@ -125,7 +125,7 @@ def compareProps(graph1Props, graph2Props, isGeneral):
 	return result
 
 #Graph Process
-def processGraph(graph1Path, graph2Path, clingoCode, isMapping):
+def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 	#Read Graph
 	file = open(graph1Path, 'r')
 	graph1 = fixIdentifier(file.read(), 1)
@@ -142,7 +142,7 @@ def processGraph(graph1Path, graph2Path, clingoCode, isMapping):
 
 	#Clingo Operation
 	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
-	pipe = subprocess.Popen(['../clingo/clingo', '--time-limit=30'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=30'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 	mapResult = pipe.communicate(input=inputString.encode())[0]
 	if isMapping:
 		map = decodeClingoResult(mapResult.decode())
