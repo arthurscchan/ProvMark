@@ -69,7 +69,7 @@ Vagrant.configure(2) do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  config.vm.provision "shell", inline: <<-SHELL
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
     sudo dnf -y install curl
 		curl -s https://packagecloud.io/install/repositories/camflow/provenance/script.rpm.sh | sudo bash
 		sudo dnf -y install camflow-0.7.4-1
@@ -83,7 +83,7 @@ Vagrant.configure(2) do |config|
     gem install json rgl mqtt rake bundler
 
     # ProvMark specific
-    sudo yum install glibc-static trace-cmd -y
+    sudo dnf -y install glibc-static trace-cmd
 
     sudo rm -rf /tmp/.camflowModel
     git clone https://github.com/arthurscchan/ProvMark.git
