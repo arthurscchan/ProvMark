@@ -120,7 +120,7 @@ Vagrant.configure(2) do |config|
     cd klee-uclibc
     sudo ln -s /usr/lib/gcc/x86_64-redhat-linux/7/crtbegin.o /lib64
     sudo ln -s /usr/lib/gcc/x86_64-redhat-linux/7/libgcc.a /lib64
-    sudo ln -s /usr/lib/gcc/x86_64-redhat-linux/7/libgcc_s.o /lib64
+    sudo ln -s /usr/lib/gcc/x86_64-redhat-linux/7/libgcc_s.so /lib64
     sudo ln -s /usr/lib/gcc/x86_64-redhat-linux/7/crtend.o /lib64
     ./configure --make-llvm-lib
     make
