@@ -147,7 +147,7 @@ for fingerprint in programFingerprint:
 			preStage4Command = '''sudo %s/processGraph/calEditDistance.py %s %s/general.clingo-control-%s 
 			%s/general.clingo-program-%s''' % (baseDir, ('''%s/processGraph/editdist.lp
 			''' % baseDir), workingDir, backgroundFingerprint, workingDir, fingerprint)
-			newEditDistance = subprocess.check_output(preStage4Command.split())
+			newEditDistance = int(subprocess.check_output(preStage4Command.split()))
 			if newEditDistance < editDistance:
 				editDistance = newEditDistance
 				background = backgroundFingerprint
