@@ -1,20 +1,20 @@
 # ProvMark Usage
 
-## Single Execution
+## Single Execution (Training / Benchmark Generation)
 
 Usage:
 ~~~~
-./fullAutomation <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]
+./ProvMark bg <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]
 ~~~~
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
 ~~~~
-./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
+./ProvMark bg spg /path/to/spade/base/directory ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
 ~~~~
 
 Example for CamFlow (note that the "tool base directory" is unused and arbitrary in this case):
 ~~~~
-./fullAutomation.py cam . ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
+./ProvMark bg cam . ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
 ~~~~
 
 #### Currently Supported Tools:
@@ -36,9 +36,10 @@ Example for CamFlow (note that the "tool base directory" is unused and arbitrary
 
 #### Output:
 - Three clingo graphs stored in result folder
-- general.clingo-program: generalized foreground graph
-- general.clingo-control: generalized background graph
-- result.clingo: final benchmark graph
+- general.clingo-program-[MD5Hash]: generalized foreground graph
+- general.clingo-control-[MD5Hash]: generalized background graph
+- result-[MD5Hash].clingo: final benchmark graph
+- Remark: There will be mutliple result with different MD5Hash indicating it is the result for the non-deterministic branch with that fingerprint. For deterministic input, there will only be one set of result.
 
 #### Output Clingo File Format
 
@@ -61,7 +62,7 @@ l<graph identifier>(<node / edge identifier>, <key>, <value>)
 ~~~~
 
 
-## Batch Execution
+## Batch Execution (Training / Benchmark Generation)
 
 Auto execute ProvMark for all syscall currently supported
 

@@ -26,7 +26,7 @@ do
 		fi
 
 		echo "Generating provenance benchmark for $syscall in group $i using $1 settings..."
-		sudo ./fullAutomation.py $1 $2 benchmarkProgram/baseSyscall/$i/$j $4
+		sudo ./ProvMark bg $1 $2 benchmarkProgram/baseSyscall/$i/$j $4
 		
 		unset benchmark
 		for result in `ls result/result-*.clingo`
