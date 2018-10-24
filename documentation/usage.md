@@ -38,7 +38,7 @@ Example for CamFlow (note that the "tool base directory" is unused and arbitrary
 - Three clingo graphs stored in result folder
 - general.clingo-program-[MD5Hash]: generalized foreground graph
 - general.clingo-control-[MD5Hash]: generalized background graph
-- result.clingo-[MD5Hash]: final benchmark graph
+- result-[MD5Hash].clingo: final benchmark graph
 - Remark: There will be mutliple result with different MD5Hash indicating it is the result for the non-deterministic branch with that fingerprint. For deterministic input, there will only be one set of result.
 
 #### Output Clingo File Format

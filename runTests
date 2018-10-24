@@ -30,7 +30,7 @@ do
 
 ####################################################Temporary fix for displaying 1 benchmark result only#################################
 
-		for result in `ls result/result.clingo*`
+		for result in `ls result/result-*.clingo`
 		do
 			sudo genClingoGraph/clingo2Dot.py result/$result result.dot
 			sudo dot -Tsvg -o "finalResult/$syscall/benchmark.svg" result.dot
