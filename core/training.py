@@ -11,7 +11,7 @@ import configparser
 def helpMenu(name):
 	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]' % name)
 	print ('Tools:\n\tspg:\tSPADE with Graphviz storage\n\tspn:\tSPADE with Neo4j storage\n\topu:\tOPUS\n\tcam:\tCamFlow')
-	print ('Tools Base Directory: Base directory of the chosen tool')
+	print ('Tools Base Directory: Base directory of the chosen tool (Type . to ignore)')
 	print ('Benchmark Directory: Base directory of the benchmark program')
 	print ('Trial:	Number of trial executed for each graph for generalization (Default: 2)')
 
@@ -24,7 +24,6 @@ def prepareDir(directory):
 
 #Check Arguments
 trial = 2
-outFile = os.path.abspath('./result.clingo')
 if len(sys.argv) < 4 or len(sys.argv) > 5:
 	helpMenu(sys.argv[0])
 	quit()
@@ -33,11 +32,8 @@ elif len(sys.argv) == 5:
 
 if trial < 2:
 	trial = 2
-baseDir = os.path.abspath(os.path.dirname(sys.argv[0]))
+baseDir = os.path.abspath('%s/../' % os.path.dirname(sys.argv[0]))
 tool = sys.argv[1]
-if tool != 'cam':
-	print ('Temporary disable spade and opus for new concurrency testing, please revert to git version a28cc39585c6e74dbeccfc3dccfeef537857ff22 for testing spade and opus in a stable version')
-	quit()
 toolBaseDir = os.path.abspath(sys.argv[2])
 benchmarkDir = os.path.abspath(sys.argv[3])
 stageDir = os.path.abspath('%s/stage/' % baseDir)

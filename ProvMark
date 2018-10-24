@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [[ "$1" == "bg" ]]
+then
+	if [[ "$#" -eq 4 || "$#" -eq 5 ]]
+	then
+		shift
+		./core/training.py $@
+		exit 0
+	fi
+elif [[ "$1" == "bt" ]]
+then
+	if [[ "$#" -ge 5 || "$#" -le 7 ]]
+	then
+		shift
+		./core/testing.py $@
+		exit -
+	fi
+fi
+
+echo "Usage: "$0" bg <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial>]"
+echo "Usage: "$0" bt <Tools> <Tools Base Directory> <Testing Program> <Benchmark File> [OPTION]"
+echo "OPTION:"
+echo "-s: testing program is a source file in c language and require compile before execution"
+echo "-d: benchmark file is a directory containing multiple benchmark files as input"
+exit 1
+

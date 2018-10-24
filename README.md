@@ -16,10 +16,17 @@ In this stage, multiple clingo graph descirbing the multiple trial of the same p
 ## Stage 4 Generating benchmark of chosen syscall for chosen provenance collecting tool
 This is the last stage of the benchmarking system execution. In this stage, the two generalized graph will be compared to each other. As we assume that the chosen syscall is always a few steps or command more than the control program execution and they are both executed based on a same stage environment with the same language. So the additional elements in the generalized syscall graph shows the patterns that can be used as a benchmark to identify this syscall when we are using the chosen provenance collecting tools. All those addtional branchesand properties will be identified and summarized in the result file in clingo format. Currently, this is the end of the full system. The clingo format graph can be transformed into other directed graph format if needed in the future.
 
+## Extra Stage Benchmark Comparison and Evaluation
+This is an extra stage provided by ProvMark. It is a standalone subsystem that takes the set of benchmark and a testing program and identify if the patterns described by the benchmark group exists in the testing program. Is it done by comparing the provenance graph of the testing program with the set of benchmark. Of course, the same provenance collecting tools is used in the testing stage. The result will be a simple yes or no answer. It can help to identify certain action in a testing program and together provide expressiveness evaluation of ProvMark and the provenance collecting tools itself. The false positive rate and false negative rate identify the correctness and completeness of the benchmark generation and collection respectively. It can help to identify bugs in the provenance collecting tools and ProvMark generation process. It can be further use as a pattern discovery of certain existing syscall patterns for security and forensics usage.
+
+## Deterministic and Non-deterministic Input
+It is worth mentioning that deterministic input will only result in one set of benchmark result. While ProvMark will generate multiple set of benchmark for non-deterministic input to cover patterns across different execution order affected by non-deterministism. The different is there are multiple background graph and foreground graph generated in the mid-process and they are grouped by their ftrace fingerprint separately. The graph with the same ftrace fingerprint are considered as the same execution branch and will be generalized together. Each generalized foreground graph will match will its closest generalized background graph to generate a separate benchmark and thus the output from stage 4 will be a set of benchmark. But currently we provide no guarantee that all of the branches will be executed, we are currently working on method to have full coverage of all possible branches.
+
 # Folder Structure
 - benchmarkProgram: Contains sample c program for the collection of provenance information on different syscall
 - clingo: Contains the clingo code
 - config: Contains the configuration profile of different tools choice for stage 1 and stage 2
+- core: Contains the entrance for the training (benchmark generation) and testing (benchmark evaluation)
 - documentation: Contains the documentation for ProvMark
 - genClingoGraph: Contains code to transform graph format
 - processGraph: Contains code to handle graph comparison and generalization
