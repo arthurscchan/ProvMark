@@ -27,25 +27,39 @@ do
 
 		echo "Generating provenance benchmark for $syscall in group $i using $1 settings..."
 		sudo ./ProvMark bg $1 $2 benchmarkProgram/baseSyscall/$i/$j 5
-		sudo genClingoGraph/clingo2Dot.py result/result.clingo result.dot
-		sudo dot -Tsvg -o "finalResult/$syscall/benchmark.svg" result.dot
-		sudo rm -f result.dot
+
+####################################################Temporary fix for displaying 1 benchmark result only#################################
+
+		for result in `ls result/result.clingo*`
+		do
+			sudo genClingoGraph/clingo2Dot.py result/$result result.dot
+			sudo dot -Tsvg -o "finalResult/$syscall/benchmark.svg" result.dot
+			sudo rm -f result.dot
+		done
 
 		if [ "$3" != "rb" ]
 		then
-			sudo genClingoGraph/clingo2Dot.py result/general.clingo-control control.dot
-			sudo dot -Tsvg -o "finalResult/$syscall/background.svg" control.dot
-			sudo rm -f control.dot
+			for result in `ls result/general.clingo-control*`
+			do
+				sudo genClingoGraph/clingo2Dot.py result/$result control.dot
+				sudo dot -Tsvg -o "finalResult/$syscall/background.svg" control.dot
+				sudo rm -f control.dot
+			done
 
-			sudo genClingoGraph/clingo2Dot.py result/general.clingo-program program.dot
-			sudo dot -Tsvg -o "finalResult/$syscall/foreground.svg" program.dot
-			sudo rm -f program.dot
+			for result in `ls result/general.clingo-program*`
+			do
+				sudo genClingoGraph/clingo2Dot.py result/$result program.dot
+				sudo dot -Tsvg -o "finalResult/$syscall/foreground.svg" program.dot
+				sudo rm -f program.dot
+			done
 
 			if [ "$3" = "rh" ]
 			then
 				row=$row$(cat template/row.html | sed "s|@@@SYSCALL@@@|${syscall}|g")
 			fi
 		fi
+
+##################################################End of Temporary Fix###################################################################
 
 		echo "Process complete for $syscall."
 	done
