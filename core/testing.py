@@ -57,7 +57,7 @@ start = time.time()
 print ('Starting stage 1...Generating provenance for the testing program from native tools')
 
 os.system('sudo chmod +x %s/startTool/%s' % (baseDir, stage1Tool.split()[0]))
-stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s' % (baseDir, stage1Tool, stageDir, workingDir, progName, toolBaseDir , '')
+stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s' % (baseDir, stage1Tool, stageDir, workingDir, progName, toolBaseDir , 'testing')
 subprocess.call(stage1Command.split())
 
 print ('End of stage 1\n')
