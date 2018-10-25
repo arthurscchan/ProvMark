@@ -68,17 +68,17 @@ Auto execute ProvMark for all syscall currently supported
 
 Usage:
 ~~~~
-./runTests.sh <Tools> <Tools_Path> <Result Type>
+./runTests <Tools> <Tools_Path> <Result Type>
 ~~~~
 
 Example for batch execution of spade with Graphviz storage and generate html webpage to display all result
 ~~~~
-./runTests.sh spg /path/to/spade/base/directory rh
+./runTests spg /path/to/spade/base/directory rh
 ~~~~
 
 Example for batch execution of CamFlow (again, the base directory is ignored in this case):
 ~~~~
-./runTests.sh cam . rh
+./runTests cam . rh
 ~~~~
 
 #### Currently Supported Tools:
