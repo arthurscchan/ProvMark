@@ -31,7 +31,9 @@ if len(sys.argv) != 6 or (sys.argv[4] != "-f" and sys.argv[4] != "-d"):
 baseDir = os.path.abspath('%s/../' % os.path.dirname(sys.argv[0]))
 tool = sys.argv[1]
 toolBaseDir = os.path.abspath(sys.argv[2])
-testingProgram = os.path.abspath(sys.argv[3])
+testProg = os.path.abspath(sys.argv[3])
+stageDir = os.path.dirname(testProg)
+progName = os.path.basename(testProg)
 workingDir = os.path.abspath('%s/working/' % baseDir)
 prepareDir(workingDir)
 benchmarkFiles = list()
@@ -55,9 +57,8 @@ start = time.time()
 print ('Starting stage 1...Generating provenance for the testing program from native tools')
 
 os.system('sudo chmod +x %s/startTool/%s' % (baseDir, stage1Tool.split()[0]))
-#stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s %s %d' % (baseDir, stage1Tool, stageDir, workingDir, '%s' , '%s', toolBaseDir , '%s', trial)
-
-#subprocess.call((stage1Command % (benchmarkDir, 'PROGRAM,READ=2,WRITE=2', 'program')).split()).decode().split()
+stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s' % (baseDir, stage1Tool, stageDir, workingDir, progName, toolBaseDir , '')
+subprocess.call(stage1Command.split())
 
 print ('End of stage 1\n')
 end = time.time()
