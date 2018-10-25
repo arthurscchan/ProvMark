@@ -45,30 +45,17 @@ def startSpade(workingPath, suffix, loopCount, fingerprint):
 	os.remove('%s/cfg/spade.config.backup' % spadePath)
 
 #Retrieve arguments
-trial = 0
-if len(sys.argv) == 9:
-	if sys.argv[8].isdigit():
-		trial = int(sys.argv[8])
-elif len(sys.argv) != 8 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):
-	print ("Neo4j DB Output Usage: %s -n <Stage Directory> <Working Directory> <Program Directory> <GCC Marco> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
-	print ("Graphviz DOT Output Usage: %s -d <Stage Directory> <Working Directory> <Program Directory> <GCC Macro> <SPADE Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
+if len(sys.argv) != 7 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):
+	print ("Neo4j DB Output Usage: %s -n <Stage Directory> <Working Directory> <Program Name> <SPADE Directory> <suffix>" % sys.argv[0])
+	print ("Graphviz DOT Output Usage: %s -d <Stage Directory> <Working Directory> <Program Name> <SPADE Directory> <suffix>" % sys.argv[0])
 	quit()
-
-if trial < 2:
-	trial = 2
 
 stagePath = os.path.abspath(sys.argv[2])
 workingPath = os.path.abspath(sys.argv[3])
 isNeo4j = (sys.argv[1] == '-n')
-progPath = os.path.abspath(sys.argv[4])
-macroOpt = sys.argv[5]
-spadePath = os.path.abspath(sys.argv[6])
-suffix = sys.argv[7]
-
-#Process GCC Macro
-gccMacro = ""
-for item in macroOpt.split(','):
-	gccMacro = "%s -D%s" %(gccMacro,item)
+progName = os.path.abspath(sys.argv[4])
+spadePath = os.path.abspath(sys.argv[5])
+suffix = sys.argv[6]
 
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'
@@ -78,85 +65,73 @@ subprocess.check_output(rule0.split())
 subprocess.check_output(rule1.split())
 subprocess.check_output(rule2.split())
 
-fingerprintList = []
-
 #Get Audit Log
-for i in range(1, trial+1):
-	#Prepare the benchmark program
-	subprocess.check_output(('%s/prepare %s %s --static' % (progPath,stagePath,gccMacro)).split())
+os.chdir(stagePath)
 
-	os.chdir(stagePath)
+#Ensure no one writing to the file
+while True:
+	if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
+		break;
 
-	#Ensure no one writing to the file
-	while True:
-		if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
-			break;
-	
-	file = open('/var/log/audit/audit.log','a')
-	file.write('start%dstart%d\n' % (i,i))
-	file.close()
+file = open('/var/log/audit/audit.log','a')
+file.write('start-start\n')
+file.close()
 
-	os.seteuid(1000)
-	os.system('trace-cmd record -e syscalls %s/test' % stagePath)
-	os.seteuid(0)
+os.seteuid(1000)
+os.system('trace-cmd record -e syscalls %s/%s' % (stagePath,progName))
+os.seteuid(0)
 
-	#Ensure no one writing to the file
-	while True:
-		if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
-			break;
+#Ensure no one writing to the file
+while True:
+	if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
+		break;
 
-	file = open('/var/log/audit/audit.log','a')
-	file.write('end%dend%d\n' % (i,i))
-	file.close()
+file = open('/var/log/audit/audit.log','a')
+file.write('end-end\n')
+file.close()
 
-	#Handle FTrace Fingerprint
-	ftraceResult = subprocess.check_output('trace-cmd report'.split())
-	if ftraceResult:
-		syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
-	fingerprintList.append(hashlib.md5(''.join(syscallList).encode()).hexdigest())
+#Handle FTrace Fingerprint
+ftraceResult = subprocess.check_output('trace-cmd report'.split())
+if ftraceResult:
+	syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
+	fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
 
 subprocess.check_output(rule0.split())
 
 #Handle Aduit Log File
 shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % workingPath)
 
-#Generate graph for multiple trial 
-for i in range(1, trial+1):
-	print ('Trial %d start' % i)
+#Generate graph
+#Extract audit log line for each trial
+command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
 
-	#Extract audit log line for each trial
-	command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
+grepCommand = command % ('start-start')
+tempResult = subprocess.check_output(grepCommand.split()).decode().splitlines()
+totalLine = len(tempResult)
+start = int(tempResult[totalLine-1].split(':')[0]) + 1
 
-	grepCommand = command % ('start%dstart%d' % (i,i))
-	tempResult = subprocess.check_output(grepCommand.split()).decode().splitlines()
-	totalLine = len(tempResult)
-	start = int(tempResult[totalLine-1].split(':')[0]) + 1
+grepCommand = command % ('end-end')
+tempResult = subprocess.check_output(grepCommand.split()).decode().splitlines()
+totalLine = len(tempResult)
+end = int(tempResult[totalLine-1].split(':')[0]) - 1
 
-	grepCommand = command % ('end%dend%d' % (i,i))
-	tempResult = subprocess.check_output(grepCommand.split()).decode().splitlines()
-	totalLine = len(tempResult)
-	end = int(tempResult[totalLine-1].split(':')[0]) - 1
+inFile = open('%s/audit.log' % workingPath, 'r')
+outFile = open('%s/input.log' % workingPath, 'w')
+for c, line in enumerate(inFile):
+	if (c >= start and c <= end):
+		outFile.write(line)
 
-	inFile = open('%s/audit.log' % workingPath, 'r')
-	outFile = open('%s/input.log' % workingPath, 'w')
-	for c, line in enumerate(inFile):
-		if (c >= start and c <= end):
-			outFile.write(line)
+inFile.close()
+outFile.close()
 
-	inFile.close()
-	outFile.close()
+if not isNeo4j:
+	#Send log lines to SPADE for processing (Repeat if data is empty)
+	outFile = '%s/output.dot-%s' % (workingPath, suffix)
+	loopCount = 0
+	while not os.path.exists(outFile) or os.path.getsize(outFile) < 1000:
+		loopCount = loopCount + 1
+		startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprint)
+else:
+	startSpade(workingPath, '%s-%d' %(suffix,i), 2, fingerprint)
 
-	if not isNeo4j:
-		#Send log lines to SPADE for processing (Repeat if data is empty)
-		outFile = '%s/output.dot-%s-%d' % (workingPath, suffix, i)
-		loopCount = 0
-		while not os.path.exists(outFile) or os.path.getsize(outFile) < 1000:
-			loopCount = loopCount + 1
-			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprintList[i-1])
-	else:
-		startSpade(workingPath, '%s-%d' %(suffix,i), 2, fingerprintList[i-1])
-
-	print ('Trial %d end' % i)
-
-for fingerprint in set(fingerprintList):
-	print (fingerprint)
+print (fingerprint)
