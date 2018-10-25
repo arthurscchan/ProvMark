@@ -53,7 +53,7 @@ if len(sys.argv) != 7 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):
 stagePath = os.path.abspath(sys.argv[2])
 workingPath = os.path.abspath(sys.argv[3])
 isNeo4j = (sys.argv[1] == '-n')
-progName = os.path.abspath(sys.argv[4])
+progName = sys.argv[4]
 spadePath = os.path.abspath(sys.argv[5])
 suffix = sys.argv[6]
 

@@ -14,7 +14,7 @@ if len(sys.argv) != 6:
 
 stagePath = os.path.abspath(sys.argv[1])
 workingPath = os.path.abspath(sys.argv[2])
-progName = os.path.abspath(sys.argv[3])
+progName = sys.argv[3]
 opusPath = os.path.abspath(sys.argv[4])
 suffix = sys.argv[5]
 
