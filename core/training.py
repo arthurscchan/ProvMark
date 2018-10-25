@@ -9,11 +9,11 @@ import configparser
 
 #Print help menu
 def helpMenu(name):
-	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]' % name)
+	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial>]' % name)
 	print ('Tools:\n\tspg:\tSPADE with Graphviz storage\n\tspn:\tSPADE with Neo4j storage\n\topu:\tOPUS\n\tcam:\tCamFlow')
-	print ('Tools Base Directory: Base directory of the chosen tool (Type . to ignore)')
-	print ('Benchmark Directory: Base directory of the benchmark program')
-	print ('Trial:	Number of trial executed for each graph for generalization (Default: 2)')
+	print ('Tools Base Directory: Base directory of the chosen tools (type . if tools are globally accessible)')
+	print ('Benchmark Program Directory: Base directory of the benchmark program')
+	print ('Trial:	Number of trial provenance capture for each case (Default: 2)')
 
 #Prepare stage and working directory
 def prepareDir(directory):
@@ -57,16 +57,20 @@ start = time.time()
 print ('Starting stage 1...Generating provenance from native tools')
 
 os.system('sudo chmod +x %s/startTool/%s' % (baseDir, stage1Tool.split()[0]))
-stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s %s %d' % (baseDir, stage1Tool, stageDir, workingDir, '%s' , '%s', toolBaseDir , '%s', trial)
+stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s' % (baseDir, stage1Tool, stageDir, workingDir, 'test' , toolBaseDir , '%s')
 
 print ('Program')
-#programFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'PROGRAM,RANDOM,READ=2,WRITE=2', 'program')).split())
-programFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'PROGRAM,READ=2,WRITE=2', 'program')).split()).decode().split()
+for i in range(1,trial+1):
+#	subprocess.check_output(('%s/prepare %s --static -DPROGRAM -DRANDOM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
+	subprocess.check_output(('%s/prepare %s --static -DPROGRAM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
+programFingerprint = subprocess.check_output((stage1Command % ('program-%d' % i)).split()).decode().split()
 print ('End Program')
 
 print ('Control')
-#controlFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'CONTROL,RANDOM,READ=2,WRITE=2', 'control')).split())
-controlFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'CONTROL,READ=2,WRITE=2', 'control')).split()).decode().split()
+for i in range(1,trial+1):
+#	subprocess.check_output(('%s/prepare %s --static -DCONTROL -DRANDOM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
+	subprocess.check_output(('%s/prepare %s --static -DCONTROL -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
+controlFingerprint = subprocess.check_output((stage1Command % ('control-%d' % i)).split()).decode().split()
 print ('End Control')
 
 print ('End of stage 1\n')

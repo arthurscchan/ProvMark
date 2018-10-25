@@ -61,7 +61,7 @@ def mergeNode(base, model):
 	return base
 
 #Start Camflow
-def startCamflow(stagePath, workingPath, suffix, isModel):
+def startCamflow(stagePath, workingPath, suffix, isModel, progName):
 	global camflowPath
 
 	os.chdir(stagePath)
@@ -96,7 +96,7 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	subprocess.call('camflow --duplicate true'.split())
 	subprocess.call('camflow -e true'.split())
 #	subprocess.call('camflow -a true'.split())
-	subprocess.call(('trace-cmd record -e syscalls %s/test' % stagePath).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+	subprocess.call(('trace-cmd record -e syscalls %s/%s' % (stagePath,progName)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 #	subprocess.call('camflow -a false'.split())
 	subprocess.call('camflow -e false'.split())
 #	subprocess.call('camflow --duplicate false'.split())
@@ -154,39 +154,21 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	return fingerprint
 
 #Retrieve arguments
-trial = 0
-if len(sys.argv) == 8:
-	if sys.argv[7].isdigit():
-		trial = int(sys.argv[7])
-elif len(sys.argv) != 7:
-	print ("Usage: %s <Stage Directory> <Working Directory> <Program Directory> <GCC MACRO> <CamFlow Config Directory> <suffix> [<Number of trial (Minimum / Default: 2)>]" % sys.argv[0])
+if len(sys.argv) != 6:
+	print ("Usage: %s <Stage Directory> <Working Directory> <Program Name> <CamFlow Config Directory> <suffix>" % sys.argv[0])
 	quit()
-
-if trial < 2:
-	trial = 2
 
 stagePath = os.path.abspath(sys.argv[1])
 workingPath = os.path.abspath(sys.argv[2])
-progPath = os.path.abspath(sys.argv[3])
-macroOpt = sys.argv[4]
-camflowPath = os.path.abspath(sys.argv[5])
-suffix = sys.argv[6]
-
-#Process GCC Macro
-gccMacro = ""
-for item in macroOpt.split(','):
-        gccMacro = "%s -D%s" %(gccMacro,item)
-
-fingerprintSet = set()
+progName = sys.argv[3]
+camflowPath = os.path.abspath(sys.argv[4])
+suffix = sys.argv[5]
 
 #Create Model Data
 #subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
 #startCamflow(stagePath, workingPath, '', True)
 
-for i in range(1, trial+1):
-	#Prepare the benchmark program
-	subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
-	fingerprintSet.add(startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i), False))
+#Prepare the benchmark program
+fingerprint = startCamflow(stagePath, workingPath, suffix, False, progName)
 	
-for fingerprint in fingerprintSet:
-	print (fingerprint)
+print (fingerprint)
