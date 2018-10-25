@@ -9,11 +9,11 @@ import configparser
 
 #Print help menu
 def helpMenu(name):
-	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]' % name)
+	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial>]' % name)
 	print ('Tools:\n\tspg:\tSPADE with Graphviz storage\n\tspn:\tSPADE with Neo4j storage\n\topu:\tOPUS\n\tcam:\tCamFlow')
-	print ('Tools Base Directory: Base directory of the chosen tool (Type . to ignore)')
-	print ('Benchmark Directory: Base directory of the benchmark program')
-	print ('Trial:	Number of trial executed for each graph for generalization (Default: 2)')
+	print ('Tools Base Directory: Base directory of the chosen tools (type . if tools are globally accessible)')
+	print ('Benchmark Program Directory: Base directory of the benchmark program')
+	print ('Trial:	Number of trial provenance capture for each case (Default: 2)')
 
 #Prepare stage and working directory
 def prepareDir(directory):
