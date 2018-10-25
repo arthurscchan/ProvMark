@@ -94,7 +94,7 @@ def startCamflow(stagePath, workingPath, suffix, isModel, progName):
 	subprocess.call('camflow --duplicate true'.split())
 	subprocess.call('camflow -e true'.split())
 #	subprocess.call('camflow -a true'.split())
-	subprocess.call(('trace-cmd record -e syscalls %s/progName' % (stagePath,progName)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+	subprocess.call(('trace-cmd record -e syscalls %s/%s' % (stagePath,progName)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 #	subprocess.call('camflow -a false'.split())
 	subprocess.call('camflow -e false'.split())
 #	subprocess.call('camflow --duplicate false'.split())
