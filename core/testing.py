@@ -38,7 +38,7 @@ workingDir = os.path.abspath('%s/working/' % baseDir)
 prepareDir(workingDir)
 benchmarkFiles = list()
 if (sys.argv[4] == "-f"):
-	benchmarkFiles.append(os.path.abspath(sys.argv[5])
+	benchmarkFiles.append(os.path.abspath(sys.argv[5]))
 else:
 	dir = os.path.abspath(sys.argv[5])
 	temp = ['%s/%s' % (dir,name) for name in os.listdir(dir)]
