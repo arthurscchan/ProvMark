@@ -5,7 +5,7 @@ import sys
 from clingoFunction import *
 
 #Check for argument
-if len(sys.argv) != 3:
+if len(sys.argv) != 4:
         print ("Usage: %s <Working Directory> <Clingo Code Template File> <threshold>" % sys.argv[0])
         quit()
 
