@@ -118,7 +118,7 @@ Example for evaluating single benchmark generating using SPADE with Graphviz sto
 
 Example for evaluating multiple benchmark generating using CamFlow on testing program target (note that the "tool base directory" is unused and arbitrary in this case):
 ~~~~
-./ProvMark bt cam . /path/to/program/target -d /path/to/directory/cotains/all/benchmark 
+./ProvMark bt cam . /path/to/program/target -d /path/to/directory/contains/all/benchmark 
 ~~~~
 
 #### Currently Supported Tools:
