@@ -44,9 +44,9 @@ if found:
 	difference = len(graphNode) + len(graphEdge) + len(graphProps) - len(benchmarkNode) - len(benchmarkEdge) - len(benchmarkProps)
 
 	#If sum of threshold and the difference larger than or equal to edit distance, then pattern exists.
-	if (difference + threshold) > editDistance:
-		print ('%d/' % editDistance)
+	if (difference + threshold) >= editDistance:
+		print ('%d/%d/' % (editDistance, difference + threshold))
 	else
-		print ('%d/ not' % editDistance)
+		print ('%d/%d/ not' % (editDistance, difference + threshold))
 else:
-	print ('%d/ not' % (len(graphNode) + len(graphEdge) + len(graphProps)))
+	print ('%d/%d not' % (len(graphNode) + len(graphEdge) + len(graphProps), difference + threshold))

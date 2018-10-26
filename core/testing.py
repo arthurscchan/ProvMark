@@ -93,5 +93,5 @@ t3 = end-start
 
 #Final Result
 print ('Minimum Edit Distance between all benchmark patterns and the testing program provenance graph: %s' % result.split('/')[0])
-print ('Threshold set: %d' % threshold)
-print ('Conclusion: syscall action sequence represent by benchmark patterns does%s exist in the testing program' % result.split('/')[1])
+print ('Threshold: %s' % result.split('/')[1])
+print ('Conclusion: syscall action sequence represent by benchmark patterns does%s exist in the testing program' % result.split('/')[2])
