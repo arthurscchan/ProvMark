@@ -16,4 +16,4 @@ file.close()
 
 result = dict()
 
-print (processGraph(sys.argv[2], sys.argv[3], clingoCode, os.path.abspath('%s/../' % os.path.dirname(sys.argv[0])), False))
+print (processGraph(readGraph(sys.argv[2], 1), readGraph(sys.argv[3], 2), clingoCode, os.path.abspath('%s/../' % os.path.dirname(sys.argv[0])), False))

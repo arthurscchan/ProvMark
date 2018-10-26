@@ -9,19 +9,23 @@ if len(sys.argv) != 2:
         print ("Usage: %s <Working Directory>" % sys.argv[0])
         quit()
 
+baseDir = os.path.abspath('%s/../' % sys.argv[1])
 workingDir = os.path.abspath(sys.argv[1])
 benchmarkDir = os.path.abspath('%s/benchmark' % sys.argv[1])
 
 os.chdir(workingDir)
 
 # Process testing program provenance graph
-with open("%s/clingo-testing" % workingDir, "r") as file:
-	graphNode, graphEdge, graphProps = clingo2Dict(fixIdentifier(file.read(), 1))
+graph = readGraph("%s/clingo-testing" % workingDir, 1)
+graphNode, graphEdge, graphProps = clingo2Dict(graph)
 
 # Process benchmark graph
 benchmarkList = list()
 for path in ['%s/%s' % (benchmarkDir,name) for name in os.listdir(benchmarkDir)]:
-	with open(path, "r") as file:
-		node, edge, props = clingo2Dict(fixIdentifier(file.read(), 1))
-		benchmarkList.append({'node':node, 'edge':edge, 'props':props})
+	benchmark = readGraph(path, 1)
+	node, edge, props = clingo2Dict(benchmark)
+	benchmarkList.append({'graph':benchmark, 'node':node, 'edge':edge, 'props':props})
 
+#benchmarkEditDistance = list()
+#for benchmark in benchmarkList:
+#	benchmark

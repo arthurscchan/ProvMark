@@ -28,7 +28,7 @@ if len(sys.argv) == 5:
 	quit()
 
 for i in range(4,len(sys.argv)-1):
-	graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(sys.argv[i], sys.argv[i+1], clingoCode, os.path.abspath('../'), True)
+	graph2Node, graph2Edge, graph1Props, graph2Props, map = processGraph(readGraph(sys.argv[i], 1), readGraph(sys.argv[i+1], 2), clingoCode, os.path.abspath('../'), True)
 
 	#Generalize properties
 	if map:

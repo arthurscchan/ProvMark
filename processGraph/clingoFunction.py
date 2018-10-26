@@ -124,29 +124,32 @@ def compareProps(graph1Props, graph2Props, isGeneral):
 				result[key] = graph2Props[key]
 	return result
 
-#Graph Process
-def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
-	#Read Graph
-	file = open(graph1Path, 'r')
-	graph1 = fixIdentifier(file.read(), 1)
-	file.close()
+#Clingo Operation
+def clingoOperation(clingoCode, graph1, graph2, baseDir):
+	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
+	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=30'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+	result = pipe.communicate(input=inputString.encode())[0]
 
-	file = open(graph2Path,'r')
-	graph2 = fixIdentifier(file.read(), 2)
-	file.close()
+	return result.decode()
+	
+#Read Graph
+def readGraph(path, id):
+	with open(path, "r") as file:
+		graph = fixIdentifier(file.read(), id)
+
+	return graph
+
+#Graph Process
+def processGraph(graph1, graph2, clingoCode, baseDir, isMapping):
+	mapResult = clingoOperation(clingoCode, graph1, graph2, baseDir)	
 
 	if isMapping:
 		#Process Graph
 		graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
 		graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
 
-	#Clingo Operation
-	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
-	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=30'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-	mapResult = pipe.communicate(input=inputString.encode())[0]
-	if isMapping:
-		map = decodeClingoResult(mapResult.decode())
+		map = decodeClingoResult(mapResult)
 		return graph2Node, graph2Edge, graph1Props, graph2Props, map
 	else:
-		editDistance = decodeEditDistance(mapResult.decode())
+		editDistance = decodeEditDistance(mapResult)
 		return editDistance
