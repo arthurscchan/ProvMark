@@ -4,7 +4,7 @@
 
 Usage:
 ~~~~
-./ProvMark bg <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]
+./ProvMark bg <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial>]
 ~~~~
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
@@ -24,9 +24,9 @@ Example for CamFlow (note that the "tool base directory" is unused and arbitrary
 - cam:    CamFlow
 
 #### Tools Base Directory:
-- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools; ignored for CamFlow
+- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools; ignored if tools are globally accessible
 
-#### Benchmark Directory:
+#### Benchmark Program Directory:
 - Base directory of the benchmark program
 - Point the script to the syscall choice for the benchmarking process
 
@@ -39,7 +39,7 @@ Example for CamFlow (note that the "tool base directory" is unused and arbitrary
 - general.clingo-program-[MD5Hash]: generalized foreground graph
 - general.clingo-control-[MD5Hash]: generalized background graph
 - result-[MD5Hash].clingo: final benchmark graph
-- Remark: There will be mutliple result with different MD5Hash indicating it is the result for the non-deterministic branch with that fingerprint. For deterministic input, there will only be one set of result.
+- Remark: The MD5Hash indicating the fingerprint for this graph or benchmark. For deterministic input, there will only be one set of result. For non-deterministic input, there will be multiple set of result indicating different possible branches. The result of each branches will bear a different MD5Hash fingerprint
 
 #### Output Clingo File Format
 
@@ -88,7 +88,7 @@ Example for batch execution of CamFlow (again, the base directory is ignored in 
 - cam:    CamFlow
 
 #### Tools Base Directory:
-- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system with a specific provenance collecting tool; ignored for CamFlow
+- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system with a specific provenance collecting tool; ignored if tools are globally accessible
 
 #### Result Type:
 - rb: benchmark only
@@ -102,3 +102,58 @@ Example for batch execution of CamFlow (again, the base directory is ignored in 
 - Benchmark graph stored in each syscall subdirectory separately
 - Generalized foreground and background graph stored in each syscall subdirectory separately (rg and rh only)
 - An index.html file stored in finalResult directory to display all graph in html table (rh only)
+
+## Single Execution (Evaluation / Pattern Discovery)
+
+Usage:
+~~~~
+./ProvMark bt <Tools> <Tools Base Directory> <Testing Program> -f <Benchmark File>
+./ProvMark bt <Tools> <Tools Base Directory> <Testing Program> -d <Benchmark Directory>
+~~~~
+
+Example for evaluating single benchmark generating using SPADE with Graphviz storage on testing program target:
+~~~~
+./ProvMark bt spg /path/to/spade/base/directory /path/to/program/target -f /path/to/benchmark
+~~~~
+
+Example for evaluating multiple benchmark generating using CamFlow on testing program target (note that the "tool base directory" is unused and arbitrary in this case):
+~~~~
+./ProvMark bt cam . /path/to/program/target -d /path/to/directory/cotains/all/benchmark 
+~~~~
+
+#### Currently Supported Tools:
+- spg:    SPADE with Graphviz storage
+- spn:    SPADE with Neo4j storage
+- opu:    OPUS
+- cam:    CamFlow
+
+#### Tools Base Directory:
+- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools; ignored if tools are globally accessible
+
+#### Testing Program:
+- An executable used for evaluation
+- ProvMark will check if the patterns determine by the given benchmark files exists in this program
+
+#### Benchmark File:
+- Path to the single benchmark file for evaluation
+
+#### Benchmark Directory:
+- Path to the directory containing mutliple benchmark files for evaluation
+
+#### Output:
+- Three line of output
+
+Sample output when benchmark patterns exist in the testing program
+~~~~
+Minimum Edit Distance between all benchmark patterns and the testing program provenance graph: 12
+Threshold set: 100
+Conclusion: syscall action sequence represent by benchmark patterns does exist in the testing program
+~~~~
+
+Sample output when benchmark patterns not exist in the testing program
+~~~~
+Minimum Edit Distance between all benchmark patterns and the testing program provenance graph: 112
+Threshold set: 100 
+Conclusion: syscall action sequence represent by benchmark patterns does not exist in the testing program                         
+~~~~
+
