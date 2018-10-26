@@ -135,33 +135,23 @@ def clingoOperation(clingoCode, graph1, graph2, baseDir):
 
 	return result.decode()
 
-def processGraphBasic(graph1Path, graph2Path, clingoCode, baseDir):
-	file = open(graph1Path, 'r')
-	graph1 = fixIdentifier(file.read(), 1)
-	file.close()
+#Read Graph
+def readGraph(path, id):
+	with open(path, "r") as file:
+		graph = fixIdentifier(file.read(), id)
 
-	file = open(graph2Path,'r')
-	graph2 = fixIdentifier(file.read(), 2)
-	file.close()
+	return graph
 
+def processGraphBasic(graph1, graph2, clingoCode, baseDir):
 	mapResult = clingoOperation(clingoCode, graph1, graph2, baseDir)
 
 	map = decodeClingoResult(mapResult)
 	return map
 
 #Graph Process
-def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
-	#Read Graph
-	file = open(graph1Path, 'r')
-	graph1 = fixIdentifier(file.read(), 1)
-	file.close()
+def processGraph(graph1, graph2, clingoCode, baseDir, isMapping):
+	mapResult = clingoOperation(clingoCode, graph1, graph2, baseDir)	
 
-	file = open(graph2Path,'r')
-	graph2 = fixIdentifier(file.read(), 2)
-	file.close()
-
-	mapResult = clingoOperation(clingoCode, graph1, graph2, baseDir)
-	
 	if isMapping:
 		#Process Graph
 		graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
@@ -196,8 +186,8 @@ def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 		for key in sorted(graph1Edge.keys()):
 			if key in graph2Edge:
 				map[key] = key
-		return graph2Node, graph2Edge, graph1Props, graph2Props, map
 
+		return graph2Node, graph2Edge, graph1Props, graph2Props, map
 	else:
 		editDistance = decodeEditDistance(mapResult)
 		return editDistance

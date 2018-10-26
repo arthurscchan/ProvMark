@@ -51,6 +51,7 @@ config.read('%s/config/config.ini' % baseDir)
 stage1Tool = config[tool]['stage1tool']
 stage2Handler = config[tool]['stage2handler']
 template = config[tool]['template']
+threshold = config[tool]['threshold']
 
 #Stage 1 - Start the tools and generate graph for the testing program (neo4j / dot / provjson)
 start = time.time()
@@ -81,16 +82,16 @@ t2 = end-start
 start = time.time()
 print ('Starting stage 3...Identifying if any benchmark patterns exists in the testing provenace provenance
 
-#os.system('sudo chmod +x %s/processGraph/evaluateBenchmark.py' % baseDir)
-#stage3Command = 'sudo %s/processGraph/evaluateBenchmark.py %s' % (baseDir, workingDir)
+os.system('sudo chmod +x %s/processGraph/evaluateBenchmark.py' % baseDir)
+stage3Command = 'sudo %s/processGraph/evaluateBenchmark.py %s %s %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), threshold)
 
-#result = subprocess.check_output(stage3Command.split())
+result = subprocess.check_output(stage3Command.split())
 
 print ('End of stage 3\n')
 end = time.time()
 t3 = end-start
 
 #Final Result
-#print ('Minimum Edit Distance between all benchmark patterns and the testing program provenance graph: %d')
-#print ('Threshold set: %d')
-#print ('Conclusion: syscall action sequence represent by benchmark patterns does %s exist in the testing program')
+print ('Minimum Edit Distance between all benchmark patterns and the testing program provenance graph: %s' % result.split('/')[0])
+print ('Threshold: %s' % result.split('/')[1])
+print ('Conclusion: syscall action sequence represent by benchmark patterns does%s exist in the testing program' % result.split('/')[2])

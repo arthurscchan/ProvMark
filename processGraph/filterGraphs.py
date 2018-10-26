@@ -48,7 +48,7 @@ for i in range(0,len(graphs)):
 		if sizes[i] != sizes[j]:
 			#print("Sizes differ.  Definitely not isomorphic.")
 			continue
-		map = processGraphBasic(graphs[i], graphs[j], clingoCode, os.path.abspath('../'))
+		map = processGraphBasic(readGraph(graphs[i], 1), readGraph(graphs[j], 2), clingoCode, os.path.abspath('../'))
 		#print(map)
 		if map != None:
 			#print("Isomorphic.  Setting firstIso[%d] to %d" % (i,firstIso[j]))
