@@ -37,7 +37,7 @@ for path in ['%s/%s' % (benchmarkDir,name) for name in os.listdir(benchmarkDir)]
 		if minEditDistance > int(editDistance):
 			minEditDistance = int(editDistance)
 			benchmarkNode, benchmarkEdge, benchmarkProps = clingo2Dict(benchmark)
-			found = true
+			found = True
 
 if found:
 	#Total number of elements of the testing program minus total number of elements of the benchmark
