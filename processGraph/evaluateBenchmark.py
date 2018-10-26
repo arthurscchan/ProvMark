@@ -5,13 +5,21 @@ import sys
 from clingoFunction import *
 
 #Check for argument
-if len(sys.argv) != 2:
-        print ("Usage: %s <Working Directory>" % sys.argv[0])
+if len(sys.argv) != 3:
+        print ("Usage: %s <Working Directory> <Clingo Code Template File> <threshold>" % sys.argv[0])
         quit()
 
 baseDir = os.path.abspath('%s/../' % sys.argv[1])
 workingDir = os.path.abspath(sys.argv[1])
 benchmarkDir = os.path.abspath('%s/benchmark' % sys.argv[1])
+if sys.argv[2].isdigit():
+	threshold = int(sys.argv[2])
+else:
+	threshold = 0
+
+file = open(os.path.abspath(sys.argv[2]),'r')
+clingoCode = file.read()
+file.close()
 
 os.chdir(workingDir)
 
@@ -20,12 +28,25 @@ graph = readGraph("%s/clingo-testing" % workingDir, 1)
 graphNode, graphEdge, graphProps = clingo2Dict(graph)
 
 # Process benchmark graph
-benchmarkList = list()
+found = False
+minEditDistance = sys.maxsize
 for path in ['%s/%s' % (benchmarkDir,name) for name in os.listdir(benchmarkDir)]:
 	benchmark = readGraph(path, 1)
-	node, edge, props = clingo2Dict(benchmark)
-	benchmarkList.append({'graph':benchmark, 'node':node, 'edge':edge, 'props':props})
+	editDistance = processGraph(graph, benchmark, clingoCode, baseDir, False)
+	if editDistance.isdigit():
+		if minEditDistance > int(editDistance):
+			minEditDistance = int(editDistance)
+			benchmarkNode, benchmarkEdge, benchmarkProps = clingo2Dict(benchmark)
+			found = true
 
-#benchmarkEditDistance = list()
-#for benchmark in benchmarkList:
-#	benchmark
+if found:
+	#Total number of elements of the testing program minus total number of elements of the benchmark
+	difference = len(graphNode) + len(graphEdge) + len(graphProps) - len(benchmarkNode) - len(benchmarkEdge) - len(benchmarkProps)
+
+	#If sum of threshold and the difference larger than or equal to edit distance, then pattern exists.
+	if (difference + threshold) > editDistance:
+		print ('%d/' % editDistance)
+	else
+		print ('%d/ not' % editDistance)
+else:
+	print ('%d/ not' % (len(graphNode) + len(graphEdge) + len(graphProps)))
