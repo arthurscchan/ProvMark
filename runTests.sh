@@ -27,23 +27,59 @@ do
 
 		echo "Generating provenance benchmark for $syscall in group $i using $1 settings..."
 		sudo ./fullAutomation.py $1 $2 benchmarkProgram/baseSyscall/$i/$j 
-		sudo genClingoGraph/clingo2Dot.py result/result.clingo result.dot
-		sudo dot -Tsvg -o "finalResult/$syscall/benchmark.svg" result.dot
-		sudo rm -f result.dot
+		
+		unset benchmark
+		for result in `ls result/result-*.clingo`
+		do
+			fingerprint=`echo $result | cut -d- -f2 | cut -d. -f1`
+			sudo genClingoGraph/clingo2Dot.py result/$result $fingerprint.dot
+			sudo dot -Tsvg -o "finalResult/$syscall/benchmark-$fingerprint.svg" $fingerprint.dot
+			sudo rm -f $fingerprint.dot
+			if [ ! -z $benchmark ]
+			then
+				benchmark=$benchmark"<br/><hr/><br/>"
+			fi
+			benchmark=$benchmark$(cat template/element.html | sed "s|@@@ELEMENT@@@|benchmark-${fingerprint}|g")
+		done
 
 		if [ "$3" != "rb" ]
 		then
-			sudo genClingoGraph/clingo2Dot.py result/general.clingo-control control.dot
-			sudo dot -Tsvg -o "finalResult/$syscall/background.svg" control.dot
-			sudo rm -f control.dot
+			unset background
+			for result in `ls result/general.clingo-control-*`
+			do
+				fingerprint=`echo $result | cut -d- -f3`
+				sudo genClingoGraph/clingo2Dot.py result/$result $fingerprint.dot
+				sudo dot -Tsvg -o "finalResult/$syscall/background-$fingerprint.svg" $fingerprint.dot
+				sudo rm -f $fingerprint.dot
+				if [ ! -z $background ]
+	                        then
+	                                background=$background"<br/><hr/><br/>"
+	                        fi
+        	                background=$background$(cat template/element.html | sed "s|@@@ELEMENT@@@|background-${fingerprint}|g")
+			done
 
-			sudo genClingoGraph/clingo2Dot.py result/general.clingo-program program.dot
-			sudo dot -Tsvg -o "finalResult/$syscall/foreground.svg" program.dot
-			sudo rm -f program.dot
+			unset foreground
+			for result in `ls result/general.clingo-program-*`
+			do
+				fingerprint=`echo $result | cut -d- -f3`
+				sudo genClingoGraph/clingo2Dot.py result/$result $fingerprint.dot
+				sudo dot -Tsvg -o "finalResult/$syscall/foreground-$fingerprint.svg" $fingerprint.dot
+				sudo rm -f $fingerprint.dot
+				if [ ! -z $foreground ]
+	                        then
+	                                foreground=$foreground"<br/><hr/><br/>"
+	                        fi
+        	                foreground=$foreground$(cat template/element.html | sed "s|@@@ELEMENT@@@|foreground-${fingerprint}|g")
+			done
 
 			if [ "$3" = "rh" ]
 			then
-				row=$row$(cat template/row.html | sed "s|@@@SYSCALL@@@|${syscall}|g")
+				newrow=$(cat template/row.html | sed "s|@@@BACKGROUND@@@|${background}|g")
+				newrow=$(echo $newrow | sed "s|@@@FOREGROUND@@@|${foreground}|g")
+				newrow=$(echo $newrow | sed "s|@@@BENCHMARK@@@|${benchmark}|g")
+				newrow=$(echo $newrow | sed "s|@@@SYSCALL@@@|${syscall}|g")
+
+				row=$row$newrow
 			fi
 		fi
 

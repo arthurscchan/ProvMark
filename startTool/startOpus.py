@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 import time
+import hashlib
 import subprocess
 
 #Retrieve arguments
@@ -34,6 +36,8 @@ os.chdir(opusPath)
 subprocess.call('./update-wrapper')
 
 os.chdir(workingPath)
+
+fingerprintSet = set()
 
 #Get Audit Log
 for i in range(1, trial+1):
@@ -69,10 +73,25 @@ for i in range(1, trial+1):
 	subprocess.call((baseCommand % 'server start').split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 	#Capture Provenance
-	subprocess.call((baseCommand % ('process launch %s/test' % stagePath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+	subprocess.call((baseCommand % ('process launch trace-cmd record -e syscalls %s/test' % stagePath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	
 	#Stop Opus Server
 	subprocess.call((baseCommand % 'server stop').split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-	#Wait for Data Flushing
-	time.sleep(2)
+	#Handle FTrace Fingerprint
+	ftraceResult = subprocess.check_output('trace-cmd report'.split())
+	if ftraceResult:
+		syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
+
+	fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
+	fingerprintSet.add(fingerprint)
+
+	#Handle fingerprint folder
+	if not os.path.exists('%s/%s' %(workingPath, fingerprint)):
+		os.makedirs('%s/%s' %(workingPath, fingerprint))
+		os.chown('%s/%s' %(workingPath, fingerprint), 1000, 1000)
+
+	os.rename('%s/output.db-%s-%d' % (workingPath,suffix,i),'%s/%s/output.db-%s-%d' % (workingPath,fingerprint,suffix,i))
+
+for fingerprint in fingerprintSet:
+	print(fingerprint)

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 import time
 import shutil
 import subprocess
 import json
+import hashlib
 
 #Merger Json
 def mergeJson(base, line):
@@ -92,13 +94,20 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	subprocess.call('camflow --duplicate true'.split())
 	subprocess.call('camflow -e true'.split())
 #	subprocess.call('camflow -a true'.split())
-	os.system('%s/test' % stagePath)
+	subprocess.call(('trace-cmd record -e syscalls %s/test' % stagePath).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 #	subprocess.call('camflow -a false'.split())
 	subprocess.call('camflow -e false'.split())
 #	subprocess.call('camflow --duplicate false'.split())
 	subprocess.call(('camflow --track-file %s/test false' % stagePath).split())
 	time.sleep(1)
 	subprocess.call('service camflowd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+	#Handle FTrace Fingerprint
+	ftraceResult = subprocess.check_output('trace-cmd report'.split())
+	if ftraceResult:
+		syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
+	
+	fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
 
 	#Process provenance result into 1 json
 	result={}
@@ -124,9 +133,14 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 #	file.write(json.dumps(mergeNode(oldNode,result)))
 #	file.close()
 
+	#Handle fingerprint folder
+	if not os.path.exists('%s/%s' %(workingPath, fingerprint)):
+		os.makedirs('%s/%s' %(workingPath, fingerprint))
+		os.chown('%s/%s' %(workingPath, fingerprint), 1000, 1000)
+
 	if not isModel:
 		#Writing result to json
-		file = open('%s/output.provjson-%s' %(workingPath, suffix), 'w')
+		file = open('%s/%s/output.provjson-%s' %(workingPath, fingerprint, suffix), 'w')
 		file.write(json.dumps(result))
 		file.close()
 
@@ -135,6 +149,7 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 	except IOError:
 		pass
 
+	return fingerprint
 
 #Retrieve arguments
 trial = 0
@@ -160,6 +175,8 @@ gccMacro = ""
 for item in macroOpt.split(','):
         gccMacro = "%s -D%s" %(gccMacro,item)
 
+fingerprintSet = set()
+
 #Create Model Data
 #subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
 #startCamflow(stagePath, workingPath, '', True)
@@ -167,5 +184,7 @@ for item in macroOpt.split(','):
 for i in range(1, trial+1):
 	#Prepare the benchmark program
 	subprocess.check_output(('%s/prepare %s %s --static' %(progPath, stagePath, gccMacro)).split())
-	startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i), False)
-		
+	fingerprintSet.add(startCamflow(stagePath, workingPath, '%s-%d' % (suffix, i), False))
+	
+for fingerprint in fingerprintSet:
+	print (fingerprint)
