@@ -32,7 +32,7 @@ do
 		for result in `ls result/result-*.clingo`
 		do
 			fingerprint=`echo $result | cut -d- -f2 | cut -d. -f1`
-			sudo genClingoGraph/clingo2Dot.py result/$result $fingerprint.dot
+			sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
 			sudo dot -Tsvg -o "finalResult/$syscall/benchmark-$fingerprint.svg" $fingerprint.dot
 			sudo rm -f $fingerprint.dot
 			if [ ! -z $benchmark ]
@@ -48,7 +48,7 @@ do
 			for result in `ls result/general.clingo-control-*`
 			do
 				fingerprint=`echo $result | cut -d- -f3`
-				sudo genClingoGraph/clingo2Dot.py result/$result $fingerprint.dot
+				sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
 				sudo dot -Tsvg -o "finalResult/$syscall/background-$fingerprint.svg" $fingerprint.dot
 				sudo rm -f $fingerprint.dot
 				if [ ! -z $background ]
@@ -62,7 +62,7 @@ do
 			for result in `ls result/general.clingo-program-*`
 			do
 				fingerprint=`echo $result | cut -d- -f3`
-				sudo genClingoGraph/clingo2Dot.py result/$result $fingerprint.dot
+				sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
 				sudo dot -Tsvg -o "finalResult/$syscall/foreground-$fingerprint.svg" $fingerprint.dot
 				sudo rm -f $fingerprint.dot
 				if [ ! -z $foreground ]
