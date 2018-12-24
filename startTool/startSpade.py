@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 import time
 import shutil
+import hashlib
 import subprocess
 
 #Start SPADE with config
@@ -37,7 +39,7 @@ def startSpade(workingPath, suffix, loopCount, fingerprint):
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
 	subprocess.call(spadeStop.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	
+
 	time.sleep(loopCount)
 
 	#Recover config file
@@ -77,9 +79,12 @@ file = open('/var/log/audit/audit.log','a')
 file.write('start-start\n')
 file.close()
 
+subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 os.seteuid(1000)
-os.system('trace-cmd record -e syscalls %s/%s' % (stagePath,progName))
+os.system('%s/%s' % (stagePath,progName))
 os.seteuid(0)
+subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
+subprocess.call(('trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 
 #Ensure no one writing to the file
 while True:
@@ -91,7 +96,7 @@ file.write('end-end\n')
 file.close()
 
 #Handle FTrace Fingerprint
-ftraceResult = subprocess.check_output('trace-cmd report'.split())
+ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % (workingPath)).split(), stderr=subprocess.DEVNULL)
 if ftraceResult:
 	syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
 	fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
@@ -118,7 +123,7 @@ end = int(tempResult[totalLine-1].split(':')[0]) - 1
 inFile = open('%s/audit.log' % workingPath, 'r')
 outFile = open('%s/input.log' % workingPath, 'w')
 for c, line in enumerate(inFile):
-	if (c >= start and c <= end):
+	if (c >= start and c < end):
 		outFile.write(line)
 
 inFile.close()
@@ -135,3 +140,4 @@ else:
 	startSpade(workingPath, '%s-%d' %(suffix,i), 2, fingerprint)
 
 print (fingerprint)
+
