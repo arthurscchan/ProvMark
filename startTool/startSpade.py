@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 import time
 import shutil
+import hashlib
 import subprocess
 
 #Start SPADE with config
@@ -37,7 +39,7 @@ def startSpade(workingPath, suffix, loopCount, fingerprint):
 	#Stop SPADE
 	spadeStop = '%s/bin/spade stop' % spadePath
 	subprocess.call(spadeStop.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	
+
 	time.sleep(loopCount)
 
 	#Recover config file
@@ -96,9 +98,12 @@ for i in range(1, trial+1):
 	file.write('start%dstart%d\n' % (i,i))
 	file.close()
 
+	subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 	os.seteuid(1000)
-	os.system('trace-cmd record -e syscalls %s/test' % stagePath)
+	os.system('%s/test' % stagePath)
 	os.seteuid(0)
+	subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
+	subprocess.call(('trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 
 	#Ensure no one writing to the file
 	while True:
@@ -108,9 +113,8 @@ for i in range(1, trial+1):
 	file = open('/var/log/audit/audit.log','a')
 	file.write('end%dend%d\n' % (i,i))
 	file.close()
-
 	#Handle FTrace Fingerprint
-	ftraceResult = subprocess.check_output('trace-cmd report'.split())
+	ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % (workingPath)).split(), stderr=subprocess.DEVNULL)
 	if ftraceResult:
 		syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
 	fingerprintList.append(hashlib.md5(''.join(syscallList).encode()).hexdigest())
@@ -122,7 +126,7 @@ shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % workingPath)
 
 #Generate graph for multiple trial 
 for i in range(1, trial+1):
-	print ('Trial %d start' % i)
+#	print ('Trial %d start' % i)
 
 	#Extract audit log line for each trial
 	command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
@@ -140,7 +144,7 @@ for i in range(1, trial+1):
 	inFile = open('%s/audit.log' % workingPath, 'r')
 	outFile = open('%s/input.log' % workingPath, 'w')
 	for c, line in enumerate(inFile):
-		if (c >= start and c <= end):
+		if (c >= start and c < end):
 			outFile.write(line)
 
 	inFile.close()
@@ -148,7 +152,7 @@ for i in range(1, trial+1):
 
 	if not isNeo4j:
 		#Send log lines to SPADE for processing (Repeat if data is empty)
-		outFile = '%s/output.dot-%s-%d' % (workingPath, suffix, i)
+		outFile = '%s/%s/output.dot-%s-%d' % (workingPath, fingerprintList[i-1], suffix, i)
 		loopCount = 0
 		while not os.path.exists(outFile) or os.path.getsize(outFile) < 1000:
 			loopCount = loopCount + 1
@@ -156,7 +160,7 @@ for i in range(1, trial+1):
 	else:
 		startSpade(workingPath, '%s-%d' %(suffix,i), 2, fingerprintList[i-1])
 
-	print ('Trial %d end' % i)
+#	print ('Trial %d end' % i)
 
 for fingerprint in set(fingerprintList):
 	print (fingerprint)
