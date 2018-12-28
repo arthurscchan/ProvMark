@@ -23,8 +23,9 @@
 #minimize { LC,X,K : label_cost(X,K,LC) }.
 
 label_cost(X,K,0) :- l1(X,K,V), match(X,Y), l2(Y,K,V).
-label_cost(X,K,1) :- l1(X,K,V1), match(X,Y), l2(Y,K,V2), V1 <> V2.
+label_cost(X,K,1) :- l1(X,K,V1), match(X,Y), l2(Y,K,V2), V1 <> V2, K <> "event id", K <> "time", K <> "pid", K <> "ppid".
 label_cost(X,K,1) :- l1(X,K,V), match(X,Y), not l2(Y,K,_).
+label_cost(X,K,1) :- l2(X,K,V), match(X,Y), not l1(Y,K,_).
 
 % Display
 #show match/2.

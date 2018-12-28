@@ -142,10 +142,17 @@ def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 
 	#Clingo Operation
 	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
-	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=30'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=600'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 	mapResult = pipe.communicate(input=inputString.encode())[0]
 	if isMapping:
 		map = decodeClingoResult(mapResult.decode())
+		if not map:
+			for key in sorted(graph1Node.keys()):
+				if key in graph2Node:
+					map[key] = key
+			for key in sorted(graph1Edge.keys()):
+				if key in graph2Edge:
+					map[key] = key
 		return graph2Node, graph2Edge, graph1Props, graph2Props, map
 	else:
 		editDistance = decodeEditDistance(mapResult.decode())
