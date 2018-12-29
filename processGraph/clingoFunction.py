@@ -124,6 +124,31 @@ def compareProps(graph1Props, graph2Props, isGeneral):
 				result[key] = graph2Props[key]
 	return result
 
+#Call External Clingo
+def clingoOperation(clingoCode, graph1, graph2, baseDir, isMapping, fail):
+	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
+	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=600'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+	mapResult = pipe.communicate(input=inputString.encode())[0]
+	
+	if isMapping:
+		map = decodeClingoResult(mapResult.decode())
+		if map or fail:
+			#Already remove properties, return map or empty map anyway
+			return map
+		else:
+			graph1NodeEdge = ""
+			for tmp in graph1.split('\n'):
+				if tmp and not tmp.startswith('l'):
+					graph1NodeEdge += "%s\n" % tmp
+			graph2NodeEdge = ""
+			for tmp in graph2.split('\n'):
+				if tmp and not tmp.startswith('l'):
+					graph2NodeEdge += "%s\n" % tmp
+			return clingoOperation(clingoCode, graph1NodeEdge, graph2NodeEdge, baseDir, isMapping, True)
+	else:
+		editDistance = decodeEditDistance(mapResult.decode())
+		return editDistance
+
 #Graph Process
 def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 	#Read Graph
@@ -135,17 +160,13 @@ def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 	graph2 = fixIdentifier(file.read(), 2)
 	file.close()
 
+	#Clingo Operation
 	if isMapping:
 		#Process Graph
 		graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
 		graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
-
-	#Clingo Operation
-	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
-	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=600'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-	mapResult = pipe.communicate(input=inputString.encode())[0]
-	if isMapping:
-		map = decodeClingoResult(mapResult.decode())
+		
+		map = clingoOperation(clingoCode, graph1, graph2, baseDir, isMapping, False)
 		if not map:
 			for key in sorted(graph1Node.keys()):
 				if key in graph2Node:
@@ -155,5 +176,5 @@ def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 					map[key] = key
 		return graph2Node, graph2Edge, graph1Props, graph2Props, map
 	else:
-		editDistance = decodeEditDistance(mapResult.decode())
+		editDistance = clingoOperation(clingoCode, graph1, graph2, baseDir, isMapping, False)
 		return editDistance
