@@ -124,14 +124,14 @@ def compareProps(graph1Props, graph2Props, isGeneral):
 				result[key] = graph2Props[key]
 	return result
 
-#Clingo Operation
+#Call External Clingo
 def clingoOperation(clingoCode, graph1, graph2, baseDir):
 	inputString = '%s\n%s\n%s'%(clingoCode, graph1, graph2)
-	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=30'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+	pipe = subprocess.Popen(['%s/clingo/clingo' % baseDir, '--time-limit=600'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 	result = pipe.communicate(input=inputString.encode())[0]
 
 	return result.decode()
-	
+
 #Read Graph
 def readGraph(path, id):
 	with open(path, "r") as file:
@@ -147,8 +147,35 @@ def processGraph(graph1, graph2, clingoCode, baseDir, isMapping):
 		#Process Graph
 		graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
 		graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
+		
+		map = decodeClingoResult(mapResult)		
+		if map:
+			return graph2Node, graph2Edge, graph1Props, graph2Props, map
+		
+		#Fail first time, remove properties
+		graph1NodeEdge = ""
+		for tmp in graph1.split('\n'):
+			if tmp and not tmp.startswith('l'):
+				graph1NodeEdge += "%s\n" % tmp
+				
+		graph2NodeEdge = ""
+		for tmp in graph2.split('\n'):
+			if tmp and not tmp.startswith('l'):
+				graph2NodeEdge += "%s\n" % tmp
+				
+		mapResult = clingoOperation(clingoCode, graph1NodeEdge, graph2NodeEdge, baseDir)		
+		map = decodeClingoResult(mapResult)		
+		if map:
+			return graph2Node, graph2Edge, graph1Props, graph2Props, map
+		
+		#Fail second time, return default mapping		
+		for key in sorted(graph1Node.keys()):
+			if key in graph2Node:
+				map[key] = key
+		for key in sorted(graph1Edge.keys()):
+			if key in graph2Edge:
+				map[key] = key
 
-		map = decodeClingoResult(mapResult)
 		return graph2Node, graph2Edge, graph1Props, graph2Props, map
 	else:
 		editDistance = decodeEditDistance(mapResult)
