@@ -46,7 +46,8 @@ To run OPUS, you also need a source or binary distribution for hte OPUS system i
 ## CamFlow
 
 ``` shell
-cd ./vagrant/camflow
+cd ./vagrant/camflowv045
+# cd ./vagrant/camflowv043
 vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant halt
