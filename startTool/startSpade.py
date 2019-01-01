@@ -136,22 +136,24 @@ for i in range(1, trial+1):
 	grepCommand = command % ('end%dend%d' % (i,i))
 	tempResult = subprocess.check_output(grepCommand.split()).decode().splitlines()
 	totalLine = len(tempResult)
-	end = int(tempResult[totalLine-1].split(':')[0]) - 1
+	end = int(tempResult[totalLine-1].split(':')[0]) - 2
 
 	inFile = open('%s/audit.log' % workingPath, 'r')
 	outFile = open('%s/input.log' % workingPath, 'w')
 	for c, line in enumerate(inFile):
-		if (c >= start and c < end):
+		if (c >= start and c <= end):
 			outFile.write(line)
 
 	inFile.close()
 	outFile.close()
 
 	if not isNeo4j:
+		if os.path.getsize('%s/input.log' % workingPath) == 0:
+			continue
 		#Send log lines to SPADE for processing (Repeat if data is empty)
 		outFile = '%s/%s/output.dot-%s-%d' % (workingPath, fingerprintList[i-1], suffix, i)
 		loopCount = 0
-		while not os.path.exists(outFile) or os.path.getsize(outFile) < 1000:
+		while not os.path.exists(outFile) or os.path.getsize(outFile) < 162:
 			loopCount = loopCount + 1
 			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprintList[i-1])
 	else:
