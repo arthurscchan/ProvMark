@@ -93,16 +93,20 @@ for i in range(1, trial+1):
 	while True:
 		if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
 			break;
-	
-
-	subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 
 	file = open('/var/log/audit/audit.log','a')
 	file.write('start%dstart%d\n' % (i,i))
 	file.close()
 
 	os.seteuid(1000)
+
+	subprocess.call('sudo trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 	os.system('%s/test' % stagePath)
+
+	subprocess.call('sudo trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
+	subprocess.call(('sudo trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
+
 	os.seteuid(0)
 
 	#Ensure no one writing to the file
@@ -113,9 +117,6 @@ for i in range(1, trial+1):
 	file = open('/var/log/audit/audit.log','a')
 	file.write('end%dend%d\n' % (i,i))
 	file.close()
-
-	subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
-	subprocess.call(('trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 
 	#Handle FTrace Fingerprint
 	ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % (workingPath)).split(), stderr=subprocess.DEVNULL)
