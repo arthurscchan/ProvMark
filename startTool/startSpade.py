@@ -157,7 +157,7 @@ for i in range(1, trial+1):
 		#Send log lines to SPADE for processing (Repeat if data is empty)
 		outFile = '%s/%s/output.dot-%s-%d' % (workingPath, fingerprintList[i-1], suffix, i)
 		loopCount = 0
-		while not os.path.exists(outFile) or os.path.getsize(outFile) < 162:
+		while not os.path.exists(outFile) or os.path.getsize(outFile) <= 162:
 			loopCount = loopCount + 1
 			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprintList[i-1])
 	else:
