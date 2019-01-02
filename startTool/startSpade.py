@@ -74,8 +74,8 @@ for item in macroOpt.split(','):
 
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'
-rule1 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S kill -S exit -S exit_group -S connect' 
-rule2 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -S creat -F success=1'
+rule1 = 'auditctl -a exit,always -F arch=b64 -F euid=1000 -S kill -S exit -S exit_group -S connect' 
+rule2 = 'auditctl -a exit,always -F arch=b64 -F euid=1000 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -S creat -F success=1'
 subprocess.check_output(rule0.split())
 subprocess.check_output(rule1.split())
 subprocess.check_output(rule2.split())
@@ -95,6 +95,8 @@ for i in range(1, trial+1):
 	subprocess.call('trace-cmd reset'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 	subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+	time.sleep(5)
+
 	file = open('/var/log/audit/audit.log','a')
 	file.write('start%dstart%d\n' % (i,i))
 	file.close()
@@ -102,6 +104,8 @@ for i in range(1, trial+1):
 	os.seteuid(1000)
 	os.system('%s/test' % stagePath)
 	os.seteuid(0)
+
+	time.sleep(1)
 
 	file = open('/var/log/audit/audit.log','a')
 	file.write('end%dend%d\n' % (i,i))
