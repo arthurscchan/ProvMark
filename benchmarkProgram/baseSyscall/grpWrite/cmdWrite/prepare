@@ -30,5 +30,8 @@ echo "$CODE">$TMPFILE
 
 gcc -o test ${*:2} $TMPFILE
 
+touch test.txt
+echo "TEST" > test.txt
+
 rm "$TMPFILE"
 chown 1000:1000 *
