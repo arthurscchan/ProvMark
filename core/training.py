@@ -63,14 +63,14 @@ print ('Program')
 for i in range(1,trial+1):
 #	subprocess.check_output(('%s/prepare %s --static -DPROGRAM -DRANDOM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
 	subprocess.check_output(('%s/prepare %s --static -DPROGRAM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
-programFingerprint = subprocess.check_output((stage1Command % ('program-%d' % i)).split()).decode().split()
+	programFingerprint = subprocess.check_output((stage1Command % ('program-%d' % i)).split()).decode().split()
 print ('End Program')
 
 print ('Control')
 for i in range(1,trial+1):
 #	subprocess.check_output(('%s/prepare %s --static -DCONTROL -DRANDOM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
 	subprocess.check_output(('%s/prepare %s --static -DCONTROL -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
-controlFingerprint = subprocess.check_output((stage1Command % ('control-%d' % i)).split()).decode().split()
+	controlFingerprint = subprocess.check_output((stage1Command % ('control-%d' % i)).split()).decode().split()
 print ('End Control')
 
 print ('End of stage 1\n')
