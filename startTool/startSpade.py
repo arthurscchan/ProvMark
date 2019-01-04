@@ -61,8 +61,8 @@ suffix = sys.argv[6]
 
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'
-rule1 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S kill -S exit -S exit_group -S connect' 
-rule2 = 'auditctl -a exit,always -F arch=b64 -F euid!=0 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -S creat -F success=1'
+rule1 = 'auditctl -a exit,always -F arch=b64 -F euid=1000 -S kill -S exit -S exit_group -S connect' 
+rule2 = 'auditctl -a exit,always -F arch=b64 -F euid=1000 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -S creat -F success=1'
 subprocess.check_output(rule0.split())
 subprocess.check_output(rule1.split())
 subprocess.check_output(rule2.split())
@@ -70,30 +70,30 @@ subprocess.check_output(rule2.split())
 #Get Audit Log
 os.chdir(stagePath)
 
-#Ensure no one writing to the file
-while True:
-	if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
-		break;
+if os.path.exists('%s/trace.dat' % workingPath):
+	os.remove('%s/trace.dat' % workingPath)
+
+subprocess.call('trace-cmd reset'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+time.sleep(5)
 
 file = open('/var/log/audit/audit.log','a')
 file.write('start-start\n')
 file.close()
 
-subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 os.seteuid(1000)
 os.system('%s/%s' % (stagePath,progName))
 os.seteuid(0)
-subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
-subprocess.call(('trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)	
 
-#Ensure no one writing to the file
-while True:
-	if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
-		break;
+time.sleep(1)
 
 file = open('/var/log/audit/audit.log','a')
 file.write('end-end\n')
 file.close()
+
+subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+subprocess.call(('trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 #Handle FTrace Fingerprint
 ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % (workingPath)).split(), stderr=subprocess.DEVNULL)
@@ -118,26 +118,26 @@ start = int(tempResult[totalLine-1].split(':')[0]) + 1
 grepCommand = command % ('end-end')
 tempResult = subprocess.check_output(grepCommand.split()).decode().splitlines()
 totalLine = len(tempResult)
-end = int(tempResult[totalLine-1].split(':')[0]) - 1
+end = int(tempResult[totalLine-1].split(':')[0]) - 2
 
 inFile = open('%s/audit.log' % workingPath, 'r')
 outFile = open('%s/input.log' % workingPath, 'w')
 for c, line in enumerate(inFile):
-	if (c >= start and c < end):
+	if (c >= start and c <= end):
 		outFile.write(line)
 
 inFile.close()
 outFile.close()
 
 if not isNeo4j:
-	#Send log lines to SPADE for processing (Repeat if data is empty)
-	outFile = '%s/output.dot-%s' % (workingPath, suffix)
-	loopCount = 0
-	while not os.path.exists(outFile) or os.path.getsize(outFile) < 1000:
-		loopCount = loopCount + 1
-		startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprint)
+	if os.path.getsize('%s/input.log' % workingPath) > 0:
+		#Send log lines to SPADE for processing (Repeat if data is empty)
+		outFile = '%s/output.dot-%s' % (workingPath, suffix)
+		loopCount = 0
+		while not os.path.exists(outFile) or os.path.getsize(outFile) <= 162:
+			loopCount = loopCount + 1
+			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprint)
 else:
 	startSpade(workingPath, '%s-%d' %(suffix,i), 2, fingerprint)
 
 print (fingerprint)
-
