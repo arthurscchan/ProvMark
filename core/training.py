@@ -105,6 +105,34 @@ print ('End of stage 2\n')
 end = time.time()
 t2 = end-start
 
+if filterGraphs:
+	#Stage 3a - Filter out non-isomorphic graphs
+	start = time.time()
+	print ('Starting stage 3a...Fltering out non-isomorphic graphs')
+
+	os.system('sudo chmod +x %s/processGraph/filterGraphs.py' % baseDir)
+	stage3aCommand = 'sudo %s/processGraph/filterGraphs.py %s %s %s' % (baseDir,workingDir, ('%s/processGraph/isoTemplate.lp' % baseDir), '%s')
+
+	for fingerprint in controlFingerprint:
+		dir = os.path.abspath('%s/control-%s' % (workingDir, fingerprint))
+		if os.path.isdir(dir):
+			command = stage3aCommand
+			for file in ('%s/%s' % (dir,name) for name in os.listdir(dir) if name.startswith('clingo-control')):
+				command = command % ('%s %s' % (file, '%s'))
+			subprocess.call((command % '').split())
+
+	for fingerprint in programFingerprint:
+		dir = os.path.abspath('%s/program-%s' % (workingDir, fingerprint))
+		if os.path.isdir(dir):
+			command = stage3aCommand
+			for file in ('%s/%s' % (dir,name) for name in os.listdir(dir) if name.startswith('clingo-program')):
+				command = command % ('%s %s' % (file, '%s'))
+			subprocess.call((command % '').split())
+
+	print ('End of stage 3a\n')
+	end = time.time()
+	t3a= end-start
+
 #Stage 3 - Generalize graph
 start = time.time()
 print ('Starting stage 3...Generalizing graph from multiple trial')

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [[ "$#" -ne 3 || ("$3" != "rb" && "$3" != "rg" && "$3" != "rh") ]] 
+if [[ "$#" -lt 3 || ("$3" != "rb" && "$3" != "rg" && "$3" != "rh") ]] 
 then
-	echo "Usage: "$0" <Tools> <Tools_Path> <Result Type>"
+	echo "Usage: "$0" <Tools> <Tools_Path> <Result Type> <Num Trials>"
 	echo "Result Type:"
 	echo "rb: benchmark only"
 	echo "rg: benchmark and generalized foreground and background graph only"
@@ -26,7 +26,7 @@ do
 		fi
 
 		echo "Generating provenance benchmark for $syscall in group $i using $1 settings..."
-		sudo ./ProvMark bg $1 $2 benchmarkProgram/baseSyscall/$i/$j 2
+		sudo ./ProvMark bg $1 $2 benchmarkProgram/baseSyscall/$i/$j $4
 
 		unset benchmark
 		for result in `ls result/result-*.clingo`
