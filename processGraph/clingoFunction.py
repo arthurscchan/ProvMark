@@ -62,6 +62,9 @@ def dict2Clingo(nodeDict, edgeDict, graphDict, suffix):
 
 #Retrieve mapping result from Clingo
 def decodeClingoResult(result):
+	for line in result.split('\n'):
+		if line.startswith('UNSATISFIABLE'):
+			return None
 	map = dict()
 	# get the last line starting with "match"
 	lastline = None
@@ -132,6 +135,23 @@ def clingoOperation(clingoCode, graph1, graph2, baseDir):
 
 	return result.decode()
 
+def processGraphBasic(graph1Path, graph2Path, clingoCode, baseDir):
+	file = open(graph1Path, 'r')
+	graph1 = fixIdentifier(file.read(), 1)
+	file.close()
+
+	file = open(graph2Path,'r')
+	graph2 = fixIdentifier(file.read(), 2)
+	file.close()
+
+	mapResult = clingoOperation(clingoCode, graph1, graph2, baseDir)
+
+	graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
+	graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
+	
+	map = decodeClingoResult(mapResult)
+	return (graph1Node, graph1Edge, graph1Props), (graph2Node, graph2Edge, graph2Props), map
+
 #Graph Process
 def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 	#Read Graph
@@ -178,6 +198,7 @@ def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 			if key in graph2Edge:
 				map[key] = key
 		return graph2Node, graph2Edge, graph1Props, graph2Props, map
+
 	else:
 		editDistance = decodeEditDistance(mapResult)
 		return editDistance
