@@ -15,6 +15,9 @@ def helpMenu(name):
 	print ('Benchmark Directory: Base directory of the benchmark program')
 	print ('Trial:	Number of trial executed for each graph for generalization (Default: 2)')
 
+#change to enable fitlering non-isomorphic graphs
+filterGraphs = False
+
 #Prepare stage and working directory
 def prepareDir(directory):
 	if os.path.exists(directory):
