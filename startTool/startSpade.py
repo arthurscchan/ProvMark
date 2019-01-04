@@ -13,9 +13,9 @@ def startSpade(workingPath, suffix, loopCount, fingerprint):
 	global isNeo4j, spadePath
 
 	#Handle fingerprint folder
-	if not os.path.exists('%s/%s' %(workingPath, fingerprint)):
-		os.makedirs('%s/%s' %(workingPath, fingerprint))
-		os.chown('%s/%s' %(workingPath, fingerprint), 1000, 1000)
+	if not os.path.exists('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint)):
+		os.makedirs('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint))
+		os.chown('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint), 1000, 1000)
 
 	#Initialize Config File
 	try:
@@ -25,9 +25,9 @@ def startSpade(workingPath, suffix, loopCount, fingerprint):
 	file = open('%s/cfg/spade.config' % spadePath, 'w')
 	file.write('add reporter Audit inputLog=%s/input.log arch=64 fileIO=true\n' % workingPath)
 	if isNeo4j:
-		file.write('add storage Neo4j %s/%s/output.db-%s\n' % (workingPath, fingerprint, suffix))	
+		file.write('add storage Neo4j %s/%s-%s/output.db-%s\n' % (workingPath, suffix.split('-')[0], fingerprint, suffix))
 	else:
-		file.write('add storage Graphviz %s/%s/output.dot-%s\n' % (workingPath, fingerprint, suffix))
+		file.write('add storage Graphviz %s/%s-%s/output.dot-%s\n' % (workingPath, suffix.split('-')[0], fingerprint, suffix))
 	file.close()
 
 	#Start SPADE

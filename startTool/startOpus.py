@@ -87,11 +87,11 @@ for i in range(1, trial+1):
 	fingerprintSet.add(fingerprint)
 
 	#Handle fingerprint folder
-	if not os.path.exists('%s/%s' %(workingPath, fingerprint)):
-		os.makedirs('%s/%s' %(workingPath, fingerprint))
-		os.chown('%s/%s' %(workingPath, fingerprint), 1000, 1000)
+	if not os.path.exists('%s/%s-%s' %(workingPath, suffix, fingerprint)):
+		os.makedirs('%s/%s-%s' %(workingPath, suffix, fingerprint))
+		os.chown('%s/%s-%s' %(workingPath, suffix, fingerprint), 1000, 1000)
 
-	os.rename('%s/output.db-%s-%d' % (workingPath,suffix,i),'%s/%s/output.db-%s-%d' % (workingPath,fingerprint,suffix,i))
+	os.rename('%s/output.db-%s-%d' % (workingPath,suffix,i),'%s/%s-%s/output.db-%s-%d' % (workingPath,suffix,fingerprint,suffix,i))
 
 for fingerprint in fingerprintSet:
 	print(fingerprint)
