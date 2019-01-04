@@ -67,10 +67,10 @@ if ftraceResult:
 fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
 
 #Handle fingerprint folder
-if not os.path.exists('%s/%s' %(workingPath, fingerprint)):
-	os.makedirs('%s/%s' %(workingPath, fingerprint))
-	os.chown('%s/%s' %(workingPath, fingerprint), 1000, 1000)
+if not os.path.exists('%s/%s-%s' %(workingPath, suffix, fingerprint)):
+	os.makedirs('%s/%s-%s' %(workingPath, suffix, fingerprint))
+	os.chown('%s/%s-%s' %(workingPath, suffix, fingerprint), 1000, 1000)
 
-os.rename('%s/output.db-%s' % (workingPath,suffix),'%s/%s/output.db-%s' % (workingPath,fingerprint,suffix))
+os.rename('%s/output.db-%s-%d' % (workingPath,suffix,i),'%s/%s-%s/output.db-%s-%d' % (workingPath,suffix,fingerprint,suffix,i))
 
 print(fingerprint)
