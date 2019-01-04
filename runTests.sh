@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$#" -ne 3 || ("$3" != "rb" && "$3" != "rg" && "$3" != "rh") ]] 
+if [[ "$#" -lt 3 || ("$3" != "rb" && "$3" != "rg" && "$3" != "rh") ]] 
 then
 	echo "Usage: "$0" <Tools> <Tools_Path> <Result Type> <Num Trials>"
 	echo "Result Type:"
