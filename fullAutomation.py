@@ -64,7 +64,6 @@ stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s %s %d' % (baseDir, stage1To
 
 print ('Program')
 #programFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'PROGRAM,RANDOM,READ=2,WRITE=2', 'program')).split())
-print(stage1Command % (benchmarkDir, 'PROGRAM,READ=2,WRITE=2', 'program'))
 programFingerprint = subprocess.check_output((stage1Command % (benchmarkDir, 'PROGRAM,READ=2,WRITE=2', 'program')).split()).decode().split()
 print ('End Program')
 
