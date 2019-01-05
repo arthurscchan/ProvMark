@@ -132,12 +132,12 @@ outFile.close()
 if not isNeo4j:
 	if os.path.getsize('%s/input.log' % workingPath) > 0:
 		#Send log lines to SPADE for processing (Repeat if data is empty)
-		outFile = '%s/output.dot-%s' % (workingPath, suffix)
+		outFile = '%s/%s-%s/output.dot-%s' % (workingPath, suffix.split('-')[0], fingerprint, suffix)
 		loopCount = 0
 		while not os.path.exists(outFile) or os.path.getsize(outFile) <= 162:
 			loopCount = loopCount + 1
-			startSpade(workingPath, '%s-%d' %(suffix,i), loopCount, fingerprint)
+			startSpade(workingPath, '%s' % suffix, loopCount, fingerprint)
 else:
-	startSpade(workingPath, '%s-%d' %(suffix,i), 2, fingerprint)
+	startSpade(workingPath, '%s' % suffix, 2, fingerprint)
 
 print (fingerprint)

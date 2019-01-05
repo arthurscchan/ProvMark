@@ -11,10 +11,12 @@ echo 'deb https://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.lis
 sudo apt-get update
 sudo apt-get install -y neo4j
 sudo apt-get install -y cypher-shell
+sudo apt-get install -y git
 
 ## ProvMark stuff
-sudo apt-get install python3-pip 
-sudo apt-get install realpath
-sudo apt-get install trace-cmd
+sudo apt-get install -y python3-pip 
+sudo apt-get install -y realpath
+sudo apt-get install -y trace-cmd
+sudo pip3 install setuptools --upgrade
 sudo pip3 install json_merger
 git clone https://github.com/arthurscchan/ProvMark.git 

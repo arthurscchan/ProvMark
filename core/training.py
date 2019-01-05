@@ -15,6 +15,9 @@ def helpMenu(name):
 	print ('Benchmark Program Directory: Base directory of the benchmark program')
 	print ('Trial:	Number of trial provenance capture for each case (Default: 2)')
 
+#change to enable fitlering non-isomorphic graphs
+filterGraphs = False
+
 #Prepare stage and working directory
 def prepareDir(directory):
 	if os.path.exists(directory):
