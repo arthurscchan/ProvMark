@@ -16,7 +16,7 @@ def helpMenu(name):
 	print ('Trial:	Number of trial executed for each graph for generalization (Default: 2)')
 
 #change to enable fitlering non-isomorphic graphs
-filterGraphs = True
+filterGraphs = False
 
 #Prepare stage and working directory
 def prepareDir(directory):
