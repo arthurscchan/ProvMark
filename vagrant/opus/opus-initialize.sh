@@ -9,8 +9,8 @@ echo "Warning: Please get a licensed OPUS copy and extract to any location"
 wget -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
 echo 'deb https://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
 sudo apt-get update
-sudo apt-get -y install neo4j
-sudo apt-get -y install cypher-shell
+sudo apt-get -y install neo4j=2.2.4
+#sudo apt-get -y install cypher-shell
 sudo apt-get -y install git
 
 ## Install Java 8
