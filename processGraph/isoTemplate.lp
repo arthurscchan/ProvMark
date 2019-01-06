@@ -29,6 +29,10 @@
 :- e1(E1,X1,_,_), match(E1,E2), e2(E2,Y1,_,_), not match(X1,Y1).
 :- e1(E1,_,X2,_), match(E1,E2), e2(E2,_,Y2,_), not match(X2,Y2).
 
+% properties on one side exist on the other
+:- l1(X,K,_), match(X,Y), not l2(Y,K,_).
+:- l2(Y,K,_), match(X,Y), not l1(X,K,_).
+
 
 % Display
 #show match/2.

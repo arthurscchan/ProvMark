@@ -145,11 +145,8 @@ def readGraph(path, id):
 def processGraphBasic(graph1Path, graph2Path, clingoCode, baseDir):
 	mapResult = clingoOperation(clingoCode, graph1, graph2, baseDir)
 
-	graph1Node, graph1Edge, graph1Props = clingo2Dict(graph1)
-	graph2Node, graph2Edge, graph2Props = clingo2Dict(graph2)
-	
 	map = decodeClingoResult(mapResult)
-	return (graph1Node, graph1Edge, graph1Props), (graph2Node, graph2Edge, graph2Props), map
+	return map
 
 #Graph Process
 def processGraph(graph1, graph2, clingoCode, baseDir, isMapping):

@@ -111,7 +111,7 @@ t2 = end-start
 if filterGraphs:
 	#Stage 3a - Filter out non-isomorphic graphs
 	start = time.time()
-	print ('Starting stage 3a...Fltering out non-isomorphic graphs')
+	print ('Starting stage 3a...Filtering out non-isomorphic graphs')
 
 	os.system('sudo chmod +x %s/processGraph/filterGraphs.py' % baseDir)
 	stage3aCommand = 'sudo %s/processGraph/filterGraphs.py %s %s %s' % (baseDir,workingDir, ('%s/processGraph/isoTemplate.lp' % baseDir), '%s')
