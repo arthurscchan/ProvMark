@@ -4,6 +4,7 @@ In this folder, it contains the vagrant files for starting up a virtual machine 
 the original developer of the provenance collecting tools. Please refer to their own repository and documentation if needed.
 
 #### Version of tools:
-- camflow: v0.4.3 (dnf 0.7.4-1)
+- camflowv043: v0.4.3 (dnf 0.7.4-1)
+- camflowv045: v0.4.5 (dnf 0.7.6-1)
 - opus: v0.1.0.26
 - spadev3: v3.0 (git tag tc-e3)

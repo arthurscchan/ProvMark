@@ -134,13 +134,13 @@ def startCamflow(stagePath, workingPath, suffix, isModel):
 #	file.close()
 
 	#Handle fingerprint folder
-	if not os.path.exists('%s/%s' %(workingPath, fingerprint)):
-		os.makedirs('%s/%s' %(workingPath, fingerprint))
-		os.chown('%s/%s' %(workingPath, fingerprint), 1000, 1000)
+	if not os.path.exists('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint)):
+		os.makedirs('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint))
+		os.chown('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint), 1000, 1000)
 
 	if not isModel:
 		#Writing result to json
-		file = open('%s/%s/output.provjson-%s' %(workingPath, fingerprint, suffix), 'w')
+		file = open('%s/%s-%s/output.provjson-%s' %(workingPath, suffix.split('-')[0], fingerprint, suffix), 'w')
 		file.write(json.dumps(result))
 		file.close()
 
