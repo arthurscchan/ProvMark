@@ -57,7 +57,7 @@ for i in range(0,len(graphs)):
 		else:
 			#print("Not isomorphic")
                         continue
-                        
+ 
 #print(sizes)
 #print(firstIso)
 
