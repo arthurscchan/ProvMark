@@ -44,26 +44,36 @@ for i in range(0,len(graphs)):
 	g1nodes, g1edges, g1props = clingo2Dict(graph1)
 	sizes[i] = len(g1nodes) + len(g1edges) + len(g1props)
 	for j in range(0,i):
+		#print("comparing %d and %d" % (i,j))
+		if sizes[i] != sizes[j]:
+			#print("Sizes differ.  Definitely not isomorphic.")
+			continue
 		map = processGraphBasic(graphs[i], graphs[j], clingoCode, os.path.abspath('../'))
+		#print(map)
 		if map != None:
+			#print("Isomorphic.  Setting firstIso[%d] to %d" % (i,firstIso[j]))
 			firstIso[i] = firstIso[j]
-
-print(sizes)
-print(firstIso)
+			break
+		else:
+			#print("Not isomorphic")
+                        continue
+                        
+#print(sizes)
+#print(firstIso)
 
 numIsos = [0 for x in firstIso]
 
 for i in firstIso:
 	numIsos[i] = numIsos[i]+1
 
-print(numIsos)
+#print(numIsos)
 # find the largest equivalence class
 maxIsos = max(numIsos)
 
 if maxIsos <= 1:
 	print("No pairs of isomorphic graphs found, deleting all and aborting")
-	for n in graphs:
-		os.remove(graphs[n])
+	for g in graphs:
+		os.remove(g)
 	quit()
 
 
@@ -86,15 +96,15 @@ for i in range(0,len(firstIso)):
 			minSize = sizes[i]
 			bestIso = i
 
-print(bestIso)
-print(minSize)
+#print(bestIso)
+#print(minSize)
 # make a list of all of the graphs in the best isomorphism class
 bestGraphs = [graphs[i] for i in range(0,len(graphs))
 			if firstIso[i] == bestIso]
-print(bestGraphs)
+#print(bestGraphs)
 # preserve some of them
 preservedGraphs = [bestGraphs[0],bestGraphs[1]]
-print(preservedGraphs)
+#print(preservedGraphs)
 # delete everything but the preserved class
 for g in graphs:
 	if g not in preservedGraphs:
