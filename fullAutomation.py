@@ -51,6 +51,7 @@ config.read('%s/config/config.ini' % baseDir)
 
 stage1Tool = config[tool]['stage1tool']
 stage2Handler = config[tool]['stage2handler']
+filterGraphs = config.getboolean(tool, 'filtergraphs')
 
 #Stage 1 - Start the tools and generate graph (neo4j / dot / provjson)
 start = time.time()
@@ -81,7 +82,7 @@ os.system('sudo chmod +x %s/genClingoGraph/%s' % (baseDir, stage2Handler.split()
 stage2Command = 'sudo %s/genClingoGraph/%s %s %s %s' % (baseDir, stage2Handler, '%s', '%s', '%s')
 
 for fingerprint in controlFingerprint:
-	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
+	dir = os.path.abspath('%s/control-%s' % (workingDir, fingerprint))
 	if os.path.isdir(dir):
 		i = 1
 		for file in os.listdir(dir):
@@ -90,7 +91,7 @@ for fingerprint in controlFingerprint:
 			i += 1
 
 for fingerprint in programFingerprint:
-	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
+	dir = os.path.abspath('%s/program-%s' % (workingDir, fingerprint))
 	if os.path.isdir(dir):
 		i = 1
 		for file in os.listdir(dir):
@@ -102,6 +103,34 @@ print ('End of stage 2\n')
 end = time.time()
 t2 = end-start
 
+if filterGraphs:
+	#Stage 3a - Filter out non-isomorphic graphs
+	start = time.time()
+	print ('Starting stage 3a...Filtering out non-isomorphic graphs')
+
+	os.system('sudo chmod +x %s/processGraph/filterGraphs.py' % baseDir)
+	stage3aCommand = 'sudo %s/processGraph/filterGraphs.py %s %s %s' % (baseDir,workingDir, ('%s/processGraph/isoTemplate.lp' % baseDir), '%s')
+
+	for fingerprint in controlFingerprint:
+		dir = os.path.abspath('%s/control-%s' % (workingDir, fingerprint))
+		if os.path.isdir(dir):
+			command = stage3aCommand
+			for file in ('%s/%s' % (dir,name) for name in os.listdir(dir) if name.startswith('clingo-control')):
+				command = command % ('%s %s' % (file, '%s'))
+			subprocess.call((command % '').split())
+
+	for fingerprint in programFingerprint:
+		dir = os.path.abspath('%s/program-%s' % (workingDir, fingerprint))
+		if os.path.isdir(dir):
+			command = stage3aCommand
+			for file in ('%s/%s' % (dir,name) for name in os.listdir(dir) if name.startswith('clingo-program')):
+				command = command % ('%s %s' % (file, '%s'))
+			subprocess.call((command % '').split())
+
+	print ('End of stage 3a\n')
+	end = time.time()
+	t3a= end-start
+
 #Stage 3 - Generalize graph
 start = time.time()
 print ('Starting stage 3...Generalizing graph from multiple trial')
@@ -110,7 +139,7 @@ os.system('sudo chmod +x %s/processGraph/generalizeGraph.py' % baseDir)
 stage3Command = 'sudo %s/processGraph/generalizeGraph.py %s %s %s' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), '%s')
 
 for fingerprint in controlFingerprint:
-	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
+	dir = os.path.abspath('%s/control-%s' % (workingDir, fingerprint))
 	if os.path.isdir(dir):
 		command = stage3Command % ('control-%s %s' % (fingerprint, '%s'))
 		for file in ('%s/%s' % (dir,name) for name in os.listdir(dir) if name.startswith('clingo-control')):
@@ -118,7 +147,7 @@ for fingerprint in controlFingerprint:
 		subprocess.call((command % '').split())
 
 for fingerprint in programFingerprint:
-	dir = os.path.abspath('%s/%s' % (workingDir, fingerprint))
+	dir = os.path.abspath('%s/program-%s' % (workingDir, fingerprint))
 	if os.path.isdir(dir):
 		command = stage3Command % ('program-%s %s' % (fingerprint, '%s'))
 		for file in ('%s/%s' % (dir,name) for name in os.listdir(dir) if name.startswith('clingo-program')):
@@ -160,6 +189,6 @@ print ('End of stage 4\n')
 end = time.time()
 t4 = end-start
 
-with open('%s/time.log' % workingDir, 'a') as file:
+with open('/tmp/time.log', 'a') as file:
 	file.write("%s, %s, %.3f, %.3f, %.3f, %.3f\n" % (tool, os.path.basename(benchmarkDir).lower()[3:], t1, t2, t3, t4))
 
