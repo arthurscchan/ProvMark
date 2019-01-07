@@ -72,7 +72,12 @@ subprocess.call((baseCommand % 'server stop').split(), stdout=subprocess.DEVNULL
 #Ensure Opus Server stopped
 while True:
 	time.sleep(2)
-	output = subprocess.check_output((baseCommand % 'server status').split(), stderr=subprocess.DEVNULL)
+	try:
+		output = subprocess.check_output((baseCommand % 'server status').split(), stderr=subprocess.DEVNULL)
+	except subproess.CalledProcessError as err:
+		#Unlucky situation as opus server is disconnected but the process is not yet completed
+		#Treated as server stopped
+		break
 	if 'Server is not running.' in output.decode():
 		break
 
@@ -80,7 +85,6 @@ while True:
 ftraceResult = subprocess.check_output('trace-cmd report -i %s/trace.dat' % workingPath).split(), stderr=subprocess.DEVNULL)
 if ftraceResult:
 	syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
-
 fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
 
 #Handle fingerprint folder
