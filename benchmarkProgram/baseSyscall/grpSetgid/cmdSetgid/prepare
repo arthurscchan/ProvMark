@@ -17,7 +17,7 @@ CODE=$(cat <<EOF
 #include <unistd.h>
 int main() {int rn=0;
 #ifdef PROGRAM
-rn=setgid(1000);
+rn=setgid(getgid());
 #endif
 return (rn==-1);}
 EOF

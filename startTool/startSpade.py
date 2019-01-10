@@ -23,7 +23,7 @@ def startSpade(workingPath, suffix, loopCount, fingerprint):
 	except:
 		pass
 	file = open('%s/cfg/spade.config' % spadePath, 'w')
-	file.write('add reporter Audit inputLog=%s/input.log arch=64 fileIO=true\n' % workingPath)
+	file.write('add reporter Audit inputLog=%s/%s-input.log arch=64 fileIO=true\n' % (workingPath,suffix))
 	if isNeo4j:
 		file.write('add storage Neo4j %s/%s-%s/output.db-%s\n' % (workingPath, suffix.split('-')[0], fingerprint, suffix))
 	else:
@@ -75,7 +75,7 @@ for item in macroOpt.split(','):
 #Add audit rule for capturing audit log of activities (according to spade default)
 rule0 = 'auditctl -D'
 rule1 = 'auditctl -a exit,always -F arch=b64 -F euid=1000 -S kill -S exit -S exit_group -S connect' 
-rule2 = 'auditctl -a exit,always -F arch=b64 -F euid=1000 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setgid -S setregid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -S creat -F success=1'
+rule2 = 'auditctl -a exit,always -F arch=b64 -F euid=1000 -S mmap -S mprotect -S unlink -S unlinkat -S link -S linkat -S symlink -S symlinkat -S clone -S fork -S vfork -S execve -S open -S close -S creat -S openat -S mknodat -S mknod -S dup -S dup2 -S dup3 -S fcntl -S bind -S accept -S accept4 -S socket -S rename -S renameat -S setuid -S setreuid -S setresuid -S setgid -S setregid -S setresgid -S chmod -S fchmod -S fchmodat -S pipe -S pipe2 -S truncate -S ftruncate -S read -S pread -S write -S pwrite -S creat -F success=1'
 subprocess.check_output(rule0.split())
 subprocess.check_output(rule1.split())
 subprocess.check_output(rule2.split())
@@ -102,7 +102,8 @@ for i in range(1, trial+1):
 	file.close()
 
 	os.seteuid(1000)
-	os.system('%s/test' % stagePath)
+	#os.system('%s/test' % stagePath)
+	subprocess.check_call('%s/test' % stagePath)
 	os.seteuid(0)
 
 	time.sleep(1)
@@ -143,7 +144,8 @@ for i in range(1, trial+1):
 	end = int(tempResult[totalLine-1].split(':')[0]) - 2
 
 	inFile = open('%s/audit.log' % workingPath, 'r')
-	outFile = open('%s/input.log' % workingPath, 'w')
+	inputLog = '%s/%s-%d-input.log' % (workingPath,suffix,i)
+	outFile = open(inputLog, 'w')
 	for c, line in enumerate(inFile):
 		if (c >= start and c <= end):
 			outFile.write(line)
@@ -152,7 +154,7 @@ for i in range(1, trial+1):
 	outFile.close()
 
 	if not isNeo4j:
-		if os.path.getsize('%s/input.log' % workingPath) == 0:
+		if os.path.getsize(inputLog) == 0:
 			continue
 		#Send log lines to SPADE for processing (Repeat if data is empty)
 		outFile = '%s/%s-%s/output.dot-%s-%d' % (workingPath, suffix, fingerprintList[i-1], suffix, i)
