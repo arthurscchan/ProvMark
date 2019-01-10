@@ -17,8 +17,9 @@ CODE=$(cat <<EOF
 #define _GNU_SOURCE
 #include <unistd.h>
 int main() {int rn=0;
+int n = getgid();
 #ifdef PROGRAM
-rn=setresgid(getgid(),getgid(),getgid());
+rn=setresgid(n,n,n);
 #endif
 return (rn==-1);}
 EOF

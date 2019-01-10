@@ -16,8 +16,9 @@ ls | grep -v 'prepare' | xargs rm -f
 CODE=$(cat <<EOF
 #include <unistd.h>
 int main() {int rn=0;
+int n = getgid();
 #ifdef PROGRAM
-rn=setgid(getgid());
+rn=setgid(n);
 #endif
 return (rn==-1);}
 EOF
