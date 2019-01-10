@@ -15,10 +15,11 @@ ls | grep -v 'prepare' | xargs rm -f
 #Prepare Benchmark Program
 CODE=$(cat <<EOF
 #include <unistd.h>
+#include <sys/types.h>
 int main() {int rn=0;
-int n = getgid();
+gid_t gid = getgid();
 #ifdef PROGRAM
-rn=setregid(n,n);
+rn=setregid(gid,gid);
 #endif
 return (rn==-1);}
 EOF
