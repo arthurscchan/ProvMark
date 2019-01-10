@@ -90,10 +90,14 @@ for i in range(1, trial+1):
 	#Ensure Opus Server stopped
 	while True:
 		time.sleep(2)
-		output = subprocess.check_output((baseCommand % 'server status').split(), stderr=subprocess.DEVNULL)
+		try:
+			output = subprocess.check_output((baseCommand % 'server status').split(), stderr=subprocess.DEVNULL)
+		except subprocess.CalledProcessError as err:
+			#Unlucky situation as opus server is disconnected but the process is not yet completed
+			#Treated as server stopped
+			break
 		if 'Server is not running.' in output.decode():
 			break
-
 
 	#Handle FTrace Fingerprint
 	ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % workingPath).split(), stderr=subprocess.DEVNULL)

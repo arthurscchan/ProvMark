@@ -25,6 +25,7 @@ sudo apt-get -y install oracle-java8-installer
 sudo apt-get -y install python3-pip 
 sudo apt-get -y install realpath
 sudo apt-get -y install trace-cmd
+sudo apt-get -y install Graphviz
 sudo pip3 install setuptools --upgrade
 sudo pip3 install json_merger
 git clone https://github.com/arthurscchan/ProvMark.git 
