@@ -16,9 +16,11 @@ ls | grep -v 'prepare' | xargs rm -f
 CODE=$(cat <<EOF
 #define _GNU_SOURCE
 #include <unistd.h>
+#include <sys/types.h>
 int main() {int rn=0;
+gid_t gid = getgid();
 #ifdef PROGRAM
-rn=setresgid(1000,1000,1000);
+rn=setresgid(gid,gid,gid);
 #endif
 return (rn==-1);}
 EOF
