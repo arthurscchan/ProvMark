@@ -89,7 +89,9 @@ def startCamflow(stagePath, workingPath, suffix, isModel, progName):
 
 	#Capture provenance
 	subprocess.call('service camflowd start'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	subprocess.call('camflow --opaque-file /usr/bin/bash false'.split())
+	subprocess.call('camflow --opaque-file /usr/bin/bash true'.split())
+	subprocess.call('camflow --opaque-file /usr/bin/trace-cmd true'.split())
+	subprocess.call('camflow --opaque-file /usr/lib/systemd/systemd-journald true'.split())
 	subprocess.call(('camflow --track-file %s/test propagate' % stagePath).split())
 	subprocess.call('camflow --duplicate true'.split())
 	subprocess.call('camflow -e true'.split())
