@@ -1,0 +1,99 @@
+#!/bin/bash
+
+if [[ "$#" -lt 3 || ("$3" != "rb" && "$3" != "rg" && "$3" != "rh") ]] 
+then
+	echo "Usage: "$0" <Tools> <Tools_Path> <Result Type> <Num Trials>"
+	echo "Result Type:"
+	echo "rb: benchmark only"
+	echo "rg: benchmark and generalized foreground and background graph only"
+	echo "rh: html page displaying benchmark and generalied foreground and background graph"
+	exit 1
+fi
+
+sudo mkdir finalResult > /dev/null 2>&1
+row=""
+for i in `ls benchmarkProgram/expSyscall`
+do
+	for j in `ls benchmarkProgram/expSyscall/$i`
+	do
+		syscall=${j:3}
+		syscall=${syscall,,}
+		if [ -e finalResult/$syscall ]
+		then
+			sudo rm -f finalResult/$syscall/*
+		else		
+			sudo mkdir finalResult/$syscall > /dev/null 2>&1
+		fi
+
+		echo "Generating provenance benchmark for $syscall in group $i using $1 settings..."
+		sudo ./fullAutomation.py $1 $2 benchmarkProgram/expSyscall/$i/$j $4
+		
+		unset benchmark
+		for result in `ls result/result-*.clingo`
+		do
+			fingerprint=`echo $result | cut -d- -f2 | cut -d. -f1`
+			sudo cp $result "finalResult/$syscall/benchmark-$fingerprint.clingo"
+			sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
+			sudo dot -Tsvg -o "finalResult/$syscall/benchmark-$fingerprint.svg" $fingerprint.dot
+			sudo rm -f $fingerprint.dot
+			if [ ! -z $benchmark ]
+			then
+				benchmark=$benchmark"<br/><hr/><br/>"
+			fi
+			benchmark=$benchmark$(cat template/element.html | sed "s|@@@ELEMENT@@@|benchmark-${fingerprint}|g")
+		done
+
+		if [ "$3" != "rb" ]
+		then
+			unset background
+			for result in `ls result/general.clingo-control-*`
+			do
+				fingerprint=`echo $result | cut -d- -f3`
+				sudo cp $result "finalResult/$syscall/background-$fingerprint.clingo"
+				sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
+				sudo dot -Tsvg -o "finalResult/$syscall/background-$fingerprint.svg" $fingerprint.dot
+				sudo rm -f $fingerprint.dot
+				if [ ! -z $background ]
+	                        then
+	                                background=$background"<br/><hr/><br/>"
+	                        fi
+        	                background=$background$(cat template/element.html | sed "s|@@@ELEMENT@@@|background-${fingerprint}|g")
+			done
+
+			unset foreground
+			for result in `ls result/general.clingo-program-*`
+			do
+				fingerprint=`echo $result | cut -d- -f3`
+				sudo cp $result "finalResult/$syscall/foreground-$fingerprint.clingo"
+				sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
+				sudo dot -Tsvg -o "finalResult/$syscall/foreground-$fingerprint.svg" $fingerprint.dot
+				sudo rm -f $fingerprint.dot
+				if [ ! -z $foreground ]
+	                        then
+	                                foreground=$foreground"<br/><hr/><br/>"
+	                        fi
+        	                foreground=$foreground$(cat template/element.html | sed "s|@@@ELEMENT@@@|foreground-${fingerprint}|g")
+			done
+
+			if [ "$3" = "rh" ]
+			then
+				newrow=$(cat template/row.html | sed "s|@@@BACKGROUND@@@|${background}|g")
+				newrow=$(echo $newrow | sed "s|@@@FOREGROUND@@@|${foreground}|g")
+				newrow=$(echo $newrow | sed "s|@@@BENCHMARK@@@|${benchmark}|g")
+				newrow=$(echo $newrow | sed "s|@@@SYSCALL@@@|${syscall}|g")
+
+				row=$row$newrow
+			fi
+		fi
+
+		echo "Process complete for $syscall."
+	done
+done
+
+if [ "$3" = "rh" ]
+then
+	html=$(sudo cat template/base.html)
+        echo "${html%@@@TABLEROW@@@*} $row ${html##*@@@TABLEROW@@@}" | sudo tee finalResult/index.html > /dev/null
+fi
+
+echo "Process done. Result in finalResult directory."
