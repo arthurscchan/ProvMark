@@ -171,6 +171,7 @@ def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 		if map:
 			return graph2Node, graph2Edge, graph1Props, graph2Props, map
 		
+		map = dict()
 		#Fail first time, remove properties
 		graph1NodeEdge = ""
 		for tmp in graph1.split('\n'):
@@ -187,6 +188,7 @@ def processGraph(graph1Path, graph2Path, clingoCode, baseDir, isMapping):
 		if map:
 			return graph2Node, graph2Edge, graph1Props, graph2Props, map
 		
+		map = dict()
 		#Fail second time, return default mapping		
 		for key in sorted(graph1Node.keys()):
 			if key in graph2Node:
