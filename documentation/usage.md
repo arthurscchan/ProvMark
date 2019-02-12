@@ -68,8 +68,15 @@ Auto execute ProvMark for all syscall currently supported
 
 Usage:
 ~~~~
-./runTests <Tools> <Tools_Path> <Result Type>
+./runTests <Tools> <Tools_Path> <Result Type> [<Trial> <Target Base Path>]
 ~~~~
+
+#### Trial (Default: 2):
+- Number of trial executed for each graph for generalization
+- More trial will result in longer processing time, but provide a more accurate result as multiple trial can help to filter out uncertainty and unrelated elements and noise
+
+#### Target Base Path (Default: ./baseSyscall/):
+- Path to the location of the directory storing the target testing command group, with separate syscall folder inside containing prepare script for the specific syscall.
 
 Example for batch execution of spade with Graphviz storage and generate html webpage to display all result
 ~~~~
@@ -78,7 +85,7 @@ Example for batch execution of spade with Graphviz storage and generate html web
 
 Example for batch execution of CamFlow (again, the base directory is ignored in this case):
 ~~~~
-./runTests cam . rh
+./runTests cam . rh 11 expSyscall
 ~~~~
 
 #### Currently Supported Tools:
