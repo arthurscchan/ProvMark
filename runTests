@@ -2,7 +2,7 @@
 
 if [[ "$#" -lt 3 || ("$3" != "rb" && "$3" != "rg" && "$3" != "rh") ]] 
 then
-	echo "Usage: "$0" <Tools> <Tools_Path> <Result Type> <Num Trials>"
+	echo "Usage: "$0" <Tools> <Tools_Path> <Result Type> <Num Trials> <Target Base Path>"
 	echo "Result Type:"
 	echo "rb: benchmark only"
 	echo "rg: benchmark and generalized foreground and background graph only"
@@ -12,9 +12,17 @@ fi
 
 sudo mkdir finalResult > /dev/null 2>&1
 row=""
-for i in `ls benchmarkProgram/baseSyscall`
+
+if [[ "$#" -eq 5 ]]
+then
+	basepath="$5"
+else
+	basepath="baseSyscall"
+fi
+
+for i in `ls benchmarkProgram/$basepath`
 do
-	for j in `ls benchmarkProgram/baseSyscall/$i`
+	for j in `ls benchmarkProgram/$basepath/$i`
 	do
 		syscall=${j:3}
 		syscall=${syscall,,}
@@ -26,7 +34,7 @@ do
 		fi
 
 		echo "Generating provenance benchmark for $syscall in group $i using $1 settings..."
-		sudo ./ProvMark bg $1 $2 benchmarkProgram/baseSyscall/$i/$j $4
+		sudo ./ProvMark bg $1 $2 benchmarkProgram/$basepath/$i/$j $4
 
 		unset benchmark
 		for result in `ls result/result-*.clingo`
