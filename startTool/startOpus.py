@@ -25,25 +25,19 @@ subprocess.call('./update-wrapper')
 os.chdir(workingPath)
 
 #Get Audit Log
-
-	#Capture Provenance
-subprocess.call((baseCommand % ('process launch %s/test' % stagePath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-subprocess.call(('trace-cmd extract -o %s/trace.dat' % workingPath).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-=======
 #Config OPUS Server
 pipe = subprocess.Popen(['%s/bin/opusctl' % opusPath, 'conf'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 #Choose a location for the OPUS master config
 config = '%s/.opus-cfg\n' % workingPath
 #Where is your OPUS installation?
-config = '%s%s/\n' % (config,opusPath)
+config = '%s%s/\n' % (config, opusPath)
 #Choose an address for provenance data collection.
 config = '%s\n' % config
 #Choose a location for the OPUS database to reside in
-config = '%s%s/output.db\n' % (config,workingPath)
+config = '%s%s/output.db\n' % (config, workingPath)
 #Choose a location for the OPUS bash variables cfg_file
-config = '%s%s/.opus-vars\n' % (config,workingPath)
+config = '%s%s/.opus-vars\n' % (config, workingPath)
 #What is the location of your python 2.7 binary?
 config = '%s\n' % config
 #Where is your jvm installation?
@@ -55,7 +49,8 @@ config = '%sFalse\n' % config
 
 pipe.communicate(input=config.encode())
 
-baseCommand = '%s/bin/opusctl --conf %s/.opus-cfg %s' % (opusPath,workingPath,'%s')
+baseCommand = '%s/bin/opusctl --conf %s/.opus-cfg %s' % (opusPath, workingPath, '%s')
+
 #Start Opus Server
 subprocess.call((baseCommand % 'server start').split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -66,11 +61,11 @@ subprocess.call('trace-cmd reset'.split(), stdout=subprocess.DEVNULL, stderr=sub
 subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 #Capture Provenance
-subprocess.call((baseCommand % ('process launch %s/%s' % (stagePath,progName))).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-	
+subprocess.call((baseCommand % ('process launch %s/%s' % (stagePath, progName))).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 subprocess.call(('trace-cmd extract -o %s/trace.dat' % workingPath).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
+	
 #Stop Opus Server
 subprocess.call((baseCommand % 'server stop').split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -97,6 +92,6 @@ if not os.path.exists('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprin
 	os.makedirs('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint))
 	os.chown('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint), 1000, 1000)
 
-os.rename('%s/output.db' % workingPath,'%s/%s-%s/output.db-%s-%d' % (workingPath, suffix.split('-')[0], fingerprint, suffix, i))
+os.rename('%s/output.db' % workingPath, '%s/%s-%s/output.db-%s' % (workingPath, suffix.split('-')[0], fingerprint, suffix))
 
 print(fingerprint)
