@@ -70,12 +70,8 @@ subprocess.check_output(rule2.split())
 #Get Audit Log
 os.chdir(stagePath)
 
-#Ensure no one writing to the file
-while True:
-	if time.time() > os.path.getmtime('/var/log/audit/audit.log') + 1:
-		break;
-
 if os.path.exists('%s/trace.dat' % workingPath):
+	os.remove('%s/trace.dat' % workingPath)
 
 subprocess.call('trace-cmd reset'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 subprocess.call('trace-cmd start -e syscalls'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -96,14 +92,7 @@ file = open('/var/log/audit/audit.log','a')
 file.write('end-end\n')
 file.close()
 
-subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-subprocess.call(('trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-#Handle FTrace Fingerprint
-ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % (workingPath)).split(), stderr=subprocess.DEVNULL)
-if ftraceResult:
-	syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
-fingerprintList.append(hashlib.md5(''.join(syscallList).encode()).hexdigest())
+fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
 
 subprocess.check_output(rule0.split())
 
@@ -143,7 +132,8 @@ if not isNeo4j:
 	loopCount = 0
 	while not os.path.exists(outFile) or os.path.getsize(outFile) <= 162:
 		loopCount = loopCount + 1
-		startSpade(workingPath, '%s' % suffix, loopCount, fingerprint])
+		startSpade(workingPath, '%s' % suffix, loopCount, fingerprint)
 else:
-	startSpade(workingPath, '%s-%d' %(sffix, 2, fingerprint])
+	startSpade(workingPath, '%s' % suffix, 2, fingerprint)
+
 print (fingerprint)
