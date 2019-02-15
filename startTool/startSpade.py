@@ -110,6 +110,7 @@ subprocess.check_output(rule0.split())
 #Handle Aduit Log File
 shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % workingPath)
 
+#Generate graph
 #Extract audit log line for each trial
 command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
 
@@ -143,6 +144,6 @@ if not isNeo4j:
 	while not os.path.exists(outFile) or os.path.getsize(outFile) <= 162:
 		loopCount = loopCount + 1
 		startSpade(workingPath, '%s' % suffix, loopCount, fingerprint])
-	else:
-		startSpade(workingPath, '%s-%d' %(sffix, 2, fingerprint])
+else:
+	startSpade(workingPath, '%s-%d' %(sffix, 2, fingerprint])
 print (fingerprint)
