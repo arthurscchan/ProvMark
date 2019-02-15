@@ -99,10 +99,7 @@ subprocess.check_output(rule0.split())
 #Handle Aduit Log File
 shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % workingPath)
 
-<<<<<<< HEAD
 #Generate graph
-=======
->>>>>>> master
 #Extract audit log line for each trial
 command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
 
