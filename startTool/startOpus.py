@@ -74,7 +74,7 @@ while True:
 	time.sleep(2)
 	try:
 		output = subprocess.check_output((baseCommand % 'server status').split(), stderr=subprocess.DEVNULL)
-	except subproess.CalledProcessError as err:
+	except subprocess.CalledProcessError as err:
 		#Unlucky situation as opus server is disconnected but the process is not yet completed
 		#Treated as server stopped
 		break
@@ -82,7 +82,7 @@ while True:
 		break
 
 #Handle FTrace Fingerprint
-ftraceResult = subprocess.check_output('trace-cmd report -i %s/trace.dat' % workingPath).split(), stderr=subprocess.DEVNULL)
+ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % workingPath).split(), stderr=subprocess.DEVNULL)
 if ftraceResult:
 	syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
 fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
@@ -92,6 +92,6 @@ if not os.path.exists('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprin
 	os.makedirs('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint))
 	os.chown('%s/%s-%s' %(workingPath, suffix.split('-')[0], fingerprint), 1000, 1000)
 
-os.rename('%s/output.db' % workingPath, '%s/%s-%s/output.db-%s' % (workingPath, suffix, fingerprint, suffix))
+os.rename('%s/output.db' % workingPath, '%s/%s-%s/output.db-%s' % (workingPath, suffix.split('-')[0], fingerprint, suffix))
 
 print(fingerprint)

@@ -92,21 +92,17 @@ file = open('/var/log/audit/audit.log','a')
 file.write('end-end\n')
 file.close()
 
-subprocess.call('trace-cmd stop'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-subprocess.call(('trace-cmd extract -o %s/trace.dat' % (workingPath)).split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-#Handle FTrace Fingerprint
-ftraceResult = subprocess.check_output(('trace-cmd report -i %s/trace.dat' % (workingPath)).split(), stderr=subprocess.DEVNULL)
-if ftraceResult:
-	syscallList = [line.split(':')[1].strip() for line in ftraceResult.decode('ascii').split('\n') if re.match(r'^\s*test-((?!wait4).)*$',line)]
-	fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
+fingerprint = hashlib.md5(''.join(syscallList).encode()).hexdigest()
 
 subprocess.check_output(rule0.split())
 
 #Handle Aduit Log File
 shutil.copyfile('/var/log/audit/audit.log', '%s/audit.log' % workingPath)
 
+<<<<<<< HEAD
 #Generate graph
+=======
+>>>>>>> master
 #Extract audit log line for each trial
 command = 'grep -n %s %s/audit.log' % ('%s', workingPath)
 
@@ -126,6 +122,7 @@ outFile = open(inputLog, 'w')
 for c, line in enumerate(inFile):
 	if (c >= start and c <= end):
 		outFile.write(line)
+
 inFile.close()
 outFile.close()
 
@@ -133,12 +130,12 @@ if not isNeo4j:
 	if os.path.getsize(inputLog) == 0:
 		continue
 
-		#Send log lines to SPADE for processing (Repeat if data is empty)
-		outFile = '%s/%s-%s/output.dot-%s' % (workingPath, suffix.split('-')[0], fingerprint, suffix)
-		loopCount = 0
-		while not os.path.exists(outFile) or os.path.getsize(outFile) <= 162:
-			loopCount = loopCount + 1
-			startSpade(workingPath, '%s' % suffix, loopCount, fingerprint)
+	#Send log lines to SPADE for processing (Repeat if data is empty)
+	outFile = '%s/%s-%s/output.dot-%s' % (workingPath, suffix.split('-')[0], fingerprint, suffix)
+	loopCount = 0
+	while not os.path.exists(outFile) or os.path.getsize(outFile) <= 162:
+		loopCount = loopCount + 1
+		startSpade(workingPath, '%s' % suffix, loopCount, fingerprint)
 else:
 	startSpade(workingPath, '%s' % suffix, 2, fingerprint)
 

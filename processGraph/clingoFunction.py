@@ -142,7 +142,7 @@ def readGraph(path, id):
 
 	return graph
 
-def processGraphBasic(graph1Path, graph2Path, clingoCode, baseDir):
+def processGraphBasic(graph1, graph2, clingoCode, baseDir):
 	mapResult = clingoOperation(clingoCode, graph1, graph2, baseDir)
 
 	map = decodeClingoResult(mapResult)
