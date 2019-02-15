@@ -188,6 +188,7 @@ def processGraph(graph1, graph2, clingoCode, baseDir, isMapping):
 				map[key] = key
 
 		return graph2Node, graph2Edge, graph1Props, graph2Props, map
+
 	else:
 		editDistance = decodeEditDistance(mapResult)
 		return editDistance
