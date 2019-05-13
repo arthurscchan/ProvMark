@@ -20,7 +20,7 @@ int main() {
 int id=0;
 #ifdef PROGRAM
 id+=creat("`realpath $1`/newtest.txt",S_IRWXU|S_IRWXG);
-id+=unlink"`realpath $1`/newtest.txt")
+id+=unlink("`realpath $1`/newtest.txt")
 #endif
 return (id==-1);
 }
