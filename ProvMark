@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-if [[ "$1" == "bg" && ("$#" -eq 4 || "$#" -eq 5) ]]
+if [[ "$1" == "bg" && ("$#" -eq 4 || "$#" -eq 5 || "$#" -eq 6) ]]
 then
 	shift
 	./core/training.py $@
@@ -12,7 +12,7 @@ then
 	exit 0
 fi
 
-echo "Usage: "$0" bg <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial>]"
+echo "Usage: "$0" bg <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial> <Round>]"
 echo "Usage: "$0" bt <Tools> <Tools Base Directory> <Testing Program> -f <Benchmark File>"
 echo "Usage: "$0" bt <Tools> <Tools Base Directory> <Testing Program> -d <Benchmark Directory>"
 echo "Tools:"
@@ -23,6 +23,8 @@ echo "Benchmark Program Directory:"
 echo "	Base directory of the benchmark program"
 echo "Trial:"
 echo "	Number of trial provenance capture for each case (Default: 2)"
+echo "Round:"
+echo "  Number of repeating execution for scalibility test only (Default: 1)"
 echo "Testing Program:"
 echo "	Path to the testing program. The testing program needed to be executable"
 echo "Benchmark File:"

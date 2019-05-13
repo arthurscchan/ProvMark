@@ -9,11 +9,12 @@ import configparser
 
 #Print help menu
 def helpMenu(name):
-	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial>]' % name)
+	print ('Usage: %s <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial> <Round>]' % name)
 	print ('Tools:\n\tspg:\tSPADE with Graphviz storage\n\tspn:\tSPADE with Neo4j storage\n\topu:\tOPUS\n\tcam:\tCamFlow')
 	print ('Tools Base Directory: Base directory of the chosen tools (type . if tools are globally accessible)')
 	print ('Benchmark Program Directory: Base directory of the benchmark program')
 	print ('Trial:	Number of trial provenance capture for each case (Default: 2)')
+	print ('Round:	Number of repeating loop for scalibility test (Default: 1)')
 
 #Prepare stage and working directory
 def prepareDir(directory):
@@ -24,11 +25,15 @@ def prepareDir(directory):
 
 #Check Arguments
 trial = 2
-if len(sys.argv) < 4 or len(sys.argv) > 5:
+round = 1
+if len(sys.argv) < 4 or len(sys.argv) > 6:
 	helpMenu(sys.argv[0])
 	quit()
 elif len(sys.argv) == 5:
 	trial = int(sys.argv[4])
+elif len(sys.argv) == 6:
+	trial = int(sys.argv[4])
+	round = int(sys.argv[5])
 
 if trial < 2:
 	trial = 2
@@ -62,14 +67,14 @@ stage1Command = 'sudo %s/startTool/%s %s %s %s %s %s' % (baseDir, stage1Tool, st
 print ('Program')
 for i in range(1,trial+1):
 #	subprocess.check_output(('%s/prepare %s --static -DPROGRAM -DRANDOM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
-	subprocess.check_output(('%s/prepare %s --static -DPROGRAM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
+	subprocess.check_output(('%s/prepare %s --static -DPROGRAM -DREAD=2 -DWRITE=2 -DROUND=%d' %(benchmarkDir,stageDir,round)).split())
 	programFingerprint = subprocess.check_output((stage1Command % ('program-%d' % i)).split()).decode().split()
 print ('End Program')
 
 print ('Control')
 for i in range(1,trial+1):
 #	subprocess.check_output(('%s/prepare %s --static -DCONTROL -DRANDOM -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
-	subprocess.check_output(('%s/prepare %s --static -DCONTROL -DREAD=2 -DWRITE=2' %(benchmarkDir,stageDir)).split())
+	subprocess.check_output(('%s/prepare %s --static -DCONTROL -DREAD=2 -DWRITE=2 -DROUND=%d' %(benchmarkDir,stageDir,round)).split())
 	controlFingerprint = subprocess.check_output((stage1Command % ('control-%d' % i)).split()).decode().split()
 print ('End Control')
 

@@ -1,0 +1,53 @@
+#!/bin/bash
+
+if [[ "$#" -lt 2 ]] 
+then
+	echo "Usage: "$0" <Tools> <Tools_Path> <Num Trials>"
+	exit 1
+fi
+
+sudo mkdir finalResult > /dev/null 2>&1
+
+for i in {1..10}
+do
+	if [ -e finalResult/$i ]
+	then
+		sudo rm -f finalResult/$i/*
+	else		
+		sudo mkdir finalResult/$i > /dev/null 2>&1
+	fi
+
+	echo "Generating provenance benchmark for scalibility test with $i repeat trial..."
+	sudo ./ProvMark bg $1 $2 benchmarkProgram/scaleTest $3 $i
+
+	for result in `ls result/result-*.clingo`
+	do
+		fingerprint=`echo $result | cut -d- -f2 | cut -d. -f1`
+		sudo cp $result "finalResult/$i/benchmark-$fingerprint.clingo"
+		sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
+		sudo dot -Tsvg -o "finalResult/$i/benchmark-$fingerprint.svg" $fingerprint.dot
+		sudo rm -f $fingerprint.dot
+	done
+
+	for result in `ls result/general.clingo-control-*`
+	do
+		fingerprint=`echo $result | cut -d- -f3`
+		sudo cp $result "finalResult/$i/background-$fingerprint.clingo"
+		sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
+		sudo dot -Tsvg -o "finalResult/$i/background-$fingerprint.svg" $fingerprint.dot
+		sudo rm -f $fingerprint.dot
+	done
+
+	for result in `ls result/general.clingo-program-*`
+	do
+		fingerprint=`echo $result | cut -d- -f3`
+		sudo cp $result "finalResult/$i/foreground-$fingerprint.clingo"
+		sudo genClingoGraph/clingo2Dot.py $result $fingerprint.dot
+		sudo dot -Tsvg -o "finalResult/$i/foreground-$fingerprint.svg" $fingerprint.dot
+		sudo rm -f $fingerprint.dot
+	done
+
+	echo "Process complete for $i repeating trial."	
+done
+
+echo "Process done. Result in finalResult directory."

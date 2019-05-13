@@ -1,0 +1,37 @@
+#!/bin/bash
+
+if [ "$#" -le 1 ]
+then
+    	echo "Usage: "$0" <Stage Path> [GCC_MACRO]"
+        echo "Sample: "$0" ./stage -DPROGRAM --static"
+        exit 1
+fi
+
+cd "$1"
+
+#Clean directory
+ls | grep -v 'prepare' | xargs rm -f
+
+#Prepare Benchmark Program
+CODE=$(cat <<EOF
+#include <fcntl.h>
+#include <unistd.h>
+int main() {
+int rn=0; int i; for (i=0;i<ROUND;i++) {
+#ifdef PROGRAM
+rn+=creat("`realpath $1`/newtest.txt",S_IRWXU|S_IRWXG);
+rn+=unlink("`realpath $1`/newtest.txt");
+#endif
+}
+return (rn==-1);}
+EOF
+)
+
+TMPFILE=$(mktemp -t tmp.XXXXXX.c)
+echo "$CODE">$TMPFILE
+
+gcc -o test ${*:2} $TMPFILE
+
+#rm "$TMPFILE"
+chown 1000:1000 *
+

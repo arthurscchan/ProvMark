@@ -4,17 +4,17 @@
 
 Usage:
 ~~~~
-./ProvMark bg <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial>]
+./ProvMark bg <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial> <Round>]
 ~~~~
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
 ~~~~
-./ProvMark bg spg /path/to/spade/base/directory ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
+./ProvMark bg spg /path/to/spade/base/directory ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 1
 ~~~~
 
 Example for CamFlow (note that the "tool base directory" is unused and arbitrary in this case):
 ~~~~
-./ProvMark bg cam . ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
+./ProvMark bg cam . ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 1
 ~~~~
 
 #### Currently Supported Tools:
@@ -33,6 +33,10 @@ Example for CamFlow (note that the "tool base directory" is unused and arbitrary
 #### Trial (Default: 2):
 - Number of trial executed for each graph for generalization
 - More trial will result in longer processing time, but provide a more accurate result as multiple trial can help to filter out uncertainty and unrelated elements and noise
+
+#### Round (Default: 1):
+- For scalibility test only.
+- Declare how much time the same content is running repeataly
 
 #### Output:
 - Three clingo graphs stored in result folder
