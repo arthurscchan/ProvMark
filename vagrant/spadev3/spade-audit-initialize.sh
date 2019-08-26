@@ -42,4 +42,5 @@ sudo apt-get install -y trace-cmd
 ## ProvMark stuff
 cd ~
 git clone https://github.com/arthurscchan/ProvMark.git 
+cd ProvMark
 git checkout Middleware2019
