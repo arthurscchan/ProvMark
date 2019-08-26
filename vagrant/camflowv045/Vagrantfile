@@ -87,5 +87,7 @@ Vagrant.configure(2) do |config|
 
     sudo rm -rf /tmp/.camflowModel
     git clone https://github.com/arthurscchan/ProvMark.git
+    cd ProvMark
+    git checkout Middleware2019
   SHELL
 end
