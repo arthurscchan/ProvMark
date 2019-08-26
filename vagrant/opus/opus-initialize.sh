@@ -15,17 +15,9 @@ sudo apt-get -y install neo4j=2.2.4
 sudo apt-get -y install git
 
 ## Install OpenJDK 8
-wget https://download.java.net/openjdk/jdk8u40/ri/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
-sudo mkdir /usr/lib/jvm
-sudo tar xvf openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz --directory /usr/lib/jvm
-rm -f /home/vagrant/openjdk-8u40-b25-linux-x64-10_feb_2015.tar.gz
-export PATH="$PATH:/usr/lib/jvm/java-se-8u40-ri/bin:/usr/lib/jvm/java-se-8u40-ri/db/bin/:/usr/lib/jvm/java-se-8u40-ri/jre/bin"
-export J2SDKDIR="/usr/lib/jvm/java-se-8u40-ri"
-export J2REDIR="/usr/lib/jvm/java-se-8u40-ri/jre"
-export JAVA_HOME="/usr/lib/jvm/java-se-8u40-ri"
-export DERBY_HOME="/usr/lib/jvm/java-se-8u40-ri/db"
-sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-se-8u40-ri/bin/javac 0
-sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-se-8u40-ri/bin/java 0
+sudo add-apt-repository -y ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install -y openjdk-8-jdk
 
 ## ProvMark stuff
 sudo apt-get -y install python3-pip 
