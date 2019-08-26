@@ -10,10 +10,12 @@ As our tools aim to generate benchmark for different provenance collecting tools
 
 # ProvMark Installation
 
-Install ProvMark is simple, just clone the whole git repository and you are good to go.
+Install ProvMark is simple, just clone the whole git repository and you are good to go. The current stable version is tagged by tag Middleware2019.
 
 ~~~~
 git clone https://github.com/arthurscchan/ProvMark.git
+cd ProvMark
+git checkout Middleware2019
 ~~~~
 
 # Vagrant File

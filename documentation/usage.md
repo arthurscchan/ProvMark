@@ -4,7 +4,7 @@
 
 Usage:
 ~~~~
-./fullAutomation <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]
+./fullAutomation.py <Tools> <Tools Base Directory> <Benchmark Directory> [<Trial>]
 ~~~~
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
