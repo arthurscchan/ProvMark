@@ -60,7 +60,7 @@ for i in range(1, trial+1):
 	#What is the location of your python 2.7 binary?
 	config = '%s\n' % config
 	#Where is your jvm installation?
-	config = '%s/usr/lib/jvm/java-8-oracle\n' % config
+	config = '%s/usr/lib/jvm/java-8-openjdk-amd64\n' % config
 	#Address to use for provenance server communications.
 	config = '%s\n' % config
 	#Set OPUS to debug mode
