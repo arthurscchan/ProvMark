@@ -111,7 +111,7 @@ eg2(e1,n1,n2,"Used").
 pg2(n1,"Name","text").
 ~~~~
 
-![Visualized graph for the above Clingo code](img/sample.pdf)
+![Visualized graph for the above Clingo code](https://raw.githubusercontent.com/arthurscchan/ProvMark/master/documentation/img/sample.jpg)
 
 ## Batch Execution (Training / Benchmark Generation)
 
