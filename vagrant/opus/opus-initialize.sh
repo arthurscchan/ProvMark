@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Retrieve OPUS Package and Extract the TARBALL
-echo "Warning: Please get a licensed OPUS copy and extract to any location"
-
 ## Basic dependency
 sudo apt-get update
 sudo apt-get -y install git
@@ -11,6 +8,9 @@ sudo apt-get -y install git
 sudo add-apt-repository -y ppa:openjdk-r/ppa
 sudo apt-get update
 sudo apt-get install -y openjdk-8-jdk
+export JAVA_INCLUDE_DIR=/usr/lib/jvm/java-8-openjdk-amd64/include/
+export C_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include/:/usr/lib/jvm/java-8-openjdk-amd64/include/linux/
+export CPLUS_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/lib/jvm/java-8-openjdk-amd64/include/linux/
 
 ## Neo4j - need a specific package repo
 wget -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
@@ -19,8 +19,13 @@ sudo apt-get update
 sudo apt-get -y install neo4j=2.2.4
 sudo apt-get -y install realpath
 sudo apt-get -y install trace-cmd
-sudo apt-get -y install Graphviz
-#sudo apt-get -y install cypher-shell
+
+## OPUS
+sudo apt-get -y install python-pip python-dev build-essential unzip
+cd ~
+git clone https://github.com/DTG-FRESCO/opus
+cd opus
+./build.sh
 
 ## ProvMark stuff
 cd ~
