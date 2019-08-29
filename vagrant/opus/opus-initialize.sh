@@ -20,7 +20,6 @@ sudo apt-get -y install neo4j=2.2.4
 sudo apt-get -y install realpath
 sudo apt-get -y install trace-cmd
 
-## OPUS
 #sudo apt-get -y install python-pip python-dev build-essential unzip
 #cd ~
 #git clone https://github.com/DTG-FRESCO/opus

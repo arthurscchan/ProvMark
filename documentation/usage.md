@@ -9,7 +9,7 @@ Usage:
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
 ~~~~
-./ProvMark bg spg /path/to/spade/base/directory ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 1
+./ProvMark bg spg /home/vagrant/SPADE ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 1
 ~~~~
 
 Example for CamFlow (note that the "tool base directory" is unused and arbitrary in this case):
@@ -24,15 +24,18 @@ Example for CamFlow (note that the "tool base directory" is unused and arbitrary
 - cam:    CamFlow
 
 #### Tools Base Directory:
-- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools; ignored if tools are globally accessible
+- Base directory of the chosen tool, it is assumed that if you want to execute this benchmarking system on certain provenance collecting tools, you should have installed that tools with all dependencies required by the tools. If you build ProvMark with the given Vagrant script, the default tools base directory is shown as follows; ignored for CamFlow
+- SPADE: /home/vagrant/SPADE
+- OPUS: You should have installed OPUS manually
+- CamFlow: ./
 
 #### Benchmark Program Directory:
 - Base directory of the benchmark program
 - Point the script to the syscall choice for the benchmarking process
 
-#### Trial (Default: 2):
-- Number of trial executed for each graph for generalization
-- More trial will result in longer processing time, but provide a more accurate result as multiple trial can help to filter out uncertainty and unrelated elements and noise
+#### Number of trials (Default: 2):
+- Number of trials executed for each graph for generalization
+- More trials will result in longer processing time, but provide a more accurate result as multiple trial can help to filter out uncertainty and unrelated elements and noise
 
 #### Round (Default: 1):
 - For scalibility test only.
@@ -65,10 +68,54 @@ e<graph identifier>(<edge identifier>, <start node identifier>, <end node identi
 l<graph identifier>(<node / edge identifier>, <key>, <value>)
 ~~~~
 
+#### Visualization of Clingo Graph
+
+Usage:
+~~~~
+./genClingoGraph/clingo2Dot.py <Clingo Graph> <Output Graph>
+~~~~
+
+Example:
+~~~~
+./genClingoGraph/clingo2Dot.py result/result.clingo result/result.dot
+~~~~
+
+The command shown above is used to transfer clingo graph into DOT format. DOT is a graph description language. The default tool of DOT visualization is Graphviz DOT tool, which is shown as follows:
+
+Usage:
+~~~~
+dot -T<Graph Type> -o <Output File> <DOT graph>
+~~~~
+
+Example for visualizing DOT graph as pdf format:
+~~~~
+dot -Tpdf -o result/result.pdf result/result.dot
+~~~~
+
+Example for visualizing DOT graph as svg format:
+~~~~
+dot -Tsvg -o result/result.pdf result/result.dot
+~~~~
+
+#### Sample Clingo Graph
+
+~~~~
+ng1(n1,"File").
+pg1(n1,"Userid","1").
+pg1(n1,"Name","text").
+
+ng2(n1,"File").
+ng2(n2,"Process").
+pg2(n1,"Userid","1").
+eg2(e1,n1,n2,"Used").
+pg2(n1,"Name","text").
+~~~~
+
+![Visualized graph for the above Clingo code](img/sample.pdf)
 
 ## Batch Execution (Training / Benchmark Generation)
 
-Auto execute ProvMark for all syscall currently supported
+Automatically execute ProvMark for all syscall currently supported. The runTests script will search for all benchmark program recrusively in the default benchmarkProgarm folder and benchmark them one by one. It will also group the final result and post process them according to the given result type paramemter.
 
 Usage:
 ~~~~
@@ -84,7 +131,7 @@ Usage:
 
 Example for batch execution of spade with Graphviz storage and generate html webpage to display all result
 ~~~~
-./runTests spg /path/to/spade/base/directory rh
+./runTests spg /home/vagrant/SPADE rh
 ~~~~
 
 Example for batch execution of CamFlow (again, the base directory is ignored in this case):
@@ -104,7 +151,7 @@ Example for batch execution of CamFlow (again, the base directory is ignored in 
 #### Result Type:
 - rb: benchmark only
 - rg: benchmark and generalized foreground and background graph only
-- rh: html page displaying benchmark and generalied foreground and background graph
+- rh: html page displaying benchmark and generalized foreground and background graph
 
 #### Output:
 - Result stored in finalResult directory
@@ -113,6 +160,26 @@ Example for batch execution of CamFlow (again, the base directory is ignored in 
 - Benchmark graph stored in each syscall subdirectory separately
 - Generalized foreground and background graph stored in each syscall subdirectory separately (rg and rh only)
 - An index.html file stored in finalResult directory to display all graph in html table (rh only)
+
+#### Creation of sample output
+
+For the generation of the sample output, we have used the provided Vagrant script to build up the environment for the three provenance systems and execute a batch execution in each of the built virtual machine. The following command is used in each virtual machine respectively.
+
+##### SPADE
+~~~~
+./runTests spg /home/vagrant/SPADE rh
+~~~~
+
+##### OPUS
+~~~~
+./runTests opu /home/vagrant/opus rh
+~~~~
+
+##### CamFlow
+~~~~
+./runTests cam . rh 11
+~~~~
+
 
 ## Single Execution (Evaluation / Pattern Discovery)
 
@@ -167,4 +234,3 @@ Minimum Edit Distance between all benchmark patterns and the testing program pro
 Threshold set: 100 
 Conclusion: syscall action sequence represent by benchmark patterns does not exist in the testing program                         
 ~~~~
-
