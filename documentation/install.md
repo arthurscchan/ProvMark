@@ -45,7 +45,7 @@ vagrant up
 vagrant ssh
 ```
 
-To run OPUS, you also need a source or binary distribution for hte OPUS system itself, which is not currently available online.  Please contact the authors (http://www.cl.cam.ac.uk/research/dtg/fresco/opus/).
+To run OPUS, you also need a source or binary distribution for hte OPUS system itself, which is available [here](https://github.com/DTG-FRESCO/opus).
 
 ## CamFlow
 
