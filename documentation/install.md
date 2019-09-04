@@ -2,7 +2,7 @@
 
 The major language used in ProvMark is Python3. So you need to ensure you have python3 installed.
 Our tools basically support all unix-like operating system.
-As our tools aim to generate benchmarks for different provenance collecting systems, we assume that you have already install the provenance collecting tools and their repsective dependency properly before choosing that tools for the ProvMark system. The installation guide, dependencies and details documentations of the three currently supported tools can be found in the following links.
+As our tools aim to generate benchmarks for different provenance collecting systems, we assume that you have already installed the provenance collecting tools and their repsective dependencies properly before choosing that tools for the ProvMark system. The installation guide, dependencies and details documentations of the three currently supported tools can be found in the following links.
 
 - [SPADE](https://github.com/ashish-gehani/SPADE)
 - [OPUS](https://www.cl.cam.ac.uk/research/dtg/fresco/opus/)
@@ -45,7 +45,7 @@ vagrant up
 vagrant ssh
 ```
 
-To run OPUS, you also need a source or binary distribution for hte OPUS system itself, which is available [here](https://github.com/DTG-FRESCO/opus).
+To run OPUS, you also need a source or binary distribution for the OPUS system itself, which is available [here](https://github.com/DTG-FRESCO/opus).
 
 ## CamFlow
 

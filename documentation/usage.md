@@ -110,7 +110,7 @@ pg2(n1,"Name","text").
 
 ## Batch Execution
 
-Automatically execute ProvMark for all syscall currently supported. The runTests.sh script will search for all benchmark program recrusively in the default benchmarkProgarm folder and benchmark them one by one. It will also group the final result and post process them according to the given result type paramemter.
+Automatically execute ProvMark for all syscall currently supported. The runTests.sh script will search for all benchmark programs recursively in the default benchmarkProgarm folder and benchmark them one by one. It will also group the final result and post process them according to the given result type paramemter.
 
 Usage:
 ~~~~
@@ -167,3 +167,5 @@ For the generation of the sample output, we have used the provided Vagrant scrip
 ~~~~
 ./runTests.sh cam . rh 11
 ~~~~
+
+The full result of the batch execution will be stored in finalResult directory located under the current directory. If you choose the rh options, there is also a index webpage generated. You can view the thumbnails of all the provenance benchmark by opening finalResult/index.html in a browser, each of the thumbnails are clickable and will display the full size provenance benchmark when clicked. If you choose other options, you may need to manually open the provenance benchmark image in the finalResult directory which is classified by system calls.
