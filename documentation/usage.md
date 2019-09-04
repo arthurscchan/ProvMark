@@ -9,7 +9,7 @@ Usage:
 
 Example for generating benchmark for syscall create using SPADE with Graphviz storage:
 ~~~~
-./fullAutomation.py spg /path/to/spade/base/directory ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
+./fullAutomation.py spg /home/vagrant/SPADE ./benchmarkProgram/baseSyscall/grpCreat/cmdCreat 2 
 ~~~~
 
 Example for CamFlow (note that the "tool base directory" is unused and arbitrary in this case):
