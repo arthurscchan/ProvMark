@@ -2,7 +2,7 @@
 
 Configuration of ProvMark is done by modifying config/config.ini file. It should not be needed in common cases.
 
-In ProvMark system, the first two stages collect provenance information from provenancee collecting tools and transform the provenance result into a clingo graph. Different tools need different process handling and type conversion. These config mentions are stored in the config.ini file.
+In ProvMark system, the first two stages collect provenance information from provenancee collecting tools and transform the provenance result into a clingo graph. Different tools need different process handling and type conversion. These configuration parameters are stored in the config.ini file.
 
 Each profile starts with the name and includes three settings as follows:
 
