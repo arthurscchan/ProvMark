@@ -25,10 +25,10 @@ git clone https://github.com/arthurscchan/ProvMark.git
 
 In the vagrant folder, we have prepared the [Vagrant](https://www.vagrantup.com/) script for the three provenance collecting tools currently supported. If you have vagrant and virtual box installed in your system, you can follow the steps below to build up a virtual environment which everything (tools and ProvMark) are installed.
 
-## SPADEv3
+## SPADE
 
 ``` shell
-cd ./vagrant/spadev3
+cd ./vagrant/spade
 vagrant plugin install vagrant-vbguest
 vagrant up
 vagrant ssh
