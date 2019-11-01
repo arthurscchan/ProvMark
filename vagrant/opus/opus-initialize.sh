@@ -1,31 +1,35 @@
 #!/bin/bash
 
+## Basic dependency
 sudo apt-get update
+sudo apt-get -y install git
 
-#Retrieve OPUS Package and Extract the TARBALL
-echo "Warning: Please get a licensed OPUS copy and extract to any location"
+## Install OpenJDK 8
+sudo add-apt-repository -y ppa:openjdk-r/ppa
+sudo apt-get update
+sudo apt-get install -y openjdk-8-jdk
+echo "export JAVA_INCLUDE_DIR=/usr/lib/jvm/java-8-openjdk-amd64/include/" >> /home/vagrant/.bashrc
+echo "export C_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include/:/usr/lib/jvm/java-8-openjdk-amd64/include/linux/" >> /home/vagrant/.bashrc
+echo "export CPLUS_INCLUDE_PATH=$C_INCLUDE_PATH:/usr/lib/jvm/java-8-openjdk-amd64/include/linux/" >> /home/vagrant/.bashrc
 
 ## Neo4j - need a specific package repo
 wget -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
 echo 'deb https://debian.neo4j.org/repo stable/' | sudo tee /etc/apt/sources.list.d/neo4j.list
 sudo apt-get update
 sudo apt-get -y install neo4j=2.2.4
-#sudo apt-get -y install cypher-shell
-sudo apt-get -y install git
-
-## Install Java 8
-sudo add-apt-repository -y ppa:webupd8team/java
-sudo apt-get update
-sudo apt-get -y upgrade
-echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections 
-echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-sudo apt-get -y install oracle-java8-installer
-
-## ProvMark stuff
-sudo apt-get -y install python3-pip 
 sudo apt-get -y install realpath
 sudo apt-get -y install trace-cmd
-sudo apt-get -y install Graphviz
-sudo pip3 install setuptools --upgrade
-sudo pip3 install json_merger
+
+## OPUS
+#sudo apt-get -y install python-pip python-dev build-essential unzip
+#cd ~
+#git clone https://github.com/DTG-FRESCO/opus
+#cd opus
+#./build.sh
+
+## ProvMark stuff
+cd ~
 git clone https://github.com/arthurscchan/ProvMark.git 
+
+##
+echo "You must obtain you own copy of OPUS from https://github.com/DTG-FRESCO/opus and install it in the virtual machine manually."
