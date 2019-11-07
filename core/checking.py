@@ -96,7 +96,7 @@ print ('Starting stage 4...Generating benchmark')
 
 os.system('sudo chmod +x %s/processGraph/findSubgraph.py' % baseDir)
 
-stage4Command = '''sudo %s/processGraph/findSubgraph.py %s %s 1 clingo-target cling-benign %s
+stage4Command = '''sudo %s/processGraph/findSubgraph.py %s %s 1 clingo-target clingo-benign %s
         ''' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), ('''%s/result.clingo''' % outDir))
 
 subprocess.call(stage4Command.split())
