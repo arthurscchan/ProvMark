@@ -106,5 +106,5 @@ end = time.time()
 t4 = end-start
 
 with open('/tmp/time.log', 'a') as file:
-	file.write("%s, Integrity Checking, %.3f, %.3f, %.3f, %.3f\n" % ('%s%s' % (tool,'(static)'), t1, t2, t3, t4))
+	file.write("%s, Integrity Checking, %.3f, %.3f, %.3f, %.3f\n" % ('%s%s' % (tool,'(static)'), t1, t2, 0, t4))
 
