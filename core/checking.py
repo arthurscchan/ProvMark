@@ -61,7 +61,6 @@ except:
 	pass
 
 print ('Benign Audit Log')
-print (stage1Command % 'benign')
 subprocess.check_output((stage1Command % 'benign').split())
 print ('End Benign Audit Log')
 
@@ -72,7 +71,7 @@ print ('End Target Audit Log')
 print ('End of stage 1\n')
 end = time.time()
 t1 = end-start
-quit()
+
 #Stage 2 - Transform to Clingo graph
 start = time.time()
 print ('Starting stage 2...Transforming provenance result to Clingo graph')
@@ -107,5 +106,5 @@ end = time.time()
 t4 = end-start
 
 with open('/tmp/time.log', 'a') as file:
-	file.write("%s, %s, %.3f, %.3f, %.3f, %.3f\n" % ('%s%s' % (tool,'(static)'), os.path.basename(benchmarkDir).lower()[3:], t1, t2, t3, t4))
+	file.write("%s, Integrity Checking, %.3f, %.3f, %.3f, %.3f\n" % ('%s%s' % (tool,'(static)'), t1, t2, t3, t4))
 
