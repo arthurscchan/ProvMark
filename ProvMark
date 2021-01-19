@@ -10,11 +10,18 @@ then
 	shift
 	./core/testing.py $@
 	exit 0
+elif [[ "$1" == "br" && "$#" -eq 4 ]]
+then
+	shift
+	./core/regression.py $@
+	exit 0
+eli
 fi
 
 echo "Usage: "$0" bg <Tools> <Tools Base Directory> <Benchmark Program Directory> [<Trial> <Round>]"
 echo "Usage: "$0" bt <Tools> <Tools Base Directory> <Testing Program> -f <Benchmark File>"
 echo "Usage: "$0" bt <Tools> <Tools Base Directory> <Testing Program> -d <Benchmark Directory>"
+echo "Usage: "$0" br <Tools> <Tools Base Directory (Version 1)> <Tools Base Directory (Version 2)> <Benchmark Program Directory>"
 echo "Tools:"
 echo "	Provenance collecting tools used for the evaluation or benchmark generation"
 echo "Tools Base Directory:"
