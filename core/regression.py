@@ -26,7 +26,7 @@ if len(sys.argv) != 4:
 	helpMenu(sys.argv[0])
 	quit()
 
-trial = 2
+trial = 20
 round = 1
 baseDir = os.path.abspath('%s/../' % os.path.dirname(sys.argv[0]))
 tool = sys.argv[1]
@@ -165,17 +165,17 @@ start = time.time()
 print ('Starting stage 4...Generating benchmark')
 
 os.system('sudo chmod +x %s/processGraph/findSubgraph.py' % baseDir)
-for fingerprint1 in v1Fingerprint:
-	for fingerprint2 in v2Fingerprint:
+for fingerprint in v1Fingerprint:
+	if fingerprint in v2Fingerprint:
 		#Version 1 as background
 		stage4Command = '''sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-version1-%s general.clingo-version2-%s %s
-        	''' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), fingerprint1, fingerprint2, ('''%s/resultv1v2-%s.clingo
+        	''' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), fingerprint, fingerprint, ('''%s/resultv1v2-%s.clingo
         	''' % (outDir,fingerprint)))
 		subprocess.call(stage4Command.split())
 		
 		#Version 2 as background	
 		stage4Command = '''sudo %s/processGraph/findSubgraph.py %s %s 1 general.clingo-version2-%s general.clingo-version1-%s %s
-        	''' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), fingerprint2, fingerprint1, ('''%s/resultv2v1-%s.clingo
+        	''' % (baseDir, workingDir, ('%s/processGraph/template.lp' % baseDir), fingerprint, fingerprint, ('''%s/resultv2v1-%s.clingo
         	''' % (outDir,fingerprint)))
 		subprocess.call(stage4Command.split())
 
