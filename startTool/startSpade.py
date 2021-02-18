@@ -43,8 +43,11 @@ def startSpade(workingPath, suffix, loopCount, fingerprint):
 	time.sleep(loopCount)
 
 	#Recover config file
-	shutil.copyfile('%s/cfg/spade.config.backup' % spadePath, '%s/cfg/spade.config' % spadePath)
-	os.remove('%s/cfg/spade.config.backup' % spadePath)
+	try:
+		shutil.copyfile('%s/cfg/spade.config.backup' % spadePath, '%s/cfg/spade.config' % spadePath)
+		os.remove('%s/cfg/spade.config.backup' % spadePath)
+	except:
+		pass
 
 #Retrieve arguments
 if len(sys.argv) != 7 or (sys.argv[1] != '-n' and sys.argv[1] != '-d'):
